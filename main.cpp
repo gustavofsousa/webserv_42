@@ -26,6 +26,7 @@ void handleHTTPRequest(int client_socket) {
         return;
     }
     std::cout << "Received " << bytes_received << " bytes from client." << std::endl;
+    std::cout << "Message: " << buffer << std::endl;
 
     // Null-terminate the received data to make it a C-string
     buffer[bytes_received] = '\0';

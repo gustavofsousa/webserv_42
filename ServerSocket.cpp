@@ -7,7 +7,7 @@ void ServerSocket::Initialize() {
 	// Create a socket
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_socket < 0) {
-		std::cerr << "Error creating socket." << std::endl;
+		perror("Error creating socket.");
 		exit(1);
 	}
 
@@ -24,7 +24,7 @@ void ServerSocket::Initialize() {
 
 	// Listen for incoming connections
 	if (listen(server_socket, 5) < 0) {
-		std::cerr << "Error listening for connections." << std::endl;
+		perror("Error listening for connections.");
 		exit(1);
 	}
 }

@@ -1,12 +1,12 @@
 #include "ServerSocket.hpp"
 
-void handleHTTPRequest(int client_socket) {
+void handleHTTPRequest(int sock_fd_client) {
     // Read and parse the HTTP request from the client
     // Determine the HTTP method, URI, and other request details
 
     // Implement routing and handlers for different URIs and HTTP methods
-    // Example: if (requested_uri == "/") serveHomePage(client_socket);
-    // Example: if (requested_uri == "/submit" && http_method == "POST") handleFormSubmission(client_socket);
+    // Example: if (requested_uri == "/") serveHomePage(sock_fd_client);
+    // Example: if (requested_uri == "/submit" && http_method == "POST") handleFormSubmission(sock_fd_client);
 
     // Generate an appropriate HTTP response and send it back to the client
 
@@ -14,7 +14,7 @@ void handleHTTPRequest(int client_socket) {
     ssize_t bytes_received;
 
     // Read the HTTP request from the client
-    bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
+    bytes_received = recv(sock_fd_client, buffer, sizeof(buffer), 0);
 
     if (bytes_received < 0) {
         std::cerr << "Error reading request from client." << std::endl;
@@ -32,10 +32,6 @@ void handleHTTPRequest(int client_socket) {
     buffer[bytes_received] = '\0';
 
 
-    //receive from client requested_uri
-    // char buffer[1024];
-
-
     // if (requested_uri == "/jim") {
     //     std::cout << "Hey, This is Jim" << std::endl;
     // }
@@ -48,12 +44,12 @@ int main() {
     server.Initialize();
 
     while (true) {
-        int client_socket = server.Accept();
+        int sock_fd_client = server.Accept();
 
         // Handle the HTTP request from the client
-        handleHTTPRequest(client_socket);
+        handleHTTPRequest(sock_fd_client);
 
-        close(client_socket); // Close the client socket after handling the request
+        close(sock_fd_client); // Close the client socket after handling the request
     }
 
     server.Close();

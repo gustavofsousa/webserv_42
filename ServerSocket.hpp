@@ -15,7 +15,7 @@ public:
     void Close();
 
 private:
-    int server_socket;
+    int fd_socket;
     int port;
 };
 

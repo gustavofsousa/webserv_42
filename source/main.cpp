@@ -41,10 +41,10 @@ int main() {
     int port = 8080;
 
     ServerSocket server(port);
-    server.Initialize();
+    server.initialize();
 
     while (true) {
-        int sock_fd_client = server.Accept();
+        int sock_fd_client = server.acceptCon();
 
         // Handle the HTTP request from the client
         handleHTTPRequest(sock_fd_client);
@@ -52,7 +52,7 @@ int main() {
         close(sock_fd_client); // Close the client socket after handling the request
     }
 
-    server.Close();
+    server.close();
 
     return 0;
 }

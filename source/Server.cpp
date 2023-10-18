@@ -3,7 +3,7 @@
 
 ServerSocket::ServerSocket(int port) : port(port), fd_socket(-1) {}
 
-void ServerSocket::Initialize() {
+void ServerSocket::initialize() {
 	// Create a socket
 	fd_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd_socket < 0) {
@@ -29,7 +29,7 @@ void ServerSocket::Initialize() {
 	}
 }
 
-int ServerSocket::Accept() {
+int ServerSocket::acceptCon() {
 	// Accept incoming connections and get a file descriptor for reading and writing
 	struct sockaddr_in client_address;
 	socklen_t client_address_len = sizeof(client_address);
@@ -38,7 +38,7 @@ int ServerSocket::Accept() {
 	return client_socket;
 }
 
-void ServerSocket::Close() {
+void ServerSocket::close() {
 	if (fd_socket >= 0) {
 		close(fd_socket);
 	}

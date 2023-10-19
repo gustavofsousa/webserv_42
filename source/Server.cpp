@@ -1,4 +1,4 @@
-#include "ServerSocket.hpp"
+#include "../include/Server.hpp"
 
 
 ServerSocket::ServerSocket(int port) : port(port), fd_socket(-1) {}
@@ -39,7 +39,7 @@ int ServerSocket::acceptCon() {
 }
 
 void ServerSocket::close() {
-	if (fd_socket >= 0) {
-		close(fd_socket);
+	if (this->fd_socket >= 0) {
+		close(this->fd_socket);
 	}
 }

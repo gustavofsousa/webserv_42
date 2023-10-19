@@ -31,7 +31,6 @@ void handleHTTPRequest(int sock_fd_client) {
     // Null-terminate the received data to make it a C-string
     buffer[bytes_received] = '\0';
 
-
     // if (requested_uri == "/jim") {
     //     std::cout << "Hey, This is Jim" << std::endl;
     // }
@@ -40,7 +39,7 @@ void handleHTTPRequest(int sock_fd_client) {
 int main() {
     int port = 8080;
 
-    ServerSocket server(port);
+    Server server(port);
     server.initialize();
 
     while (true) {
@@ -52,7 +51,7 @@ int main() {
         close(sock_fd_client); // Close the client socket after handling the request
     }
 
-    server.close();
+    //server.close();
 
     return 0;
 }

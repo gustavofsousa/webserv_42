@@ -1,22 +1,26 @@
-#ifndef SERVER_SOCKET_HPP
-# define SERVER_SOCKET_HPP
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
 # include <iostream>
 # include <cstring>
 # include <unistd.h>
 # include <sys/socket.h>
 # include <netinet/in.h>
+# include <cstdio> //perror
+# include <stdlib.h> //exit()
 
-class ServerSocket {
+class Server {
 public:
-    ServerSocket(int port);
+    Server();
+    ~Server();
+    Server(int port);
     void    initialize();
     int     acceptCon();
     void    close();
 
 private:
-    int fd_socket;
-    int port;
+    int     _fd_socket;
+    int     _port;
 };
 
 #endif

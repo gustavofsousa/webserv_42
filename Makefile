@@ -42,14 +42,15 @@
 # .PHONY: all clean fclean re
 
 NAME = webserv
-SRCS = main.cpp Client.cpp HttpRequest.cpp HttpResponse.cpp Parser.cpp Server.cpp WebServ.cpp
+SRCS = main.cpp Webserv.cpp Server.cpp 
+#Client.cpp HttpRequest.cpp HttpResponse.cpp Parser.cpp
 
 # Directories
 SRC_DIR = source/
 OBJ_DIR = obj/
 
 # Compiler and flags
-CXX = g++
+CXX = c++
 CXXFLAGS = -Wall -Werror -Wextra -std=c++98
 
 # Source and object file paths
@@ -79,7 +80,7 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 
 # Link object files into the final executable
 $(NAME): $(OBJS)
-	@$(CXX) $(CXXFLAGS) $^ -o $@
+	@$(CXX) $(CXXFLAGS) -Iinclude $^ -o $@
 	@printf "$(_SUCCESS) webserv is ready.\n"
 
 clean:

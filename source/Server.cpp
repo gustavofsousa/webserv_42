@@ -39,8 +39,8 @@ int Server::acceptCon() {
 	return client_socket;
 }
 
-// void Server::close() {
-// 	if (this->_fd_socket >= 0) {
-// 		close(this->_fd_socket);
-// 	}
-// }
+void Server::closeCon() {
+	if (this->_fd_socket >= 0) {
+		close(this->_fd_socket);
+	}
+}

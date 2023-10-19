@@ -81,14 +81,15 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 # Link object files into the final executable
 $(NAME): $(OBJS)
 	@$(CXX) $(CXXFLAGS) -Iinclude $^ -o $@
-	@printf "$(_SUCCESS) webserv is ready.\n"
+	@printf "\n$(_SUCCESS) webserv now is ready.\n"
 
 clean:
 	@rm -rf $(OBJ_DIR)
-	@printf "$(YELLOW) objects removed.\n $(RESET)"
+	@printf "$(YELLOW)Objects removed.\n$(RESET)"
 
 fclean: clean
 	@rm -f $(NAME)
+	@printf "$(YELLOW)Executable removed.\n$(RESET)"
 
 re: fclean all
 

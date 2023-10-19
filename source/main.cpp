@@ -51,7 +51,7 @@ int main() {
         close(sock_fd_client); // Close the client socket after handling the request
     }
 
-    //server.close();
+    server.closeCon();
 
     return 0;
 }

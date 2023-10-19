@@ -16,7 +16,7 @@ public:
     Server(int port);
     void    initialize();
     int     acceptCon();
-    void    close();
+    void    closeCon();
 
 private:
     int     _fd_socket;

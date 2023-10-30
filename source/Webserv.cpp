@@ -1,6 +1,6 @@
 #include "../include/Webserv.hpp"
 
-Webserv::Webserv() {}
+// Webserv::Webserv() {}
 
 Webserv::Webserv(Server const& newServer) : server(newServer) {}
 
@@ -8,7 +8,7 @@ Webserv::~Webserv() {}
 
 // Im not saving new fd in poll_fd.
 void    Webserv::readDataClient() {
-    sock_fd_client = this->server.acceptCon();
+    int sock_fd_client = this->server.acceptCon();
 
     char buffer[1024];
     ssize_t bytes_received;
@@ -34,9 +34,12 @@ void    Webserv::sendDataClient() {
 }
 
 void    Webserv::start() {
-    int statusPoll
+    //int statusPoll;
 
-    this->clientSockets.push_back(this->server._fd_socket);
+    pollfd pfd;
+    pfd.fd = this->server._fd_socket;
+    pfd.events = POLLIN | POLLOUT;
+    this->clientSockets.push_back(pfd);
 
     while (42) {
         std::cout << "Ready to poll" << std::endl;

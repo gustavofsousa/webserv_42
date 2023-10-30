@@ -9,13 +9,16 @@
 
 class   Webserv {
     public:
-        Webserv();
+        //Webserv();
         Webserv(Server const& server);
         ~Webserv();
 
         Server const&   server;
         void    setup();
         void    start();
+
+        void    readDataClient();
+        void    sendDataClient();
 
         std::vector<pollfd> clientSockets;
 };

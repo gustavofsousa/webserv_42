@@ -17,7 +17,7 @@ public:
     Server(int port);
 
     void    initialize();
-    int     acceptCon();
+    int     acceptCon() const;
     void    closeCon();
     int     _fd_socket; //bette rbe private
 

@@ -33,7 +33,7 @@ void Server::initialize() {
 	}
 }
 
-int Server::acceptCon() {
+int Server::acceptCon() const {
 	// Accept incoming connections and get a file descriptor for reading and writing
 	struct sockaddr_in client_address;
 	socklen_t client_address_len = sizeof(client_address);

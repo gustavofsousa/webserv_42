@@ -34,8 +34,9 @@ void    Webserv::sendDataClient() {
 }
 
 void    Webserv::start() {
-    //int statusPoll;
+    int statusPoll;
 
+    // Inserting socket server to monitorate.
     pollfd pfd;
     pfd.fd = this->server._fd_socket;
     pfd.events = POLLIN | POLLOUT;
@@ -43,10 +44,10 @@ void    Webserv::start() {
 
     while (42) {
         std::cout << "Ready to poll" << std::endl;
-        // statusPoll = poll(this->clientSockets.data(), this->clientSockets.size(), -1);
-        // if (statusPoll == -1) {
-        //     std::cerr << "Error in webserv.cpp: " << strerror(errno) << std:endl;
-        // }
+        statusPoll = poll(this->clientSockets.data(), this->clientSockets.size(), -1);
+        if (statusPoll == -1) {
+            std::cerr << "Error in webserv.cpp: " << strerror(errno) << std::endl;
+        }
 
 
         // for (size_t i = 0; i < this->clientSockets.size(); i++)

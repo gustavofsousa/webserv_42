@@ -8,18 +8,20 @@
 # include <netinet/in.h>
 # include <cstdio> //perror
 # include <stdlib.h> //exit()
+//# include <fcntl.h> //fcntl()
 
 class Server {
 public:
     Server();
     ~Server();
     Server(int port);
+
     void    initialize();
     int     acceptCon();
     void    closeCon();
+    int     _fd_socket; //bette rbe private
 
 private:
-    int     _fd_socket;
     int     _port;
 };
 

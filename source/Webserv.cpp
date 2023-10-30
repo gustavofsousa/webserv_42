@@ -25,11 +25,17 @@ void    Webserv::readDataClient() {
     }
     std::cout << "Received " << bytes_received << " bytes from client." << std::endl;
     std::cout << "Message: " << buffer << std::endl;
-
     buffer[bytes_received] = '\0';
+    
+    // TO-DO
+    // HTTPRequest  client_request = parseRequest(buffer);
+    // HTTPResponse response = process_request(client_reqest); // Here execute methods or CGI
 }
 
 void    Webserv::sendDataClient() {
+    
+    // TO-DO
+    // send(this->response);
     std::cout << "I'm sending data back" << std::endl;
 }
 
@@ -65,6 +71,3 @@ void    Webserv::start() {
 void    Webserv::setup() {
     std::cout << "Doing the setup with config" << std::endl;
 }
-
-
-// Transform in auxiliar functions for better redability (do it in if's)

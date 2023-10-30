@@ -19,7 +19,7 @@ public:
     void    initialize();
     int     acceptCon() const;
     void    closeCon();
-    int     _fd_socket; //bette rbe private
+    int     _fd_socket; //better be private
 
 private:
     int     _port;

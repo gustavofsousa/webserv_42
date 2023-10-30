@@ -50,15 +50,15 @@ void    Webserv::start() {
         }
 
 
-        // for (size_t i = 0; i < this->clientSockets.size(); i++)
-        // {
-        //     if (this->clientSockets[i].revents & POLLIN)
-        //         this->readDataClient();
-        //     else if (this->clientSockets[i].revents & POLLOUT)
-        //         this->sendDataClient();
-        //     else
-        //         std::cer << "error in receive poll" << std::endl;
-        // }
+        for (size_t i = 0; i < this->clientSockets.size(); i++)
+        {
+            if (this->clientSockets[i].revents & POLLIN)
+                this->readDataClient();
+            else if (this->clientSockets[i].revents & POLLOUT)
+                this->sendDataClient();
+            else
+                std::cerr << "error in receive poll" << std::endl;
+        }
     }
 }
 

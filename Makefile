@@ -11,11 +11,8 @@ CXX = c++
 CXXFLAGS = -Wall -Werror -Wextra -std=c++98
 
 # Source and object file paths
-SRCS_PATH = $(addprefix $(SRC_DIR), $(SRCS))
-OBJS = $(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(SRCS_PATH))
-#OBJS		:=	$(addprefix $(OBJ_DIR), $(SRCS:.cpp=.o))
-
-
+SRCS_PATH	= $(addprefix $(SRC_DIR), $(SRCS))
+OBJS 		= $(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(SRCS_PATH))
 
 GREEN = \033[0;32m
 YELLOW = \033[0;33m
@@ -23,7 +20,7 @@ RESET = \033[0m
 _SUCCESS = ✅ $(GREEN)Successfully compiled$(RESET)
 
 
-# Main target
+############ Rules #############
 all: $(OBJ_DIR) $(NAME)
 
 # Create the object directory if it doesn't exist

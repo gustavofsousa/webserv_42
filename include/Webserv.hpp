@@ -10,9 +10,10 @@
 class   Webserv {
     public:
         Webserv();
+        Webserv(Server const& server);
         ~Webserv();
 
-        Server  *server;
+        Server const&   server;
         void    setup();
         void    start();
 

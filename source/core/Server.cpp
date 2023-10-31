@@ -1,4 +1,4 @@
-#include "../include/Server.hpp"
+#include "./Server.hpp"
 
 Server::Server() {}
 Server::~Server() {}
@@ -33,6 +33,7 @@ void Server::initialize() {
 	}
 }
 
+// Need to save a new connection in vector.
 int Server::acceptCon() const {
 	// Accept incoming connections and get a file descriptor for reading and writing
 	struct sockaddr_in client_address;

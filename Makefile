@@ -1,31 +1,41 @@
 NAME = webserv
-SRCS = main.cpp Webserv.cpp Server.cpp 
-#Client.cpp HttpRequest.cpp HttpResponse.cpp Parser.cpp
-
-# Directories
-SRC_DIR = source/
-OBJ_DIR = obj/
 
 # Compiler and flags
-CXX = c++
-CXXFLAGS = -Wall -Werror -Wextra -std=c++98
+CXX 		= c++
+CXXFLAGS	= -Wall -Werror -Wextra -std=c++98
 
-# Source and object file paths
-SRCS_PATH	= $(addprefix $(SRC_DIR), $(SRCS))
-OBJS 		= $(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(SRCS_PATH))
+#					Source and object file paths
+MAIN					=	$(addprefix $(SRC_DIR), main.cpp)
+SRC_DIR 				=	source/
 
-GREEN = \033[0;32m
-YELLOW = \033[0;33m
-RESET = \033[0m
-_SUCCESS = ✅ $(GREEN)Successfully compiled$(RESET)
+CORE					=	$(addprefix $(CORE_DIR), $(CORE_FILES))
+CORE_DIR				=	$(SRC_DIR)core/
+CORE_FILES				=	Webserver.cpp Server.cpp
 
+HTTP					=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
+HTTP_DIR				=	$(SRC_DIR)http/
+HTTP_FILES				=	Request.cpp Response.cpp
 
-############ Rules #############
+#CONFIG					=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
+#CONFIG_DIR				=	$(SRC_DIR)config/
+#CONFIG_FILES			=	ConfigFile.cpp Line.cpp Location.cpp Config.cpp
+
+ALL_SRCS 				=	$(MAIN) $(CORE) $(HTTP)
+#$(CONFIG) 
+
+#					###### OBJECTS ######
+OBJS 		= $(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(ALL_SRCS))
+OBJ_DIR 	= obj/
+ALL_OBJ_DIR				=	$(sort $(dir $(OBJS)))
+
+ALL_DIR		=	http/ core/
+
+#					########### Rules #############
 all: $(OBJ_DIR) $(NAME)
 
 # Create the object directory if it doesn't exist
 $(OBJ_DIR):
-	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(addprefix $(OBJ_DIR), $(ALL_DIR))
 
 # Compile source files into object files
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
@@ -34,7 +44,7 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 
 # Link object files into the final executable
 $(NAME): $(OBJS)
-	@$(CXX) $(CXXFLAGS) -Iinclude $^ -o $@
+	@$(CXX) $(CXXFLAGS) $^ -o $@
 	@printf "\n$(_SUCCESS) webserv now is ready.\n"
 
 clean:
@@ -47,4 +57,12 @@ fclean: clean
 
 re: fclean all
 
+# ############################ COLORS #################
+
+GREEN = \033[0;32m
+YELLOW = \033[0;33m
+RESET = \033[0m
+_SUCCESS = ✅ $(GREEN)Successfully compiled$(RESET)
+
+#######################################################3
 .PHONY: all clean fclean re

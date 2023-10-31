@@ -1,4 +1,4 @@
-#include "../include/Webserv.hpp"
+#include "./core/Webserv.hpp"
 
 int main() {
     int port = 8080;

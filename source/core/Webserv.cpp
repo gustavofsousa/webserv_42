@@ -1,4 +1,4 @@
-#include "../include/Webserv.hpp"
+#include "./Webserv.hpp"
 
 // Webserv::Webserv() {}
 
@@ -8,11 +8,12 @@ Webserv::~Webserv() {}
 
 // Im not saving new fd in poll_fd.
 void    Webserv::readDataClient() {
+	// if (socket_type == server)
 	int sock_fd_client = this->server.acceptCon();
 
+	// if (socket_type == client)
 	char buffer[1024];
 	ssize_t bytes_received;
-
 	bytes_received = recv(sock_fd_client, buffer, sizeof(buffer), 0);
 
 	if (bytes_received < 0) {
@@ -55,12 +56,11 @@ void    Webserv::start() {
 			std::cerr << "Error in webserv.cpp: " << strerror(errno) << std::endl;
 		}
 
-
 		for (size_t i = 0; i < this->clientSockets.size(); i++)
 		{
 			if (is_available_to_read(i))
 				this->readDataClient();
-			else if (this->clientSockets[i].revents & POLLOUT)
+			else if (is_available_to_write(i))
 				this->sendDataClient();
 			else
 				std::cerr << "error in receive poll" << std::endl;

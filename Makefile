@@ -5,27 +5,27 @@ CXX 		= c++
 CXXFLAGS	= -Wall -Werror -Wextra -std=c++98
 
 #					Source and object file paths
-MAIN					=	$(addprefix $(SRC_DIR), main.cpp)
-SRC_DIR 				=	source/
+MAIN					=	main.cpp
 
+CORE_DIR				=	core/
+CORE_FILES				=	Webserv.cpp Server.cpp
 CORE					=	$(addprefix $(CORE_DIR), $(CORE_FILES))
-CORE_DIR				=	$(SRC_DIR)core/
-CORE_FILES				=	Webserver.cpp Server.cpp
 
-HTTP					=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
-HTTP_DIR				=	$(SRC_DIR)http/
+HTTP_DIR				=	http/
 HTTP_FILES				=	Request.cpp Response.cpp
+HTTP					=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
 
-#CONFIG					=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
 #CONFIG_DIR				=	$(SRC_DIR)config/
 #CONFIG_FILES			=	ConfigFile.cpp Line.cpp Location.cpp Config.cpp
+#CONFIG					=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
 
-ALL_SRCS 				=	$(MAIN) $(CORE) $(HTTP)
+SRC_DIR 				=	source/
+ALL_SRCS 				=	$(addprefix $(SRC_DIR), $(MAIN) $(CORE) $(HTTP))
 #$(CONFIG) 
 
 #					###### OBJECTS ######
-OBJS 		= $(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(ALL_SRCS))
-OBJ_DIR 	= obj/
+OBJS 					=	$(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(ALL_SRCS))
+OBJ_DIR 				=	obj/
 ALL_OBJ_DIR				=	$(sort $(dir $(OBJS)))
 
 #					########### Rules #############
@@ -33,7 +33,6 @@ all: $(ALL_OBJ_DIR) $(NAME)
 
 # Create the object directory if it doesn't exist
 $(ALL_OBJ_DIR):
-	@echo $(ALL_OBJ_DIR)
 	@mkdir -p $(ALL_OBJ_DIR)
 
 # Compile source files into object files

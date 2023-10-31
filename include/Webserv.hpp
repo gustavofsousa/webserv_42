@@ -21,6 +21,10 @@ class   Webserv {
         void    sendDataClient();
 
         std::vector<pollfd> clientSockets;
+
+    private:
+        bool	is_available_to_write(int client);
+        bool	is_available_to_read(int client);
 };
 
 #endif

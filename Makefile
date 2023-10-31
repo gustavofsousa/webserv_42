@@ -28,14 +28,13 @@ OBJS 		= $(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(ALL_SRCS))
 OBJ_DIR 	= obj/
 ALL_OBJ_DIR				=	$(sort $(dir $(OBJS)))
 
-ALL_DIR		=	http/ core/
-
 #					########### Rules #############
-all: $(OBJ_DIR) $(NAME)
+all: $(ALL_OBJ_DIR) $(NAME)
 
 # Create the object directory if it doesn't exist
-$(OBJ_DIR):
-	@mkdir -p $(addprefix $(OBJ_DIR), $(ALL_DIR))
+$(ALL_OBJ_DIR):
+	@echo $(ALL_OBJ_DIR)
+	@mkdir -p $(ALL_OBJ_DIR)
 
 # Compile source files into object files
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp

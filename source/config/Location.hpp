@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,38 +10,28 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config/Error.hpp"
-#include "config/ParserServer.hpp"
+#pragma	once
 
-#include <iostream>
+# include <string>
+# include <iostream> //confirmar se será necessário para a entrega
+# include "Error.hpp"
+# include "Utils.hpp"
 
-#define DB "./config/configs/default.conf"
-
-int	main( int argc, char **argv )
+class	Location
 {
-//	std::cout << "start     | main argc: " << argc << std::endl;
-	ParserServer	server;
+	private:
+		std::string					_path;
+		std::vector<std::string>	_allowed_methods;
+	
+	public:
+		Location( void );
+		Location( const Location& copy );
+		Location	&operator=( const Location &src );
+		~Location( void );
 
-	try
-	{
-//		std::cout << "try start | main" << std::endl;
-		if (argc > 2)
-			throw Error::InvalidArg();
-		else
-		{
-			if (argc == 1)
-				server.createServer(DB);
-			else
-				server.createServer(argv[1]);
-		}
-		
-//		std::cout << "try end   | main" << std::endl;
-	}
-	catch ( std::exception &e )
-	{
-//		std::cout << "catch     | " << std::endl;
-		std::cerr << e.what() << std::endl;
-	}
-//	std::cout << "end       | main" << std::endl;
-	return (0);
-}
+		const std::string &					getPath(void) const;
+		const std::vector<std::string>		getMethods(void) const;
+
+		void								setPath(std::string & path);
+		void								setMethods(std::vector<std::string> & vecLocation);
+};

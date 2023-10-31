@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Error.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,38 +10,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config/Error.hpp"
-#include "config/ParserServer.hpp"
+#include "Error.hpp"
 
-#include <iostream>
-
-#define DB "./config/configs/default.conf"
-
-int	main( int argc, char **argv )
+const char *	Error::InvalidArg::what( void ) const throw()
 {
-//	std::cout << "start     | main argc: " << argc << std::endl;
-	ParserServer	server;
+	return ("Error:Invalid arguments.\nPlease enter webserver <config file>");
+}
 
-	try
-	{
-//		std::cout << "try start | main" << std::endl;
-		if (argc > 2)
-			throw Error::InvalidArg();
-		else
-		{
-			if (argc == 1)
-				server.createServer(DB);
-			else
-				server.createServer(argv[1]);
-		}
-		
-//		std::cout << "try end   | main" << std::endl;
-	}
-	catch ( std::exception &e )
-	{
-//		std::cout << "catch     | " << std::endl;
-		std::cerr << e.what() << std::endl;
-	}
-//	std::cout << "end       | main" << std::endl;
-	return (0);
+const char *	Error::InvalidPathServer::what( void ) const throw()
+{
+	return ("Error: could not open config file.");
+}
+
+const char *	Error::InvalidConfigurationServer::what( void ) const throw()
+{
+	return ("Error: server has configuration errors");
+}
+
+const char *	Error::InvalidServer::what( void ) const throw()
+{
+	return ("Error: server did not find.");
+}
+
+const char *	Error::InvalidParameter::what( void ) const throw()
+{
+	return ("Error: Invalid parameter.");
 }

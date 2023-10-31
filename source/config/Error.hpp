@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Error.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,38 +10,44 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config/Error.hpp"
-#include "config/ParserServer.hpp"
+#pragma once
 
-#include <iostream>
+# include <iostream>
+# include <string>
 
-#define DB "./config/configs/default.conf"
-
-int	main( int argc, char **argv )
+class	Error
 {
-//	std::cout << "start     | main argc: " << argc << std::endl;
-	ParserServer	server;
+	private:
 
-	try
-	{
-//		std::cout << "try start | main" << std::endl;
-		if (argc > 2)
-			throw Error::InvalidArg();
-		else
+	public:
+		class		InvalidArg : public std::exception
 		{
-			if (argc == 1)
-				server.createServer(DB);
-			else
-				server.createServer(argv[1]);
-		}
-		
-//		std::cout << "try end   | main" << std::endl;
-	}
-	catch ( std::exception &e )
-	{
-//		std::cout << "catch     | " << std::endl;
-		std::cerr << e.what() << std::endl;
-	}
-//	std::cout << "end       | main" << std::endl;
-	return (0);
-}
+			public:
+				virtual const char* what( void ) const throw();
+		};
+
+		class	InvalidPathServer : public std::exception
+		{
+			public:
+				virtual const char* what( void ) const throw();
+		};
+
+		class	InvalidConfigurationServer : public std::exception
+		{
+			public:
+				virtual const char* what( void ) const throw();
+		};
+
+		class	InvalidServer : public std::exception
+		{
+			public:
+				virtual const char* what( void ) const throw();
+		};
+
+		class	InvalidParameter : public std::exception
+		{
+			public:
+				virtual const char* what( void ) const throw();
+		};
+
+};

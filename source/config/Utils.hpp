@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,38 +10,23 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config/Error.hpp"
-#include "config/ParserServer.hpp"
+#pragma	once
 
-#include <iostream>
+# include <string>
+# include <vector>
+# include <iostream> /*verificar se precisa imprimir alguma coisa na tela*/
+# include "Error.hpp"/*verificar se precisa lançar exceção*/
 
-#define DB "./config/configs/default.conf"
-
-int	main( int argc, char **argv )
+class	Utils
 {
-//	std::cout << "start     | main argc: " << argc << std::endl;
-	ParserServer	server;
-
-	try
-	{
-//		std::cout << "try start | main" << std::endl;
-		if (argc > 2)
-			throw Error::InvalidArg();
-		else
-		{
-			if (argc == 1)
-				server.createServer(DB);
-			else
-				server.createServer(argv[1]);
-		}
-		
-//		std::cout << "try end   | main" << std::endl;
-	}
-	catch ( std::exception &e )
-	{
-//		std::cout << "catch     | " << std::endl;
-		std::cerr << e.what() << std::endl;
-	}
-//	std::cout << "end       | main" << std::endl;
-	return (0);
-}
+	private:
+		Utils( void );
+		Utils( const Utils& copy );
+		Utils	&operator=( const Utils &src );
+		~Utils( void );
+	
+	public:
+		static	void							trim( std::string & line );
+		static	std::vector<std::string>		split( const std::string line, std::string sep);
+		static	int								atoi(const std::string line);
+};

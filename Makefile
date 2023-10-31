@@ -15,13 +15,12 @@ HTTP_DIR				=	http/
 HTTP_FILES				=	Request.cpp Response.cpp
 HTTP					=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
 
-#CONFIG_DIR				=	$(SRC_DIR)config/
-#CONFIG_FILES			=	ConfigFile.cpp Line.cpp Location.cpp Config.cpp
-#CONFIG					=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
+CONFIG_DIR				=	config/
+CONFIG_FILES			=	ConfigFile.cpp Utils.cpp Location.cpp ParserServer.cpp Error.cpp
+CONFIG					=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
 
 SRC_DIR 				=	source/
-ALL_SRCS 				=	$(addprefix $(SRC_DIR), $(MAIN) $(CORE) $(HTTP))
-#$(CONFIG) 
+ALL_SRCS 				=	$(addprefix $(SRC_DIR), $(MAIN) $(CORE) $(HTTP) $(CONFIG))
 
 #					###### OBJECTS ######
 OBJS 					=	$(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(ALL_SRCS))

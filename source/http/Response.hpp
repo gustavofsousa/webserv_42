@@ -9,6 +9,6 @@ class   Response {
         ~Response();
 
         //std::string const&  _method;
-}
+};
 
 #endif

@@ -48,7 +48,7 @@ void 	ParserServer::createServer(const std::string & config_path)
 			servers += line;
 		}
 		ifs.close();
-		std::cout << "servers final:" << servers << std::endl;
+//		std::cout << "servers final:" << servers << std::endl;
 		splitServers(servers);
 	}
 	else

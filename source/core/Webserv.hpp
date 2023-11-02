@@ -17,14 +17,19 @@ class   Webserv {
         void    setup();
         void    start();
 
-        void    readDataClient();
+        void    readDataClient(int i);
         void    sendDataClient();
 
-        std::vector<pollfd> clientSockets;
+        std::vector<pollfd> poolAllFd;
 
     private:
         bool	is_available_to_write(int client);
         bool	is_available_to_read(int client);
+
+        void	addNewSocket(int socket_fd);
+        void	addServersSockets();
+
+        int     num_servers;
 };
 
 #endif

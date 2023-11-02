@@ -10,10 +10,10 @@
 class   Webserv {
     public:
         //Webserv();
-        Webserv(Server const& server);
+        Webserv(std::vector<Server> const& newServers);
         ~Webserv();
 
-        Server const&   server;
+        std::vector<Server> const&   servers;
         void    setup();
         void    start();
 

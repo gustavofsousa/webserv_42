@@ -11,7 +11,6 @@ void Server::initialize() {
 		perror("Error creating socket.");
 		exit(1);
 	}
-
 	// Bind the socket to a specific IP address and port
 	struct sockaddr_in server_addr;
 	server_addr.sin_family = AF_INET;
@@ -19,13 +18,12 @@ void Server::initialize() {
 	server_addr.sin_addr.s_addr = INADDR_ANY; 
 
 	// Set the server socket to be non-blocking
-// fcntl(serverSocket, F_SETFL, O_NONBLOCK);
+	// fcntl(serverSocket, F_SETFL, O_NONBLOCK);
 
 	if (bind(this->_fd_socket, reinterpret_cast<struct sockaddr*>(&server_addr), sizeof(server_addr)) < 0) { // choose a port to itself.
 		perror("Error binding socket");
 		exit(1);
 	}
-
 	// Listen for incoming connections
 	if (listen(this->_fd_socket, 5) < 0) {
 		perror("Error listening for connections.");

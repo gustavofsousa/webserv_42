@@ -2,7 +2,8 @@
 
 // Webserv::Webserv() {}
 
-Webserv::Webserv(Server const& newServer) : server(newServer) {}
+Webserv::Webserv(std::vector<Server> const& newServers)
+ : servers(newServers) {}
 
 Webserv::~Webserv() {}
 
@@ -16,7 +17,7 @@ void	Webserv::closeConnection(int index) {
 void    Webserv::readDataClient(int i) {
 	if (i < num_servers) {
 		std::cout << "Creating conection with a new client" << std::endl;
-		int	fd_client = this->server.acceptCon();
+		int	fd_client = this->servers[i].acceptCon();
 		addNewSocket(fd_client);
 		return;
 	}
@@ -70,11 +71,10 @@ void	Webserv::addNewSocket(int socket_fd) {
 
 void	Webserv::addServersSockets() {
 	std::cout << "Adding servers sockets" << std::endl;
-	// for (size_t i = 0; i < servers.size(); i++)
-	// {
-		// addNewSocket(servers[i]._fd_socket);
-	// }
-	addNewSocket(this->server._fd_socket);
+	for (size_t i = 0; i < servers.size(); i++)
+	{
+		addNewSocket(servers[i]._fd_socket);
+	}
 }
 
 void    Webserv::start() {

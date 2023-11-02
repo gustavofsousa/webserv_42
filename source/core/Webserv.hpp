@@ -23,8 +23,8 @@ class   Webserv {
         std::vector<pollfd> poolAllFd;
 
     private:
-        bool	is_available_to_write(int client);
-        bool	is_available_to_read(int client);
+        bool	ableToWrite(int client);
+        bool	ableToRead(int client);
 
         void	addNewSocket(int socket_fd);
         void	addServersSockets();

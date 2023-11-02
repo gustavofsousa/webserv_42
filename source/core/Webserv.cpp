@@ -81,18 +81,18 @@ void    Webserv::start() {
 	// Inserting socket server to monitorate.
 	addServersSockets();
 
-	while (42) {
+	while (42)
+	{
 		if (updateStatusPoll(this->poolAllFd) == -1)
 			return;
 		for (size_t i = 0; i < this->poolAllFd.size(); i++)
 		{
 			std::cout << "client number: " << i << std::endl;
-			if (is_available_to_read(i))
+			if (ableToRead(i))
 				this->readDataClient(i);
-			else if (is_available_to_write(i))
+			else if (ableToWrite(i))
 				this->sendDataClient();
-			// else
-				// std::cerr << "error in receive poll" << std::endl;
+			// maybe some checkPollError() here.
 		}
 	}
 }
@@ -102,9 +102,9 @@ void    Webserv::setup() {
 	std::cout << "Doing the setup with config" << std::endl;
 }
 
-bool	Webserv::is_available_to_read(int client) {
+bool	Webserv::ableToRead(int client) {
 	return (this->poolAllFd[client].revents & POLLIN);
 }
-bool	Webserv::is_available_to_write(int client) {
+bool	Webserv::ableToWrite(int client) {
 	return (this->poolAllFd[client].revents & POLLOUT);
 }

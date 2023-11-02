@@ -28,7 +28,7 @@ class   Webserv {
 
         void	addNewSocket(int socket_fd);
         void	addServersSockets();
-
+        void    closeConnection(int client);
         int     num_servers;
 };
 

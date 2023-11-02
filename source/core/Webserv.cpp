@@ -6,15 +6,18 @@ Webserv::Webserv(Server const& newServer) : server(newServer) {}
 
 Webserv::~Webserv() {}
 
+void	Webserv::closeConnection(int index) {
+	std::cerr << "Closing the connection: " << index << std::endl;
+	close(this->poolAllFd[index].fd);
+	this->poolAllFd.erase(this->poolAllFd.begin() + index);
+}
+
 // Im not saving new fd in poll_fd.
 void    Webserv::readDataClient(int i) {
 	if (i < num_servers) {
 		std::cout << "Creating conection with a new client" << std::endl;
-		// save socket in struct pollfd
-		pollfd pfd;
-		pfd.fd = this->server.acceptCon();
-		pfd.events = POLLIN | POLLOUT;
-		this->poolAllFd.push_back(pfd);
+		int	fd_client = this->server.acceptCon();
+		addNewSocket(fd_client);
 		return;
 	}
 
@@ -28,8 +31,7 @@ void    Webserv::readDataClient(int i) {
 		return;
 	}
 	if (bytes_received == 0) {
-		std::cerr << "Client closed the connection." << std::endl;
-		this->poolAllFd.erase(this->poolAllFd.begin() + i);
+		closeConnection(i);
 		return;
 	}
 	std::cout << "Received " << bytes_received << " bytes from client." << std::endl;
@@ -76,15 +78,12 @@ void	Webserv::addServersSockets() {
 }
 
 void    Webserv::start() {
-
-	if (updateStatusPoll(this->poolAllFd) == -1)
-		return;
 	// Inserting socket server to monitorate.
 	addServersSockets();
 
 	while (42) {
-
-
+		if (updateStatusPoll(this->poolAllFd) == -1)
+			return;
 		for (size_t i = 0; i < this->poolAllFd.size(); i++)
 		{
 			std::cout << "client number: " << i << std::endl;

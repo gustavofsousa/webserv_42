@@ -12,12 +12,18 @@
 
 #include "ParserServer.hpp"
 
-ParserServer::ParserServer(void) {}
+ParserServer::ParserServer(void)
+{
+	this->_nbrServers = 0;	
+}
 
 ParserServer	&ParserServer::operator=(const ParserServer & src)
 {
 	if (this != &src)
+	{
 		this->_servers = src._servers;
+		this->_nbrServers = src._nbrServers;
+	}
 	return (*this);
 }
 
@@ -27,7 +33,20 @@ ParserServer::ParserServer(const ParserServer & copy)
 	return ;
 }
 
-ParserServer::~ParserServer(void) {}
+ParserServer::~ParserServer(void)
+{
+	this->_nbrServers = 0;
+}
+
+const std::vector< ConfigFile > &	ParserServer::getServers(void) const
+{
+	return (this->_servers);
+}
+
+const size_t 					&	ParserServer::getNbrServers(void) const
+{
+	return (this->_nbrServers);
+}
 
 void 	ParserServer::createServer(const std::string & config_path)
 {
@@ -50,6 +69,7 @@ void 	ParserServer::createServer(const std::string & config_path)
 		ifs.close();
 //		std::cout << "servers final:" << servers << std::endl;
 		splitServers(servers);
+		this->_nbrServers = this->_servers.size();
 	}
 	else
 		throw Error::InvalidPathServer();
@@ -81,6 +101,8 @@ void	ParserServer::splitServers(std::string & servers)
 //	std::string					tmp; // apenas para teste
 	while (start < servers.size())
 	{
+		while ((start < servers.size()) && (std::isspace(servers[start])))
+			start++;
 		if (servers.compare(start, 6, "server") != 0)
 			throw Error::InvalidConfigurationServer();
 		start = start + 6;

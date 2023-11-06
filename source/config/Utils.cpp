@@ -37,7 +37,8 @@ void	Utils::trim( std::string & line )
 	i = 0;
 	if (line.size())
 	{
-		while (line[i] && std::isspace(line[i]))
+//		while (line[i] && std::isspace(line[i]))
+		while (i < line.size() && std::isspace(line[i]))
 			i++;
 		line.erase(0, i);
 		if (line.size())
@@ -62,7 +63,7 @@ std::vector<std::string> Utils::split( const std::string line, std::string sep )
 	end = 0;
 	if (line.size())
 	{
-		while (line[end])
+		while (end < line.size())
 		{
 			end = line.find_first_of(sep, start);
 			str.push_back(line.substr(start, (end - start)));

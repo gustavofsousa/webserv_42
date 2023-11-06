@@ -23,6 +23,7 @@ class	ParserServer
 {
 	private:
 		std::vector< ConfigFile >	_servers;
+		size_t						_nbrServers;
 
 		void  	removeComents( std::string & line );
 		void	splitServers( std::string & servers );
@@ -36,6 +37,7 @@ class	ParserServer
 		ParserServer	&operator=( const ParserServer &src );
 		~ParserServer( void );
 
+		const std::vector< ConfigFile > &	getServers(void) const;
+		const size_t 					&	getNbrServers(void) const;
 		void	createServer( const std::string & config_path);
-
 };

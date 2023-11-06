@@ -15,11 +15,11 @@
 
 #include <iostream>
 
-#define DB "./source/config/configs/default02.conf"
+#define DB "./source/config/configs/default.conf"
 
 int	main( int argc, char **argv )
 {
-//	std::cout << "start     | main argc: " << argc << std::endl;
+//	std::cout << "start     | main argc: " << argc << " DB:" << DB << std::endl;
 	ParserServer	server;
 
 	try
@@ -29,12 +29,22 @@ int	main( int argc, char **argv )
 			throw Error::InvalidArg();
 		else
 		{
+			std::cout << "server nbrServers pré: " << server.getNbrServers() << std::endl;
 			if (argc == 1)
 				server.createServer(DB);
 			else
 				server.createServer(argv[1]);
-		}
-		
+			std::cout << "server nbrServers pós: " << server.getNbrServers() << std::endl;
+			std::vector< ConfigFile > inter = server.getServers();
+			std::vector< ConfigFile >::iterator i = inter.begin();
+			size_t									j = 0;
+			while (j < server.getNbrServers())
+			{
+				std::cout << "servidor n: " << (j + 1) << " porta: " << i->getPort() << std::endl;
+				j++;
+				i++;
+			}
+		}		
 //		std::cout << "try end   | main" << std::endl;
 	}
 	catch ( std::exception &e )

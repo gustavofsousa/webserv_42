@@ -5,7 +5,7 @@ CXX 		= c++
 CXXFLAGS	= -Wall -Werror -Wextra -std=c++98
 
 #					Source and object file paths
-MAIN					=	main.cpp
+MAIN					=	mainConfig.cpp
 
 CORE_DIR				=	core/
 CORE_FILES				=	Webserv.cpp Server.cpp

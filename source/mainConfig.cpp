@@ -15,7 +15,7 @@
 
 #include <iostream>
 
-#define DB "./config/configs/default.conf"
+#define DB "./source/config/configs/default02.conf"
 
 int	main( int argc, char **argv )
 {

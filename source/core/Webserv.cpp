@@ -7,6 +7,10 @@ Webserv::Webserv(std::vector<Server> const& newServers)
 
 Webserv::~Webserv() {}
 
+static void printError(std::string const& error) {
+	std::cout << "\033[1;31m" << error << "\033[0m" << std::endl;
+}
+
 void	Webserv::closeConnection(int index) {
 	std::cerr << "Closing the connection: " << index << std::endl;
 	close(this->poolAllFd[index].fd);
@@ -17,8 +21,7 @@ void	Webserv::closeConnection(int index) {
 void    Webserv::readDataClient(int i) {
 	if (i < num_servers) {
 		std::cout << "Creating conection with a new client" << std::endl;
-		int	fd_client = this->servers[i].acceptCon();
-		addNewSocket(fd_client);
+		addNewSocket(this->servers[i].acceptCon());
 		return;
 	}
 
@@ -28,7 +31,7 @@ void    Webserv::readDataClient(int i) {
 	bytes_received = recv(sock_fd_client, buffer, sizeof(buffer), 0);
 
 	if (bytes_received < 0) {
-		std::cerr << "Error reading request from client." << std::endl;
+		printError("Error reading request from client.");
 		return;
 	}
 	if (bytes_received == 0) {
@@ -55,7 +58,8 @@ static int	updateStatusPoll(std::vector<pollfd> poolAllFd) {
 	std::cout << "Giving a poll" << std::endl;
 	if (poll(poolAllFd.data(), poolAllFd.size(), -1) == -1)
 	{
-		std::cerr << "Error in webserv.cpp: " << strerror(errno) << std::endl;
+		printError("Error in poll: ");
+		printError(strerror(errno));
 		return (-1);
 	}
 	return (0);
@@ -108,3 +112,4 @@ bool	Webserv::ableToRead(int client) {
 bool	Webserv::ableToWrite(int client) {
 	return (this->poolAllFd[client].revents & POLLOUT);
 }
+

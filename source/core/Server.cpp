@@ -34,10 +34,14 @@ void Server::initialize() {
 // Need to save a new connection in vector.
 int Server::acceptCon() const {
 	// Accept incoming connections and get a file descriptor for reading and writing
-	struct sockaddr_in client_address;
-	socklen_t client_address_len = sizeof(client_address);
-	int client_socket = accept(this->_fd_socket, reinterpret_cast<struct sockaddr*>(&client_address), &client_address_len);
+	struct sockaddr_in	client_address;
+	socklen_t			client_address_len;
+	int					client_socket;
 
+	client_address_len = sizeof(client_address);
+	client_socket = accept(this->_fd_socket,
+		reinterpret_cast<struct sockaddr*>(&client_address),
+		&client_address_len);
 	return client_socket;
 }
 

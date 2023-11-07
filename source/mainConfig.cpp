@@ -12,10 +12,12 @@
 
 #include "config/Error.hpp"
 #include "config/ParserServer.hpp"
+#include "http/ParserRequest.hpp"
 
 #include <iostream>
 
 #define DB "./source/config/configs/default.conf"
+#define REQUEST "./source/config/configs/html.Request"
 
 int	main( int argc, char **argv )
 {
@@ -29,11 +31,12 @@ int	main( int argc, char **argv )
 			throw Error::InvalidArg();
 		else
 		{
-			std::cout << "server nbrServers pré: " << server.getNbrServers() << std::endl;
+//			std::cout << "server nbrServers pré: " << server.getNbrServers() << std::endl;
 			if (argc == 1)
 				server.createServer(DB);
 			else
 				server.createServer(argv[1]);
+/*
 			std::cout << "server nbrServers pós: " << server.getNbrServers() << std::endl;
 			std::vector< ConfigFile > inter = server.getServers();
 			std::vector< ConfigFile >::iterator i = inter.begin();
@@ -44,6 +47,13 @@ int	main( int argc, char **argv )
 				j++;
 				i++;
 			}
+*/
+			ParserRequest	requestParser;
+			requestParser.parserRequest(REQUEST);
+			std::cout << "Method     : " << requestParser.getMethod() << std::endl;
+			std::cout << "Location   : " << requestParser.getLocation() << std::endl;
+			std::cout << "RequestInf : " << requestParser.getRequestedInf() << std::endl;
+			std::cout << "ContentType: " << requestParser.getContentType() << std::endl;
 		}		
 //		std::cout << "try end   | main" << std::endl;
 	}

@@ -11,22 +11,16 @@ static void printError(std::string const& error) {
 	std::cout << "\033[1;31m" << error << "\033[0m" << std::endl;
 }
 
-void	Webserv::closeConnection(int index) {
-	std::cerr << "Closing the connection: " << index << std::endl;
-	close(this->poolAllFd[index].fd);
-	this->poolAllFd.erase(this->poolAllFd.begin() + index);
-}
-
 // Im not saving new fd in poll_fd.
 void    Webserv::readDataClient(int i) {
 	if (i < nbrServers) {
 		std::cout << "Creating conection with a new client" << std::endl;
-		addNewSocket(this->servers[i].acceptCon());
+		conn.addNewSocket(this->servers[i].acceptCon());
 		return;
 	}
 
-	int	sock_fd_client = this->poolAllFd[i].fd;
-	char buffer[1024];
+	int		sock_fd_client = this->conn.getFd(i).fd;
+	char	buffer[1024];
 	ssize_t bytes_received;
 	bytes_received = recv(sock_fd_client, buffer, sizeof(buffer), 0);
 
@@ -35,7 +29,7 @@ void    Webserv::readDataClient(int i) {
 		return;
 	}
 	if (bytes_received == 0) {
-		closeConnection(i);
+		conn.closeConnection(i);
 		return;
 	}
 	std::cout << "Received " << bytes_received << " bytes from client." << std::endl;
@@ -65,31 +59,15 @@ static int	updateStatusPoll(std::vector<pollfd> poolAllFd) {
 	return (0);
 }
 
-void	Webserv::addNewSocket(int socket_fd) {
-	pollfd pfd;
-	pfd.fd = socket_fd;
-	pfd.events = POLLIN | POLLOUT;
-	this->poolAllFd.push_back(pfd);
-
-}
-
-void	Webserv::addServersSockets() {
-	std::cout << "Adding servers sockets" << std::endl;
-	for (size_t i = 0; i < servers.size(); i++)
-	{
-		addNewSocket(servers[i]._fd_socket);
-	}
-}
-
 void    Webserv::start() {
 	// Inserting socket server to monitorate.
-	addServersSockets();
+	conn.addServersSockets(this->servers);
 
 	while (42)
 	{
-		if (updateStatusPoll(this->poolAllFd) == -1)
+		if (updateStatusPoll(this->conn.getPollFd()) == -1)
 			return;
-		for (size_t i = 0; i < this->poolAllFd.size(); i++)
+		for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 		{
 			std::cout << "client number: " << i << std::endl;
 			if (ableToRead(i))
@@ -106,10 +84,10 @@ void    Webserv::setup(ParserServer configFile) {
 	std::cout << "Doing the setup with config" << std::endl;
 }
 
-bool	Webserv::ableToRead(int client) {
-	return (this->poolAllFd[client].revents & POLLIN);
+bool	Webserv::ableToRead(int i) {
+	return (this->conn.getFd(i).revents & POLLIN);
 }
-bool	Webserv::ableToWrite(int client) {
-	return (this->poolAllFd[client].revents & POLLOUT);
+bool	Webserv::ableToWrite(int i) {
+	return (this->conn.getFd(i).revents & POLLOUT);
 }
 

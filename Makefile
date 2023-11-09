@@ -8,7 +8,7 @@ CXXFLAGS	= -Wall -Werror -Wextra -std=c++98
 MAIN					=	main.cpp
 
 CORE_DIR				=	core/
-CORE_FILES				=	Webserv.cpp Server.cpp
+CORE_FILES				=	Webserv.cpp Server.cpp Connection.cpp
 CORE					=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 
 HTTP_DIR				=	http/

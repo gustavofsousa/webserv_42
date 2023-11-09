@@ -1,0 +1,40 @@
+#include "Connection.hpp"
+
+Connection::Connection()
+{
+}
+
+Connection::~Connection()
+{
+}
+
+void	Connection::addNewSocket(int socket_fd) {
+	pollfd pfd;
+	pfd.fd = socket_fd;
+	pfd.events = POLLIN | POLLOUT;
+	this->poolAllFd.push_back(pfd);
+
+}
+
+void	Connection::addServersSockets(std::vector<Server> const& servers) {
+	std::cout << "Adding servers sockets" << std::endl;
+	for (size_t i = 0; i < servers.size(); i++)
+	{
+		addNewSocket(servers[i]._fd_socket);
+	}
+}
+
+void	Connection::closeConnection(int index) {
+	std::cerr << "Closing the connection: " << index << std::endl;
+	close(this->poolAllFd[index].fd);
+	this->poolAllFd.erase(this->poolAllFd.begin() + index);
+}
+
+std::vector<pollfd> const&  Connection::getPollFd() {
+    return (this->poolAllFd);
+}
+
+pollfd const&             Connection::getFd(int i) {
+    return (this->poolAllFd[i]);
+}
+

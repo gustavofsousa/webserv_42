@@ -34,8 +34,8 @@ class	ParserServer
 	public:
 		ParserServer( void );
 		ParserServer( const ParserServer& copy );
-		ParserServer	&operator=( const ParserServer &src );
 		~ParserServer( void );
+		ParserServer	&operator=( const ParserServer &src );
 
 		const std::vector< ConfigFile > &	getServers(void) const;
 		const size_t 					&	getNbrServers(void) const;

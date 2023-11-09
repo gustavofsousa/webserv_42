@@ -19,7 +19,7 @@ void	Webserv::closeConnection(int index) {
 
 // Im not saving new fd in poll_fd.
 void    Webserv::readDataClient(int i) {
-	if (i < num_servers) {
+	if (i < nbrServers) {
 		std::cout << "Creating conection with a new client" << std::endl;
 		addNewSocket(this->servers[i].acceptCon());
 		return;
@@ -101,8 +101,8 @@ void    Webserv::start() {
 	}
 }
 
-void    Webserv::setup() {
-	this->num_servers = 1;
+void    Webserv::setup(ParserServer configFile) {
+	this->nbrServers = configFile.getNbrServers();
 	std::cout << "Doing the setup with config" << std::endl;
 }
 

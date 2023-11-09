@@ -6,6 +6,7 @@
 # include <cerrno>
 
 # include "Server.hpp"
+# include "../config/ParserServer.hpp"
 
 class   Webserv {
     public:
@@ -14,7 +15,7 @@ class   Webserv {
         ~Webserv();
 
         std::vector<Server> const&   servers;
-        void    setup();
+        void    setup(ParserServer configFile);
         void    start();
 
         void    readDataClient(int i);
@@ -29,7 +30,7 @@ class   Webserv {
         void	addNewSocket(int socket_fd);
         void	addServersSockets();
         void    closeConnection(int client);
-        int     num_servers;
+        int     nbrServers;
 };
 
 #endif

@@ -11,9 +11,8 @@ static void printError(std::string const& error) {
 	std::cout << "\033[1;31m" << error << "\033[0m" << std::endl;
 }
 
-// Im not saving new fd in poll_fd.
 void    Webserv::readDataClient(int i) {
-	if (i < nbrServers) {
+	if (i < this->nbrServers) {
 		std::cout << "Creating conection with a new client" << std::endl;
 		conn.addNewSocket(this->servers[i].acceptCon());
 		return;
@@ -24,11 +23,10 @@ void    Webserv::readDataClient(int i) {
 	ssize_t bytes_received;
 	bytes_received = recv(sock_fd_client, buffer, sizeof(buffer), 0);
 
-	if (bytes_received < 0) {
+	if (bytes_received == -1) {
 		printError("Error reading request from client.");
 		return;
-	}
-	if (bytes_received == 0) {
+	} else if (bytes_received == 0) {
 		conn.closeConnection(i);
 		return;
 	}
@@ -60,7 +58,7 @@ static int	updateStatusPoll(std::vector<pollfd> poolAllFd) {
 }
 
 void    Webserv::start() {
-	// Inserting socket server to monitorate.
+	// Inserting the sockets of servers to monitorate.
 	conn.addServersSockets(this->servers);
 
 	while (42)

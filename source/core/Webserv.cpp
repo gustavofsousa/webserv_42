@@ -33,10 +33,12 @@ void    Webserv::readDataClient(int i) {
 	std::cout << "Received " << bytes_received << " bytes from client." << std::endl;
 	std::cout << "Message: " << buffer << std::endl;
 	buffer[bytes_received] = '\0';
-	
-	// TO-DO
-	// HTTPRequest  client_request = parseRequest(buffer);
-	// HTTPResponse response = process_request(client_reqest); // Here execute methods or CGI
+
+	// Response		response;
+	// Request		request(buffer);
+	// Client		client(request, response);
+	// Response		response(client);
+	// Here execute	methods or CGI
 }
 
 void    Webserv::sendDataClient() {
@@ -44,6 +46,7 @@ void    Webserv::sendDataClient() {
 	// TO-DO
 	// send(this->response);
 	std::cout << "I'm sending data back" << std::endl;
+	send();
 }
 
 static int	updateStatusPoll(std::vector<pollfd> poolAllFd) {

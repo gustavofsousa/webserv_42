@@ -13,6 +13,7 @@ public:
     ~Connection();
 
     void    addNewSocket(int socket_fd);
+    void    addClientSocket(int socket);
     void	addServersSockets(std::vector<Server> const& servers);
     void    closeConnection(int client);
 

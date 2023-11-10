@@ -9,11 +9,17 @@ Connection::~Connection()
 }
 
 void	Connection::addNewSocket(int socket_fd) {
+	std::cout << "Adding new socket number " << socket_fd << std::endl;
 	pollfd pfd;
 	pfd.fd = socket_fd;
 	pfd.events = POLLIN | POLLOUT;
 	this->poolAllFd.push_back(pfd);
 
+}
+
+void	Connection::addClientSocket(int socket) {
+	std::cout << "Creating conection with a new client" << std::endl;
+	this->addNewSocket(socket);
 }
 
 void	Connection::addServersSockets(std::vector<Server> const& servers) {

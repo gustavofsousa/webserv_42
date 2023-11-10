@@ -13,8 +13,7 @@ static void printError(std::string const& error) {
 
 void    Webserv::readDataClient(int i) {
 	if (i < this->nbrServers) {
-		std::cout << "Creating conection with a new client" << std::endl;
-		conn.addNewSocket(this->servers[i].acceptCon());
+		conn.addClientSocket(this->servers[i].acceptCon());
 		return;
 	}
 
@@ -41,11 +40,9 @@ void    Webserv::readDataClient(int i) {
 	// Here execute	methods or CGI
 }
 
-void    Webserv::sendDataClient() {
-	
-	// TO-DO
-	// send(this->response);
+void    Webserv::sendDataClient(int i) {
 	std::cout << "I'm sending data back" << std::endl;
+	send(this->conn.getFd(i).fd, "200", 4, 0);
 }
 
 static int	updateStatusPoll(std::vector<pollfd> poolAllFd) {
@@ -69,11 +66,10 @@ void    Webserv::start() {
 			return;
 		for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 		{
-			std::cout << "client number: " << i << std::endl;
 			if (ableToRead(i))
 				this->readDataClient(i);
 			else if (ableToWrite(i))
-				this->sendDataClient();
+				this->sendDataClient(i);
 			// maybe some checkPollError() here.
 		}
 	}

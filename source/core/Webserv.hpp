@@ -19,7 +19,7 @@ class   Webserv {
         void    start();
 
         void    readDataClient(int i);
-        void    sendDataClient();
+        void    sendDataClient(int i);
 
         Connection  conn;
     private:

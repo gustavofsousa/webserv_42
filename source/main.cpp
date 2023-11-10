@@ -13,10 +13,13 @@ int main(int argc, char **argv) {
         configServer.createServer(argv[1]);
 
     int nbrServers = configServer.getNbrServers();
+    // int nbrServers = 1;
 
     std::vector<Server> servers;
     for (int i = 0; i < nbrServers; i++) {
         int port = configServer.getServers()[i].getPort();
+        // int port = 8080;
+        std::cout << "Initializing server number " << i << " on port " << port << std::endl;
         servers.push_back(Server(port));
         servers[i].initialize();
     }

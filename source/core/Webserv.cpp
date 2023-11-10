@@ -46,7 +46,6 @@ void    Webserv::sendDataClient() {
 	// TO-DO
 	// send(this->response);
 	std::cout << "I'm sending data back" << std::endl;
-	send();
 }
 
 static int	updateStatusPoll(std::vector<pollfd> poolAllFd) {

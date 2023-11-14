@@ -17,7 +17,7 @@ public:
     void	addServersSockets(std::vector<Server> const& servers);
     void    closeConnection(int client);
 
-    std::vector<pollfd> const&  getPollFd();
+    std::vector<pollfd>&  getPollFd();
     pollfd const&               getFd(int i);
 
 private:

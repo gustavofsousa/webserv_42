@@ -27,6 +27,8 @@ class   Webserv {
         bool	ableToRead(int client);
         bool	pollError(int i);
 
+        int     updateStatusPoll();
+
         int     nbrServers;
 };
 

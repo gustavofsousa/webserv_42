@@ -36,7 +36,7 @@ void	Connection::closeConnection(int index) {
 	this->poolAllFd.erase(this->poolAllFd.begin() + index);
 }
 
-std::vector<pollfd> const&  Connection::getPollFd() {
+std::vector<pollfd>&  Connection::getPollFd() {
     return (this->poolAllFd);
 }
 

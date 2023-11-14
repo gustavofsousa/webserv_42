@@ -47,9 +47,9 @@ void    Webserv::sendDataClient(int i) {
 	send(this->conn.getFd(i).fd, "200", 4, 0);
 }
 
-static int	updateStatusPoll(std::vector<pollfd> poolAllFd) {
+int	Webserv::updateStatusPoll() {
 	//std::cout << "Giving a poll" << std::endl;
-	if (poll(poolAllFd.data(), poolAllFd.size(), -1) == -1)
+	if (poll(this->conn.getPollFd().data(), this->conn.getPollFd().size(), -1) == -1)
 	{
 		printError("Error in poll: ");
 		printError(strerror(errno));
@@ -64,7 +64,7 @@ void    Webserv::start() {
 
 	while (42)
 	{
-		if (updateStatusPoll(this->conn.getPollFd()) == -1)
+		if (updateStatusPoll() == -1)
 			return;
 		for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 		{

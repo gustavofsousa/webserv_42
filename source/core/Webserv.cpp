@@ -7,11 +7,13 @@ Webserv::Webserv(std::vector<Server> const& newServers)
 
 Webserv::~Webserv() {}
 
-static void printError(std::string const& error) {
+static int printError(std::string const& error) {
 	std::cout << "\033[1;31m" << error << "\033[0m" << std::endl;
+	return (1);
 }
 
 void    Webserv::readDataClient(int i) {
+	std::cout << "Reading data now." << std::endl;
 	if (i < this->nbrServers) {
 		conn.addClientSocket(this->servers[i].acceptCon());
 		return;
@@ -46,7 +48,7 @@ void    Webserv::sendDataClient(int i) {
 }
 
 static int	updateStatusPoll(std::vector<pollfd> poolAllFd) {
-	std::cout << "Giving a poll" << std::endl;
+	//std::cout << "Giving a poll" << std::endl;
 	if (poll(poolAllFd.data(), poolAllFd.size(), -1) == -1)
 	{
 		printError("Error in poll: ");
@@ -70,14 +72,17 @@ void    Webserv::start() {
 				this->readDataClient(i);
 			else if (ableToWrite(i))
 				this->sendDataClient(i);
-			// maybe some checkPollError() here.
+			else if (pollError(i))
+				printError("Error for poll revents");
+			else
+				std::cout  << "on [" << i << "] my revent is ->" << this->conn.getFd(i).revents << std::endl;
 		}
 	}
 }
 
 void    Webserv::setup(ParserServer configFile) {
 	this->nbrServers = configFile.getNbrServers();
-	std::cout << "Doing the setup with config" << std::endl;
+	std::cout << "Doing the setup of webserv" << std::endl;
 }
 
 bool	Webserv::ableToRead(int i) {
@@ -86,4 +91,8 @@ bool	Webserv::ableToRead(int i) {
 bool	Webserv::ableToWrite(int i) {
 	return (this->conn.getFd(i).revents & POLLOUT);
 }
-
+bool	Webserv::pollError(int i) {
+	return ((this->conn.getFd(i).revents & POLLERR)
+		|| (this->conn.getFd(i).revents & POLLHUP)
+		|| (this->conn.getFd(i).revents & POLLNVAL));
+}

@@ -25,6 +25,7 @@ class   Webserv {
     private:
         bool	ableToWrite(int client);
         bool	ableToRead(int client);
+        bool	pollError(int i);
 
         int     nbrServers;
 };

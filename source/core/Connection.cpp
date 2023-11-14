@@ -13,6 +13,7 @@ void	Connection::addNewSocket(int socket_fd) {
 	pollfd pfd;
 	pfd.fd = socket_fd;
 	pfd.events = POLLIN | POLLOUT;
+	pfd.revents = 0;
 	this->poolAllFd.push_back(pfd);
 
 }

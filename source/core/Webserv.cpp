@@ -13,9 +13,8 @@ static int printError(std::string const& error) {
 }
 
 void    Webserv::readDataClient(int i) {
-	std::cout << "Reading data now." << std::endl;
 	if (i < this->nbrServers) {
-		conn.addClientSocket(this->servers[i].acceptCon());
+		this->conn.addClientSocket(this->servers[i].acceptCon());
 		return;
 	}
 
@@ -43,12 +42,12 @@ void    Webserv::readDataClient(int i) {
 }
 
 void    Webserv::sendDataClient(int i) {
-	std::cout << "I'm sending data back" << std::endl;
+	// std::cout << "I'm sending data back" << std::endl;
 	send(this->conn.getFd(i).fd, "200", 4, 0);
 }
 
 int	Webserv::updateStatusPoll() {
-	//std::cout << "Giving a poll" << std::endl;
+	std::cout << "Giving a poll" << std::endl;
 	if (poll(this->conn.getPollFd().data(), this->conn.getPollFd().size(), -1) == -1)
 	{
 		printError("Error in poll: ");

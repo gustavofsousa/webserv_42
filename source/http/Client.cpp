@@ -2,7 +2,9 @@
 
 Client::Client(const Request &request, Response & response) :
     _request(request), _response(response)
-{ }
+{ 
+    this->getMethod();
+}
 
 Client::~Client()
 { }

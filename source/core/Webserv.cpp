@@ -27,17 +27,17 @@ void    Webserv::readDataClient(int i) {
 	else if (bytes_received == 0)
 		return this->conn.closeConnection(i);
 
-	std::cout << "Received " << bytes_received << " bytes from client." << std::endl;
-	std::cout << "Message: " << buffer << std::endl;
+	std::cout << "###### REQUEST ######" << std::endl << buffer << std::endl;
 	buffer[bytes_received] = '\0';
 
 	Request		request(buffer);
-	Response	response;
-	Client		client(request, response);
+	Client		client(request, this->_response);
 }
 
 void    Webserv::sendDataClient(int i) {
-	send(this->conn.getFd(i).fd, "200", 3, 0);
+	std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
+	send(this->conn.getFd(i).fd, &this->_response.httpMessage,
+		this->_response.httpMessage.size(), 0);
 }
 
 int	Webserv::updateStatusPoll() {

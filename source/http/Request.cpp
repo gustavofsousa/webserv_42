@@ -83,9 +83,7 @@ void	Request::splitRequest(std::string & fullRequest, size_t & pos) {
 	this->_location = (*i).substr(0, (j + 1));
 	this->_requestedInf = (*i).substr((j + 1), ((*i).size() - (j + 1)));
 	j = fullRequest.find("Content-Type:");
-	if (j == std::string::npos)
-		std::cout << "there is not content type" << std::endl;
-	else
+	if (j != std::string::npos)
 		this->_contentType = fullRequest.substr(j, (fullRequest.size() - j));
 //	std::cout << "end   | splitRequest Content-Type: " << j << " contentType: " << this->_contentType << std::endl;
 }

@@ -27,6 +27,7 @@ class   Webserv {
     private:
 
         int     nbrServers;
+        Response    _response;
 
         bool	ableToWrite(int client);
         bool	ableToRead(int client);

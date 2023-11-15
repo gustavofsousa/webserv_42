@@ -7,11 +7,12 @@
 #include <sstream>
 
 #include "Request.hpp"
+# include "Response.hpp"
 
 class Client
 {
     public:
-        Client(const Request &request);
+        Client(const Request &request, Response & response);
         ~Client();
 
         void        choiceMethod();
@@ -22,10 +23,10 @@ class Client
     private:
         Client(const Client &client);
         Client &operator=(const Client &Client);
-        const Request&  _request;
-        std::string     _response;
-        int             _statusCode;
-
+        Request const&      _request;
+        Response &     _response;
+        // std::string         _response;
+        int                 _statusCode;
 };
 
 #endif

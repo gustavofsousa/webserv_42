@@ -71,7 +71,7 @@ void 	Request::parserRequest(std::string & request)
 }
 
 void	Request::splitRequest(std::string & fullRequest, size_t & pos) {
-	std::cout << "start | splitRequest | fullRequest: " << std::endl << fullRequest << " pos: " << pos << std::endl;
+	// std::cout << "start | splitRequest | fullRequest: " << std::endl << fullRequest << " pos: " << pos << std::endl;
 	std::vector<std::string>			splitHeadRequest;
 	std::vector<std::string>::iterator	i;
 	size_t								j;

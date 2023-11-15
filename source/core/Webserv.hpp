@@ -4,11 +4,11 @@
 # include <vector>
 # include <cerrno>
 
+# include <cstring> //c_string()
 # include "./Server.hpp"
 # include "../config/ParserServer.hpp"
 # include "./Connection.hpp"
 # include "../http/Client.hpp"
-# include <cstring> //c_string()
 
 class   Webserv {
     public:

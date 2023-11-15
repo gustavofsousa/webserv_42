@@ -1,25 +1,23 @@
 #include "Client.hpp"
 
-Client::Client(const Request &request) :
-    _request(request)
-{
-
-}
+Client::Client(const Request &request, Response & response) :
+    _request(request), _response(response)
+{ }
 
 Client::~Client()
-{
-}
+{ }
 
-std::string Client::getMethod(void){
-    std::string pagePath("./index.html");
+std::string Client::getMethod(void) {
+    std::string pagePath("./static_pages/index.html");
 
     //I need to receive information from the header
     std::ifstream file(pagePath.c_str());
     if (!file) {
-        _response = "HTTP/1.1 404 Not Found\r\n\r\n";
+        this->_response.httpMessage.append("HTTP/1.1 404 Not Found\r\n\r\n");
         return "";
     }
 
+	// Here execute	methods or CGI
     std::ostringstream page;
     page << file.rdbuf();
     file.close();
@@ -30,7 +28,7 @@ std::string Client::getMethod(void){
     resp << "Content-Length: "  << page.str().length()  << " \n";
     resp << page.str();
     
-    _response = resp.str();
+    this->_response.httpMessage = resp.str();
     _statusCode = 200;
-    return (_response);
+    return (this->_response.httpMessage);
 }

@@ -7,9 +7,8 @@ Webserv::Webserv(std::vector<Server> const& newServers)
 
 Webserv::~Webserv() {}
 
-static int printError(std::string const& error) {
+static void printError(std::string const& error) {
 	std::cout << "\033[1;31m" << error << "\033[0m" << std::endl;
-	return (1);
 }
 
 void    Webserv::readDataClient(int i) {
@@ -19,26 +18,22 @@ void    Webserv::readDataClient(int i) {
 	}
 
 	int			sock_fd_client = this->conn.getFd(i).fd;
-	char	buffer[10000];
+	char	buffer[4096];
 	ssize_t 	bytes_received;
 	bytes_received = recv(sock_fd_client, buffer, sizeof(buffer), 0);
 
-	if (bytes_received == -1) {
-		printError("Error reading request from client.");
-		return;
-	} else if (bytes_received == 0) {
-		this->conn.closeConnection(i);
-		return;
-	}
+	if (bytes_received == -1)
+		return printError("Error reading request from client.");
+	else if (bytes_received == 0)
+		return this->conn.closeConnection(i);
+
 	std::cout << "Received " << bytes_received << " bytes from client." << std::endl;
 	std::cout << "Message: " << buffer << std::endl;
 	buffer[bytes_received] = '\0';
 
-	// Response		response(buffer);
 	Request		request(buffer);
-	// Client		client(request, response);
-	// Response	response(client);
-	// Here execute	methods or CGI
+	Response	response;
+	Client		client(request, response);
 }
 
 void    Webserv::sendDataClient(int i) {

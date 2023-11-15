@@ -15,10 +15,7 @@ void Server::initialize() {
 	struct sockaddr_in server_addr;
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(this->_port); //Reorganize order of bytes to network order.
-	server_addr.sin_addr.s_addr = INADDR_ANY; 
-
-	// Set the server socket to be non-blocking
-	// fcntl(serverSocket, F_SETFL, O_NONBLOCK);
+	server_addr.sin_addr.s_addr = INADDR_ANY;
 
 	if (bind(this->_fd_socket, reinterpret_cast<struct sockaddr*>(&server_addr), sizeof(server_addr)) < 0) { // choose a port to itself.
 		perror("Error binding socket");

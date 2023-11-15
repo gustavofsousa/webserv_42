@@ -10,6 +10,9 @@ Connection::~Connection()
 
 void	Connection::addNewSocket(int socket_fd) {
 	std::cout << "Adding new socket number " << socket_fd << std::endl;
+	// Set the socket to be non-blocking
+	fcntl(socket_fd, F_SETFL, O_NONBLOCK);
+
 	pollfd pfd;
 	pfd.fd = socket_fd;
 	pfd.events = POLLIN | POLLOUT;

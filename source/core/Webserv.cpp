@@ -57,6 +57,19 @@ int	Webserv::updateStatusPoll() {
 	return (0);
 }
 
+# include <fcntl.h>
+static bool isNonBlocking(int fd) {
+    int flags = fcntl(fd, F_GETFL, 0);
+    if (flags == -1) {
+        // Error handling: fcntl failed
+        std::cerr << "Error getting file descriptor flags\n";
+        return false; // Assuming non-blocking on error is false
+    }
+
+    return (flags & O_NONBLOCK) != 0;
+}
+
+
 void    Webserv::start() {
 	// Inserting the sockets of servers to monitorate.
 	conn.addServersSockets(this->servers);
@@ -73,8 +86,12 @@ void    Webserv::start() {
 				this->sendDataClient(i);
 			else if (pollError(i))
 				printError("Error for poll revents");
+			// else
+			// 	std::cout  << "on [" << i << "] my revent is ->" << this->conn.getFd(i).revents << std::endl;
+			 if (isNonBlocking(this->conn.getFd(i).fd))
+				std::cout << "The socket " << i << " is in non-blocking mode.\n";
 			else
-				std::cout  << "on [" << i << "] my revent is ->" << this->conn.getFd(i).revents << std::endl;
+				std::cout << "The socket " << i << " is in blocking mode.\n";
 		}
 	}
 }

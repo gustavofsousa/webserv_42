@@ -5,6 +5,7 @@
 # include "./Server.hpp"
 # include <poll.h>
 # include <vector>
+# include <fcntl.h>
 
 class Connection
 {

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ParserRequest.hpp                                  :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/09 15:23:54 by woliveir          #+#    #+#             */
-/*   Updated: 2022/05/09 15:09:49 by coder            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma	once
 
 # include <fstream>
@@ -34,10 +22,10 @@ class	Request
 		Request(std::string buffer);
 		~Request(void);
 
-		const std::string &				getMethod(void) const;
-		const std::string &				getLocation(void) const;
-		const std::string &				getRequestedInf(void) const;
-		const std::string &				getContentType(void) const;
+		const std::string &		getMethod(void) const;
+		const std::string &		getLocation(void) const;
+		const std::string &		getRequestedInf(void) const;
+		const std::string &		getContentType(void) const;
 
-		void							parserRequest(const std::string & request);
+		void					parserRequest(std::string & request);
 };

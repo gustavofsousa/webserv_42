@@ -18,9 +18,9 @@ void    Webserv::readDataClient(int i) {
 		return;
 	}
 
-	int		sock_fd_client = this->conn.getFd(i).fd;
-	char	buffer[1024];
-	ssize_t bytes_received;
+	int			sock_fd_client = this->conn.getFd(i).fd;
+	char	buffer[10000];
+	ssize_t 	bytes_received;
 	bytes_received = recv(sock_fd_client, buffer, sizeof(buffer), 0);
 
 	if (bytes_received == -1) {
@@ -34,15 +34,14 @@ void    Webserv::readDataClient(int i) {
 	std::cout << "Message: " << buffer << std::endl;
 	buffer[bytes_received] = '\0';
 
-	// Response		response;
-	// Request		request(buffer);
+	// Response		response(buffer);
+	Request		request(buffer);
 	// Client		client(request, response);
 	// Response	response(client);
 	// Here execute	methods or CGI
 }
 
 void    Webserv::sendDataClient(int i) {
-	this->client.response != NULL;
 	send(this->conn.getFd(i).fd, "200", 3, 0);
 }
 

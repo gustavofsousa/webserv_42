@@ -7,10 +7,12 @@
 # include "./Server.hpp"
 # include "../config/ParserServer.hpp"
 # include "./Connection.hpp"
+# include "../http/Client.hpp"
+# include <cstring> //c_string()
 
 class   Webserv {
     public:
-        //Webserv();
+        //Webserv(); //VOLTAR PRA VER. TEM QUE SER CANONICO?
         Webserv(std::vector<Server> const& newServers);
         ~Webserv();
 
@@ -23,13 +25,15 @@ class   Webserv {
 
         Connection  conn;
     private:
+
+        int     nbrServers;
+
         bool	ableToWrite(int client);
         bool	ableToRead(int client);
         bool	pollError(int i);
 
         int     updateStatusPoll();
 
-        int     nbrServers;
 };
 
 #endif

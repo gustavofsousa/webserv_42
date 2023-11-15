@@ -20,11 +20,11 @@ class Client
         void        deleteMethod(void);
 
     private:
-        const Request   &_request;
-        Client &operator=(const Client &Client);
         Client(const Client &client);
-        std::string _response;
-        int         _statusCode;
+        Client &operator=(const Client &Client);
+        const Request&  _request;
+        std::string     _response;
+        int             _statusCode;
 
 };
 

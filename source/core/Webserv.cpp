@@ -27,7 +27,7 @@ void    Webserv::readDataClient(int i) {
 		printError("Error reading request from client.");
 		return;
 	} else if (bytes_received == 0) {
-		conn.closeConnection(i);
+		this->conn.closeConnection(i);
 		return;
 	}
 	std::cout << "Received " << bytes_received << " bytes from client." << std::endl;
@@ -37,17 +37,17 @@ void    Webserv::readDataClient(int i) {
 	// Response		response;
 	// Request		request(buffer);
 	// Client		client(request, response);
-	// Response		response(client);
+	// Response	response(client);
 	// Here execute	methods or CGI
 }
 
 void    Webserv::sendDataClient(int i) {
-	// std::cout << "I'm sending data back" << std::endl;
-	send(this->conn.getFd(i).fd, "200", 4, 0);
+	this->client.response != NULL;
+	send(this->conn.getFd(i).fd, "200", 3, 0);
 }
 
 int	Webserv::updateStatusPoll() {
-	std::cout << "Giving a poll" << std::endl;
+	// std::cout << "Giving a poll" << std::endl;
 	if (poll(this->conn.getPollFd().data(), this->conn.getPollFd().size(), -1) == -1)
 	{
 		printError("Error in poll: ");
@@ -57,29 +57,16 @@ int	Webserv::updateStatusPoll() {
 	return (0);
 }
 
-# include <fcntl.h>
-static bool isNonBlocking(int fd) {
-    int flags = fcntl(fd, F_GETFL, 0);
-    if (flags == -1) {
-        // Error handling: fcntl failed
-        std::cerr << "Error getting file descriptor flags\n";
-        return false; // Assuming non-blocking on error is false
-    }
-
-    return (flags & O_NONBLOCK) != 0;
-}
-
-
 void    Webserv::start() {
 	// Inserting the sockets of servers to monitorate.
 	conn.addServersSockets(this->servers);
-
 	while (42)
 	{
 		if (updateStatusPoll() == -1)
 			return;
 		for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 		{
+			// std::cout << "Tamanho do vector -> " << this->conn.getPollFd().size() << std::endl;
 			if (ableToRead(i))
 				this->readDataClient(i);
 			else if (ableToWrite(i))
@@ -88,10 +75,6 @@ void    Webserv::start() {
 				printError("Error for poll revents");
 			// else
 			// 	std::cout  << "on [" << i << "] my revent is ->" << this->conn.getFd(i).revents << std::endl;
-			 if (isNonBlocking(this->conn.getFd(i).fd))
-				std::cout << "The socket " << i << " is in non-blocking mode.\n";
-			else
-				std::cout << "The socket " << i << " is in blocking mode.\n";
 		}
 	}
 }

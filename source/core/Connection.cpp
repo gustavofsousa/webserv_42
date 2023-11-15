@@ -35,7 +35,7 @@ void	Connection::addServersSockets(std::vector<Server> const& servers) {
 }
 
 void	Connection::closeConnection(int index) {
-	std::cerr << "Closing the connection: " << index << std::endl;
+	std::cerr << "Closing the connection: " << this->poolAllFd[index].fd << std::endl;
 	close(this->poolAllFd[index].fd);
 	this->poolAllFd.erase(this->poolAllFd.begin() + index);
 }

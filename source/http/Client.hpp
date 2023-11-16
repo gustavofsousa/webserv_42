@@ -24,7 +24,7 @@ class Client
         Client(const Client &client);
         Client &operator=(const Client &Client);
         Request const&      _request;
-        Response &     _response;
+        Response &          _response;
         // std::string         _response;
         int                 _statusCode;
 };

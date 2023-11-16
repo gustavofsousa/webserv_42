@@ -71,6 +71,12 @@ const std::string &					ConfigFile::getRoot(void) const
 	return (this->_root);
 }
 
+
+const std::vector<Location>	&		ConfigFile::getLocation(void) const
+{
+	return (this->_vec_location);
+}
+
 void					ConfigFile::setPort(std::string & _parameter)
 {
 	int 				nbr_port;
@@ -97,7 +103,7 @@ void					ConfigFile::setPort(std::string & _parameter)
 	}
 }
 
-void					ConfigFile::setHost(std::string & _parameter)
+void					ConfigFile::setHost(std::string _parameter)
 {
 //	std::cout << "início de setHost: " << _parameter << std::endl;
 	if (this->isTokenValid(_parameter))
@@ -127,30 +133,33 @@ void					ConfigFile::setIndex(myItVecS &i, myVecS & sp_server)
 void					ConfigFile::setRoot(std::string & _parameter)
 {
 //	std::cout << "início de setRoot: " << _parameter << std::endl;
-	char path[4096];
-	std::string fullPath;
-	DIR *directory;
+	std::string tmp;
 
-	directory = NULL;
 	if (this->isTokenValid(_parameter))
 	{
-		if (getcwd(path, 4096))
+		if ((_parameter.size() == 1) && (_parameter.compare(0, 1, "/") == 0))
+			this->_root = _parameter;
+		else
 		{
-			fullPath = path;
-			fullPath.append("/").append(_parameter);
-			directory = opendir(fullPath.c_str());
-			if (!directory)
-				throw Error::InvalidParameter();
+			if (_parameter.find("/") == std::string::npos)
+			{
+				tmp.append("/").append(_parameter).append("/");
+				this->_root = tmp;
+			}
 			else
 			{
-				this->_root = fullPath;
-				closedir(directory);
+				if (_parameter.find("/") != 0)
+				{
+					tmp.append("/").append(_parameter);
+					_parameter = tmp;
+				}
+				if (_parameter.rfind("/") != (_parameter.size() - 1))
+					_parameter.append("/");
+				this->_root = _parameter;
 			}
 		}
-		else
-			throw Error::InvalidParameter();
 	}
-//	std::cout << "fim    de setRoot: " << _parameter << std::endl;
+//	std::cout << "fim    de setRoot: " << std::endl;
 }
 
 void					ConfigFile::setLocation(myItVecS &i, myVecS & sp_server)

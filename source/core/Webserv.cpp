@@ -31,13 +31,16 @@ void    Webserv::readDataClient(int i) {
 	buffer[bytes_received] = '\0';
 
 	Request		request(buffer);
+	std::cout << buffer << std::endl;
 	Client		client(request, this->_response);
 }
 
 void    Webserv::sendDataClient(int i) {
-	std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
-	send(this->conn.getFd(i).fd, &this->_response.httpMessage,
-		this->_response.httpMessage.size(), 0);
+	//std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
+	if (!this->_response.httpMessage.empty()){
+		send(this->conn.getFd(i).fd, this->_response.httpMessage.c_str(), this->_response.httpMessage.size(), 0);
+		this->_response.httpMessage.clear();
+	}
 }
 
 int	Webserv::updateStatusPoll() {
@@ -63,8 +66,9 @@ void    Webserv::start() {
 			// std::cout << "Tamanho do vector -> " << this->conn.getPollFd().size() << std::endl;
 			if (ableToRead(i))
 				this->readDataClient(i);
-			else if (ableToWrite(i))
+			else if (ableToWrite(i)){
 				this->sendDataClient(i);
+			}
 			else if (pollError(i))
 				printError("Error for poll revents");
 			// else

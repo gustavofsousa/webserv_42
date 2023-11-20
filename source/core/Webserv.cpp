@@ -15,7 +15,7 @@ void    Webserv::readDataClient(int i) {
 	if (this->isRequestFromServer(i))
 		return this->conn.addClientSocket(this->servers[i].acceptCon());
 
-	Request request;
+	Request 	request;
 	int ok = request.receiveFromClient(this->conn.getFd(i).fd);
 	if (ok == -1 || ok == 0)
 		return this->conn.closeConnection(i);
@@ -25,11 +25,12 @@ void    Webserv::readDataClient(int i) {
 
 void    Webserv::sendDataClient(int i) {
 	// Check if size of response is greater than permited.
-	std::cout << "Sending data to client" << std::endl;
 	if (this->_response.httpMessage.empty())
 		return;
+	std::cout << "Sending data to client" << std::endl;
 	std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
-	send(this->conn.getFd(i).fd, &this->_response.httpMessage,
+	send(this->conn.getFd(i).fd,
+		this->_response.httpMessage.c_str(),
 		this->_response.httpMessage.size(), 0);
 	this->_response.httpMessage.clear();
 }

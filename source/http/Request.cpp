@@ -23,13 +23,8 @@ Request::Request(const Request & copy)
 
 Request::~Request(void) {}
 
-int		Request::receiveFromClient(int client) {
-
-	char		buffer[4096];
-	ssize_t 	bytes_received;
-	bytes_received = recv(client, buffer, sizeof(buffer), 0);
-
-	// Check if came all the data or if need to repeat.
+int	checkBytesReceived(ssize_t bytes_received)
+{
 	if (bytes_received == -1)
 	{
 		std::cout << "Error in recv: " << strerror(errno) << std::endl;
@@ -40,9 +35,64 @@ int		Request::receiveFromClient(int client) {
 		std::cout << "Client disconnected" << std::endl;
 		return (0);
 	}
-	buffer[bytes_received] = '\0';
-	std::cout << "###### REQUEST ######" << std::endl << buffer << std::endl;
-	this->_httpMessage = buffer;
+	return (1);
+}
+
+
+static void printYellow(std::string const& str) {
+	std::cout << "\033[1;33m" << str << "\033[0m" << std::endl;
+}
+
+int		Request::receiveFromClient(int client)
+{
+	char		buffer[BUFFER_SIZE];
+	size_t		contentLenght;
+	std::string initBody = "\r\n\r\n";
+	int			bytes;
+
+	// Get header.
+	while ((bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK | MSG_DONTWAIT)) > 0) 
+	{
+		//printYellow("bytes: ", bytes);
+		printYellow("buffer: " + std::string(buffer));	
+		if (checkBytesReceived(bytes) != 1) return (-1);
+		char*	msg_pos = std::search(buffer, buffer + bytes, initBody.begin(), initBody.end());
+		printYellow("MSG_POS: " + std::string(msg_pos));
+		if (msg_pos != buffer + bytes) 
+		{
+			printYellow("Yes");
+			// Found crlf in buff.
+			// Change this msg_pos to something of int.
+			this->_header.append(buffer, msg_pos);
+			break;
+		}
+		else 
+		{
+			// crlf not found in buff.
+			this->_header.append(buffer, bytes);
+			recv(client, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT);
+		}
+		printYellow("header: " + this->_header);
+	}
+
+	//get content lenght.
+	contentLenght = 4096;
+
+	while (this->_body.size() < contentLenght)
+	{
+		if (checkBytesReceived(bytes) != 1) return (-1);
+		bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT);
+		if (this->_body.empty())
+		{
+			// The first time needs to jump to begin of body.
+			char*	msg_pos = std::search(buffer, buffer + bytes, initBody.begin(), initBody.end());
+			this->_body.append(buffer, msg_pos + initBody.size());
+		}
+		this->_body.append(buffer, bytes);
+	}
+
+	this->_httpMessage = this->_header + this->_body;
+	std::cout << "###### REQUEST ######" << std::endl << this->_httpMessage << std::endl;
 	return (1);
 }
 

@@ -9,13 +9,17 @@
 # include "./../config/Utils.hpp"
 # include <sys/socket.h>
 # include <string.h>
+# include <string> //to_string()
+# include <algorithm> //for search
+
+# define BUFFER_SIZE 4096
 
 class	Request
 {
 	private:
-		std::string							_headRequest; //new
-		std::string							_bodyRequest; //new
 		int									_contentLength; //new
+		std::string							_header;
+		std::string							_body;
 		std::string							_httpMessage;
 		std::string							_method;
 		std::string							_location;

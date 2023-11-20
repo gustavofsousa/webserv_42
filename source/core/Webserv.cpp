@@ -17,7 +17,7 @@ void    Webserv::readDataClient(int i) {
 
 	Request 	request;
 	int ok = request.receiveFromClient(this->conn.getFd(i).fd);
-	if (ok == -1 || ok == 0)
+	if (ok == -1)
 		return this->conn.closeConnection(i);
 	request.parseRequest();
 	Client		client(request, this->_response);
@@ -55,7 +55,7 @@ void    Webserv::start() {
 			return;
 		for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 		{
-			std::cout << "Tamanho do vector -> " << this->conn.getPollFd().size() << std::endl;
+			// std::cout << "Tamanho do vector -> " << this->conn.getPollFd().size() << std::endl;
 			if (ableToRead(i))
 				this->readDataClient(i);
 			else if (ableToWrite(i)){

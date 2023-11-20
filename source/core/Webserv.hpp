@@ -32,6 +32,7 @@ class   Webserv {
         bool	ableToWrite(int client);
         bool	ableToRead(int client);
         bool	pollError(int i);
+        bool    isRequestFromServer(int i);
 
         int     updateStatusPoll();
 

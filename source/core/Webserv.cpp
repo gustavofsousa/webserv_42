@@ -12,14 +12,15 @@ static void printError(std::string const& error) {
 }
 
 void    Webserv::readDataClient(int i) {
-	if (i < this->nbrServers) {
-		this->conn.addClientSocket(this->servers[i].acceptCon());
-		return;
-	}
+	if (this->isRequestFromServer(i))
+		return this->conn.addClientSocket(this->servers[i].acceptCon());
+
+	
 
 	int			sock_fd_client = this->conn.getFd(i).fd;
 	char	buffer[4096];
 	ssize_t 	bytes_received;
+	// function to receive. Receive COMPLETE data.
 	bytes_received = recv(sock_fd_client, buffer, sizeof(buffer), 0);
 
 	if (bytes_received == -1)
@@ -92,4 +93,8 @@ bool	Webserv::pollError(int i) {
 	return ((this->conn.getFd(i).revents & POLLERR)
 		|| (this->conn.getFd(i).revents & POLLHUP)
 		|| (this->conn.getFd(i).revents & POLLNVAL));
+}
+
+bool	Webserv::isRequestFromServer(int i) {
+	return (i < this->nbrServers);
 }

@@ -15,23 +15,20 @@ void    Webserv::readDataClient(int i) {
 	if (this->isRequestFromServer(i))
 		return this->conn.addClientSocket(this->servers[i].acceptCon());
 
-	
+	Request		request;
 
-	int			sock_fd_client = this->conn.getFd(i).fd;
-	char	buffer[4096];
-	ssize_t 	bytes_received;
-	// function to receive. Receive COMPLETE data.
-	bytes_received = recv(sock_fd_client, buffer, sizeof(buffer), 0);
+	int ok = request.receiveFromClient(this->conn.getFd(i).fd);
 
-	if (bytes_received == -1)
-		return printError("Error reading request from client.");
-	else if (bytes_received == 0)
+	if (ok == -1)
+	{
+		printError("Error reading request from client.");
+		return this->conn.closeConnection(i);
+	}
+	else if (ok == 0)
 		return this->conn.closeConnection(i);
 
-	buffer[bytes_received] = '\0';
-	std::cout << "###### REQUEST ######" << std::endl << buffer << std::endl;
 
-	Request		request(buffer);
+	//Request		request(buffer);
 	Client		client(request, this->_response);
 }
 

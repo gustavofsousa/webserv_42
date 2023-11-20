@@ -1,16 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ParserRequest.cpp                                  :+:      :+:    :+:   */
+/*   Request.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
+/*   By: gusta <gusta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 15:23:54 by woliveir          #+#    #+#             */
-/*   Updated: 2022/05/09 15:09:49 by coder            ###   ########.fr       */
+/*   Updated: 2023/11/20 09:31:30 by gusta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
+
+Request::Request(void) {}
 
 Request::Request(std::string buffer)
 {
@@ -37,6 +39,18 @@ Request::Request(const Request & copy)
 }
 
 Request::~Request(void) {}
+
+
+int		Request::receiveFromClient(int client) {
+
+	char		buffer[4096];
+	ssize_t 	bytes_received;
+	bytes_received = recv(client, buffer, sizeof(buffer), 0);
+
+	buffer[bytes_received] = '\0';
+	std::cout << "###### REQUEST ######" << std::endl << buffer << std::endl;
+	return (bytes_received);
+}
 
 const std::string &		Request::getMethod(void) const
 {

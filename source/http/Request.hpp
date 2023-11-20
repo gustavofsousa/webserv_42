@@ -7,6 +7,7 @@
 # include <map>
 # include "./../config/Error.hpp"
 # include "./../config/Utils.hpp"
+# include <sys/socket.h>
 
 class	Request
 {
@@ -24,9 +25,11 @@ class	Request
 		std::string	urlDecoder(const std::string & url);
 
 	public:
+		Request(void);
 		Request(std::string buffer);
 		~Request(void);
 
+		int			receiveFromClient(int client);
 		const std::string &							getMethod(void) const;
 		const std::string &							getLocation(void) const;
 		const std::string &							getRequestedInf(void) const;

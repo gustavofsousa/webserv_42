@@ -26,12 +26,13 @@ class   Webserv {
         Connection  conn;
     private:
 
-        int     nbrServers;
+        int         nbrServers;
         Response    _response;
 
         bool	ableToWrite(int client);
         bool	ableToRead(int client);
         bool	pollError(int i);
+        bool    isRequestFromServer(int i);
 
         int     updateStatusPoll();
 

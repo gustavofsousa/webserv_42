@@ -12,35 +12,27 @@ static void printError(std::string const& error) {
 }
 
 void    Webserv::readDataClient(int i) {
-	if (i < this->nbrServers) {
-		this->conn.addClientSocket(this->servers[i].acceptCon());
-		return;
-	}
+	if (this->isRequestFromServer(i))
+		return this->conn.addClientSocket(this->servers[i].acceptCon());
 
-	int			sock_fd_client = this->conn.getFd(i).fd;
-	char	buffer[4096];
-	ssize_t 	bytes_received;
-	bytes_received = recv(sock_fd_client, buffer, sizeof(buffer), 0);
-
-	if (bytes_received == -1)
-		return printError("Error reading request from client.");
-	else if (bytes_received == 0)
+	Request 	request;
+	int ok = request.receiveFromClient(this->conn.getFd(i).fd);
+	if (ok == -1 || ok == 0)
 		return this->conn.closeConnection(i);
-
-	std::cout << "###### REQUEST ######" << std::endl << buffer << std::endl;
-	buffer[bytes_received] = '\0';
-
-	Request		request(buffer);
-	std::cout << buffer << std::endl;
+	request.parseRequest();
 	Client		client(request, this->_response);
 }
 
 void    Webserv::sendDataClient(int i) {
-	//std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
-	if (!this->_response.httpMessage.empty()){
-		send(this->conn.getFd(i).fd, this->_response.httpMessage.c_str(), this->_response.httpMessage.size(), 0);
-		this->_response.httpMessage.clear();
-	}
+	// Check if size of response is greater than permited.
+	if (this->_response.httpMessage.empty())
+		return;
+	std::cout << "Sending data to client" << std::endl;
+	std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
+	send(this->conn.getFd(i).fd,
+		this->_response.httpMessage.c_str(),
+		this->_response.httpMessage.size(), 0);
+	this->_response.httpMessage.clear();
 }
 
 int	Webserv::updateStatusPoll() {
@@ -63,7 +55,7 @@ void    Webserv::start() {
 			return;
 		for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 		{
-			// std::cout << "Tamanho do vector -> " << this->conn.getPollFd().size() << std::endl;
+			std::cout << "Tamanho do vector -> " << this->conn.getPollFd().size() << std::endl;
 			if (ableToRead(i))
 				this->readDataClient(i);
 			else if (ableToWrite(i)){
@@ -72,7 +64,7 @@ void    Webserv::start() {
 			else if (pollError(i))
 				printError("Error for poll revents");
 			// else
-			// 	std::cout  << "on [" << i << "] my revent is ->" << this->conn.getFd(i).revents << std::endl;
+				// std::cout  << "on [" << i << "] my revent is ->" << this->conn.getFd(i).revents << std::endl;
 		}
 	}
 }
@@ -92,4 +84,8 @@ bool	Webserv::pollError(int i) {
 	return ((this->conn.getFd(i).revents & POLLERR)
 		|| (this->conn.getFd(i).revents & POLLHUP)
 		|| (this->conn.getFd(i).revents & POLLNVAL));
+}
+
+bool	Webserv::isRequestFromServer(int i) {
+	return (i < this->nbrServers);
 }

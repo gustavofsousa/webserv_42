@@ -180,7 +180,7 @@ void		ParserServer::buildServer(const std::string & server)
 			else if (((*i).compare(0 , 4, "host") == 0) && ((i + 1) != splitted_server.end()))
 			{
 //				std::cout << "this is a host!: " << *i << std::endl;
-				if (_server.getHost() == 0 )
+				if (_server.getHost() == 0)
 					_server.setHost(*(++i));
 				else
 					throw Error::InvalidParameter();
@@ -228,6 +228,13 @@ void		ParserServer::buildServer(const std::string & server)
 			if (i != splitted_server.end())
 				i++;
 		}
+		if (_server.getHost() == 0)
+			_server.setHost("localhost;");
+//		(_server.getRoot().size() == 0)
+		if ((_server.getPort() == -1) || (_server.getServerName().size() == 0) || \
+			(_server.getIndex().size() == 0) || (_server.getLocation().size() == 0) || \
+			(_server.getRoot().size() == 0))
+			throw Error::InvalidParameter();
 		this->_servers.push_back(_server);
 	}
 	else

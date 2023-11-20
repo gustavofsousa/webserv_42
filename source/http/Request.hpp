@@ -8,10 +8,12 @@
 # include "./../config/Error.hpp"
 # include "./../config/Utils.hpp"
 # include <sys/socket.h>
+# include <string.h>
 
 class	Request
 {
 	private:
+		std::string							_httpMessage;
 		std::string							_method;
 		std::string							_location;
 		std::string							_requestedInf;
@@ -26,7 +28,6 @@ class	Request
 
 	public:
 		Request(void);
-		Request(std::string buffer);
 		~Request(void);
 
 		int			receiveFromClient(int client);
@@ -36,5 +37,5 @@ class	Request
 		const std::string &							getContentType(void) const;
 		const std::map<std::string, std::string> &	getQueryString(void) const;
 
-		void					parserRequest(std::string & request);
+		void					parseRequest();
 };

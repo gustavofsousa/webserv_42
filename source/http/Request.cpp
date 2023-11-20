@@ -6,18 +6,13 @@
 /*   By: gusta <gusta@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 15:23:54 by woliveir          #+#    #+#             */
-/*   Updated: 2023/11/20 09:31:30 by gusta            ###   ########.fr       */
+/*   Updated: 2023/11/20 10:34:04 by gusta            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
 Request::Request(void) {}
-
-Request::Request(std::string buffer)
-{
-	this->parserRequest(buffer);
-}
 
 Request	&Request::operator=(const Request & src)
 {
@@ -40,16 +35,27 @@ Request::Request(const Request & copy)
 
 Request::~Request(void) {}
 
-
 int		Request::receiveFromClient(int client) {
 
 	char		buffer[4096];
 	ssize_t 	bytes_received;
 	bytes_received = recv(client, buffer, sizeof(buffer), 0);
 
+	// Check if came all the data or if need to repeat.
+	if (bytes_received == -1)
+	{
+		std::cout << "Error in recv: " << strerror(errno) << std::endl;
+		return (-1);
+	}
+	else if (bytes_received == 0)
+	{
+		std::cout << "Client disconnected" << std::endl;
+		return (0);
+	}
 	buffer[bytes_received] = '\0';
 	std::cout << "###### REQUEST ######" << std::endl << buffer << std::endl;
-	return (bytes_received);
+	this->_httpMessage = buffer;
+	return (1);
 }
 
 const std::string &		Request::getMethod(void) const
@@ -77,16 +83,16 @@ const std::map<std::string, std::string> &		Request::getQueryString(void) const
 	return (this->_queryString);
 }
 
-void 	Request::parserRequest(std::string & request)
+void 	Request::parseRequest()
 {
 //	std::cout << "start | parserRequest: " << request << std::endl;
 	size_t			pos;
 
-	pos = request.find(" HTTP/");
+	pos = this->_httpMessage.find(" HTTP/");
 	if (pos == std::string::npos)
 		std::cout << "Erro na requisição" << std::endl;
 	else
-		this->splitRequest(request, pos);
+		this->splitRequest(this->_httpMessage, pos);
 //	std::cout << "end   | parserRequest" << std::endl;
 }
 

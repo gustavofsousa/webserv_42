@@ -15,24 +15,16 @@ void    Webserv::readDataClient(int i) {
 	if (this->isRequestFromServer(i))
 		return this->conn.addClientSocket(this->servers[i].acceptCon());
 
-	Request		request;
-
+	Request request;
 	int ok = request.receiveFromClient(this->conn.getFd(i).fd);
-
-	if (ok == -1)
-	{
-		printError("Error reading request from client.");
+	if (ok == -1 || ok == 0)
 		return this->conn.closeConnection(i);
-	}
-	else if (ok == 0)
-		return this->conn.closeConnection(i);
-
-
-	//Request		request(buffer);
+	request.parseRequest();
 	Client		client(request, this->_response);
 }
 
 void    Webserv::sendDataClient(int i) {
+	// Check if size of response is greater than permited.
 	std::cout << "Sending data to client" << std::endl;
 	if (this->_response.httpMessage.empty())
 		return;

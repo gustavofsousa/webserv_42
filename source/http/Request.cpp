@@ -54,16 +54,14 @@ int		Request::receiveFromClient(int client)
 	while ((bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK | MSG_DONTWAIT)) > 0) 
 	{
 		//printYellow("bytes: ", bytes);
-		printYellow("buffer: " + std::string(buffer));	
 		if (checkBytesReceived(bytes) != 1) return (-1);
 		char*	msg_pos = std::search(buffer, buffer + bytes, initBody.begin(), initBody.end());
-		printYellow("MSG_POS: " + std::string(msg_pos));
 		if (msg_pos != buffer + bytes) 
 		{
-			printYellow("Yes");
 			// Found crlf in buff.
-			// Change this msg_pos to something of int.
-			this->_header.append(buffer, msg_pos);
+			std::string str(buffer);
+			size_t i = str.find(initBody);
+			this->_header.append(buffer, i);
 			break;
 		}
 		else 
@@ -72,21 +70,24 @@ int		Request::receiveFromClient(int client)
 			this->_header.append(buffer, bytes);
 			recv(client, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT);
 		}
-		printYellow("header: " + this->_header);
 	}
+	// printYellow("header: " + this->_header);
 
 	//get content lenght.
 	contentLenght = 4096;
 
 	while (this->_body.size() < contentLenght)
 	{
+		printYellow("buffer: " + std::string(buffer));	
 		if (checkBytesReceived(bytes) != 1) return (-1);
 		bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT);
 		if (this->_body.empty())
 		{
 			// The first time needs to jump to begin of body.
-			char*	msg_pos = std::search(buffer, buffer + bytes, initBody.begin(), initBody.end());
-			this->_body.append(buffer, msg_pos + initBody.size());
+			// char*	msg_pos = std::search(buffer, buffer + bytes, initBody.begin(), initBody.end());
+			std::string str(buffer);
+			size_t i = str.find(initBody);
+			this->_body.append(buffer, i + initBody.size());
 		}
 		this->_body.append(buffer, bytes);
 	}

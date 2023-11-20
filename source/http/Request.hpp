@@ -38,6 +38,9 @@ class	Request
 		~Request(void);
 
 		int			receiveFromClient(int client);
+		int			getHeader(int client );
+		int			getBody(int client, size_t contentLenght);
+		int			getContentLenght();
 		const std::string &							getMethod(void) const;
 		const std::string &							getLocation(void) const;
 		const std::string &							getRequestedInf(void) const;

@@ -43,10 +43,8 @@ static void printYellow(std::string const& str) {
 	std::cout << "\033[1;33m" << str << "\033[0m" << std::endl;
 }
 
-int		Request::receiveFromClient(int client)
-{
+int		Request::getHeader(int client) {
 	char		buffer[BUFFER_SIZE];
-	size_t		contentLenght;
 	std::string initBody = "\r\n\r\n";
 	int			bytes;
 
@@ -72,9 +70,10 @@ int		Request::receiveFromClient(int client)
 		}
 	}
 	// printYellow("header: " + this->_header);
+	return (0);
+}
 
-	//get content lenght.
-	contentLenght = 149438;
+int		Request::getContentLenght() {
 	// std::string	phraseLenght("Content-Length");
 	// char*	lineWithLen = search(this->_header.begin(),
 	// 							this->_header.end(),
@@ -85,6 +84,12 @@ int		Request::receiveFromClient(int client)
 	// 	lineWithLen++;
 	// 	contentLenght += atoi(lineWithLen*) * 10;
 	// }
+	return 129438;
+}
+int		Request::getBody(int client, size_t contentLenght) {
+	char		buffer[BUFFER_SIZE];
+	int			bytes;
+	std::string initBody = "\r\n\r\n";
 
 	while (this->_body.size() < contentLenght)
 	{
@@ -101,7 +106,20 @@ int		Request::receiveFromClient(int client)
 		this->_body.append(buffer, bytes);
 	}
 	printYellow("BODY: " + this->_body);
+	return (0);
+}
 
+// Check if it really is "return -1".
+// What do I do with this return?
+int		Request::receiveFromClient(int client)
+{
+	size_t		contentLenght;
+
+	if (getHeader(client) < 0)
+		return (-1);
+	contentLenght = getContentLenght();
+	if (getBody(client, contentLenght) < 0)
+		return (-1);
 	this->_httpMessage = this->_header + this->_body;
 	// std::cout << "###### REQUEST ######" << std::endl << this->_httpMessage << std::endl;
 	return (1);

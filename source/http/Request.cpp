@@ -74,13 +74,22 @@ int		Request::receiveFromClient(int client)
 	// printYellow("header: " + this->_header);
 
 	//get content lenght.
-	contentLenght = 4096;
+	contentLenght = 149438;
+	// std::string	phraseLenght("Content-Length");
+	// char*	lineWithLen = search(this->_header.begin(),
+	// 							this->_header.end(),
+	// 							phraseLenght.begin(),
+	// 							phraseLenght.end());
+	// lineWithLen += 16;
+	// while (is_number(lineWithLen*)) {
+	// 	lineWithLen++;
+	// 	contentLenght += atoi(lineWithLen*) * 10;
+	// }
 
 	while (this->_body.size() < contentLenght)
 	{
-		printYellow("buffer: " + std::string(buffer));	
-		if (checkBytesReceived(bytes) != 1) return (-1);
 		bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT);
+		if (checkBytesReceived(bytes) != 1) return (-1);
 		if (this->_body.empty())
 		{
 			// The first time needs to jump to begin of body.
@@ -91,9 +100,10 @@ int		Request::receiveFromClient(int client)
 		}
 		this->_body.append(buffer, bytes);
 	}
+	printYellow("BODY: " + this->_body);
 
 	this->_httpMessage = this->_header + this->_body;
-	std::cout << "###### REQUEST ######" << std::endl << this->_httpMessage << std::endl;
+	// std::cout << "###### REQUEST ######" << std::endl << this->_httpMessage << std::endl;
 	return (1);
 }
 

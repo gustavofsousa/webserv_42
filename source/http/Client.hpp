@@ -19,13 +19,14 @@ class Client
         std::string getMethod(void);
         void        postMethod(void);
         void        deleteMethod(void);
+        int         getStatusCode(void);
+        std::string readFile(std::string name); 
 
     private:
         Client(const Client &client);
         Client &operator=(const Client &Client);
         Request const&      _request;
         Response &          _response;
-        // std::string         _response;
         int                 _statusCode;
 };
 

@@ -26,7 +26,7 @@ class   Webserv {
         Connection  conn;
     private:
 
-        int     nbrServers;
+        int         nbrServers;
         Response    _response;
 
         bool	ableToWrite(int client);

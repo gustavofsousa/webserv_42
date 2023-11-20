@@ -27,17 +27,21 @@ void    Webserv::readDataClient(int i) {
 	else if (bytes_received == 0)
 		return this->conn.closeConnection(i);
 
-	std::cout << "###### REQUEST ######" << std::endl << buffer << std::endl;
 	buffer[bytes_received] = '\0';
+	std::cout << "###### REQUEST ######" << std::endl << buffer << std::endl;
 
 	Request		request(buffer);
 	Client		client(request, this->_response);
 }
 
 void    Webserv::sendDataClient(int i) {
+	std::cout << "Sending data to client" << std::endl;
+	if (this->_response.httpMessage.empty())
+		return;
 	std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
 	send(this->conn.getFd(i).fd, &this->_response.httpMessage,
 		this->_response.httpMessage.size(), 0);
+	this->_response.httpMessage.clear();
 }
 
 int	Webserv::updateStatusPoll() {
@@ -60,7 +64,7 @@ void    Webserv::start() {
 			return;
 		for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 		{
-			// std::cout << "Tamanho do vector -> " << this->conn.getPollFd().size() << std::endl;
+			std::cout << "Tamanho do vector -> " << this->conn.getPollFd().size() << std::endl;
 			if (ableToRead(i))
 				this->readDataClient(i);
 			else if (ableToWrite(i))
@@ -68,7 +72,7 @@ void    Webserv::start() {
 			else if (pollError(i))
 				printError("Error for poll revents");
 			// else
-			// 	std::cout  << "on [" << i << "] my revent is ->" << this->conn.getFd(i).revents << std::endl;
+				// std::cout  << "on [" << i << "] my revent is ->" << this->conn.getFd(i).revents << std::endl;
 		}
 	}
 }

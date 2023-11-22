@@ -39,7 +39,11 @@ std::string Client::getMethod(void)
     int lenPage = page.str().size();
     text.append("HTTP/1.1 200 OK\r\n");
     text.append("Content-Type: text/html\r\n");
-    std::string content_len = "Content-Length: " + lenPage;
+    std::string content_len;
+    std::stringstream sstream;
+    sstream << lenPage;
+    content_len.append("Content-Length: ").append(sstream.str()); //para fazer funcinar na 42!
+//    std::string content_len = "Content-Length: " + lenPage; // na 42, estava dando erro!
     content_len += "\r\n\n";
     text.append(content_len);
     text.append(page.str());

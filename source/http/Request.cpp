@@ -74,6 +74,40 @@ const std::map<std::string, std::string> &		Request::getQueryString(void) const
 void 	Request::parseRequest()
 {
 //	std::cout << "start | parserRequest: " << request << std::endl;
+	size_t		pos;
+	size_t		end;
+
+	pos =this-> _httpMessage.find("\r\n\r\n");
+	if (pos != std::string::npos)
+	{
+		this->_headRequest =this-> _httpMessage.substr(0, pos);
+		pos += 4;
+		if (pos <this-> _httpMessage.size())
+			this->_bodyRequest =this-> _httpMessage.substr(pos);
+	}
+	else
+		this->_headRequest =this-> _httpMessage.substr(0);
+	pos = this->_headRequest.find("Content-Length: ");
+	pos += 16;
+	end = pos;
+	while ((end != std::string::npos) && (std::isspace(this->_headRequest[end])))
+		end++;
+	while ((end != std::string::npos) && (!std::isspace(this->_headRequest[end])))
+		end++;
+	if (end != this->_headRequest.size())
+		this->_contentLength = Utils::atoi(this->_headRequest.substr(pos, (end - pos)));
+	pos = this->_headRequest.find(" HTTP/");
+	if (pos == std::string::npos)
+		std::cout << "Erro na requisição" << std::endl;
+	else
+		this->splitRequest(this->_headRequest, pos);
+//	std::cout << "end   | parserRequest" << std::endl;
+}
+
+/*
+void 	Request::parseRequest()
+{
+//	std::cout << "start | parserRequest: " << request << std::endl;
 	size_t			pos;
 
 	pos = this->_httpMessage.find(" HTTP/");
@@ -83,6 +117,7 @@ void 	Request::parseRequest()
 		this->splitRequest(this->_httpMessage, pos);
 //	std::cout << "end   | parserRequest" << std::endl;
 }
+*/
 
 void	Request::splitRequest(std::string & fullRequest, size_t & pos) {
 	std::vector<std::string>			splitHeadRequest;

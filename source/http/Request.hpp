@@ -13,6 +13,9 @@
 class	Request
 {
 	private:
+		std::string							_headRequest; //new
+		std::string							_bodyRequest; //new
+		int									_contentLength; //new
 		std::string							_httpMessage;
 		std::string							_method;
 		std::string							_location;

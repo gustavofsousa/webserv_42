@@ -48,7 +48,6 @@ int		Request::getHeader(int client) {
 	std::string initBody = "\r\n\r\n";
 	int			bytes;
 
-	// Get header.
 	while ((bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK | MSG_DONTWAIT)) > 0) 
 	{
 		//printYellow("bytes: ", bytes);
@@ -69,7 +68,7 @@ int		Request::getHeader(int client) {
 			recv(client, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT);
 		}
 	}
-	// printYellow("header: " + this->_header);
+	printYellow("header: " + this->_header);
 	return (0);
 }
 
@@ -86,7 +85,9 @@ int		Request::getContentLenght() {
 		end++;
 	if (end != this->_header.size())
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
-	return 129438;
+	std::cout << "My ccontenlenght: " << this->_contentLength << std::endl;
+	// return 129438;
+	return this->_contentLength;
 }
 
 int		Request::getBody(int client, size_t contentLenght) {
@@ -152,32 +153,6 @@ const std::map<std::string, std::string> &		Request::getQueryString(void) const
 {
 	return (this->_queryString);
 }
-
-// void 	Request::parseRequest()
-// {
-//	std::cout << "start | parserRequest: " << request << std::endl;
-	// size_t		pos;
-	// size_t		end;
-
-	// pos =this-> _httpMessage.find("\r\n\r\n");
-	// if (pos != std::string::npos)
-	// {
-	// 	this->_headRequest =this-> _httpMessage.substr(0, pos);
-	// 	pos += 4;
-	// 	if (pos <this-> _httpMessage.size())
-	// 		this->_bodyRequest =this-> _httpMessage.substr(pos);
-	// }
-	// else
-	// 	this->_headRequest =this-> _httpMessage.substr(0);
-	
-	// pos = this->_headRequest.find(" HTTP/");
-	// if (pos == std::string::npos)
-	// 	std::cout << "Erro na requisição" << std::endl;
-	// else
-	// 	this->splitRequest(this->_headRequest, pos);
-//	std::cout << "end   | parserRequest" << std::endl;
-// }
-
 
 void 	Request::parseRequest()
 {

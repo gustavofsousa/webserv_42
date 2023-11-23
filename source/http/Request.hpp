@@ -17,7 +17,7 @@
 class	Request
 {
 	private:
-		int									_contentLength; //new
+		int									_contentLength;
 		std::string							_header;
 		std::string							_body;
 		std::string							_httpMessage;

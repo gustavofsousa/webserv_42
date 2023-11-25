@@ -28,7 +28,7 @@ void    Webserv::sendDataClient(int i) {
 	if (this->_response.httpMessage.empty())
 		return;
 	std::cout << "Sending data to client" << std::endl;
-	std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
+	// std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
 	send(this->conn.getFd(i).fd,
 		this->_response.httpMessage.c_str(),
 		this->_response.httpMessage.size(), 0);

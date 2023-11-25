@@ -23,11 +23,22 @@ Request::Request(const Request & copy)
 
 Request::~Request(void) {}
 
-int	checkBytesReceived(ssize_t bytes_received)
+static void printYellow(std::string const& str) {
+	std::cout << "\033[1;33m" << str << "\033[0m" << std::endl;
+}
+
+int	Request::checkBytesReceived(ssize_t bytes_received)
 {
 	if (bytes_received == -1)
 	{
-		std::cout << "Error in recv: " << strerror(errno) << std::endl;
+        std::cout << "My error -> " << errno << std::endl;
+        if (errno == 11) 
+        {
+            errno = 0;
+            printYellow("Continue bro");
+            return 2;
+        }
+		std::cerr << errno << " - Error in recv: " << strerror(errno) << std::endl;
 		return (-1);
 	}
 	else if (bytes_received == 0)
@@ -39,31 +50,26 @@ int	checkBytesReceived(ssize_t bytes_received)
 }
 
 
-static void printYellow(std::string const& str) {
-	std::cout << "\033[1;33m" << str << "\033[0m" << std::endl;
-}
-
 int		Request::getHeader(int client) {
 	char		buffer[BUFFER_SIZE];
 	std::string initBody = "\r\n\r\n";
 	int			bytes;
 
-	while ((bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK | MSG_DONTWAIT)) > 0) 
+	while ((bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK)) > 0) 
 	{
-		//printYellow("bytes: ", bytes);
-		if (checkBytesReceived(bytes) != 1) return (-1);
+		if (this->checkBytesReceived(bytes) == -1) return (-1);
 		char*	msg_pos = std::search(buffer, buffer + bytes, initBody.begin(), initBody.end());
+        // Found the crlf in buff.
 		if (msg_pos != buffer + bytes) 
 		{
-			// Found crlf in buff.
 			std::string str(buffer);
 			size_t i = str.find(initBody);
 			this->_header.append(buffer, i);
 			break;
 		}
+        // the crlf not found in buff.
 		else 
 		{
-			// crlf not found in buff.
 			this->_header.append(buffer, bytes);
 			recv(client, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT);
 		}
@@ -85,8 +91,7 @@ int		Request::getContentLenght() {
 		end++;
 	if (end != this->_header.size())
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
-	std::cout << "My ccontenlenght: " << this->_contentLength << std::endl;
-	// return 129438;
+    // check if its too big with configfile.
 	return this->_contentLength;
 }
 
@@ -94,18 +99,26 @@ int		Request::getBody(int client, size_t contentLenght) {
 	char		buffer[BUFFER_SIZE];
 	int			bytes;
 	std::string initBody = "\r\n\r\n";
+    int         cont = 1;
 
 	while (this->_body.size() < contentLenght)
 	{
 		bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
-		if (checkBytesReceived(bytes) != 1) return (-1);
+        std::cout << "Round number: " << cont++ << " | Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
+        // std::cout << "MY MESSAGE -> " << buffer << std::endl;
+		if (this->checkBytesReceived(bytes) != 1) 
+            return (-1);
+        else if (this->checkBytesReceived(bytes) == 2) 
+            continue;
+        // To separete the body from header.
 		if (this->_body.empty())
 		{
-			// The first time needs to jump to begin of body.
-			// char*	msg_pos = std::search(buffer, buffer + bytes, initBody.begin(), initBody.end());
 			std::string str(buffer);
-			size_t i = str.find(initBody);
-			this->_body.append(buffer, i + initBody.size());
+			size_t i = str.find(initBody) + initBody.size();
+            std::cout << "I will move forward -> " << i << " | Until -> " << str.end() - str.begin() << std::endl;
+            printYellow(str);
+			this->_body.append(str.begin() + i, str.end());
+            continue;
 		}
 		this->_body.append(buffer, bytes);
 	}

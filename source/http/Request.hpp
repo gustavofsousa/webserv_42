@@ -41,6 +41,7 @@ class	Request
 		int			getHeader(int client );
 		int			getBody(int client, size_t contentLenght);
 		int			getContentLenght();
+        int         checkBytesReceived(ssize_t bytes_received);
 		const std::string &							getMethod(void) const;
 		const std::string &							getLocation(void) const;
 		const std::string &							getRequestedInf(void) const;

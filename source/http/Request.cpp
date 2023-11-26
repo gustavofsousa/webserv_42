@@ -34,13 +34,6 @@ int	Request::checkBytesReceived(ssize_t bytes_received)
 {
 	if (bytes_received == -1)
 	{
-        std::cout << "My error -> " << errno << std::endl;
-        if (errno == 11) 
-        {
-            errno = 0;
-            printYellow("Continue bro");
-            return 2;
-        }
 		std::cerr << errno << " - Error in recv: " << strerror(errno) << std::endl;
 		return (-1);
 	}
@@ -101,11 +94,10 @@ bool        Request::appendFirstBody(std::string buffer)
 {
     if (this->_body.empty())
     {
-        std::string str(buffer);
-        size_t i = str.find(this->_delimeter) + this->_delimeter.size();
-        std::cout << "I will move forward -> " << i << " | Until -> " << str.end() - str.begin() << std::endl;
-        printYellow(str);
-        this->_body.append(str.begin() + i, str.end());
+        size_t i = buffer.find(this->_delimeter) + this->_delimeter.size();
+        // std::cout << "I will move forward -> " << i << " | Until -> " << str.end() - str.begin() << std::endl;
+        // printYellow(str);
+        this->_body.append(buffer.begin() + i, buffer.end());
         return (true);
     }
     return (false);
@@ -126,14 +118,13 @@ int		Request::getBody(int client, size_t contentLenght) {
         else if (this->checkBytesReceived(bytes) == 2) 
             continue;
         if (appendFirstBody(buffer)) continue;
-        // To separete the body from header.
 		this->_body.append(buffer, bytes);
 	}
-    if (this->_body.size() == contentLenght)
-    {
-        this->_ready = true;
-        printYellow("BODY: " + this->_body);
-    }
+    // if (this->_body.size() == contentLenght)
+    // {
+    //     this->_ready = true;
+    //     printYellow("BODY: " + this->_body);
+    // }
 	return (0);
 }
 

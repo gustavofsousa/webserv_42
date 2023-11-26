@@ -16,37 +16,40 @@
 
 class	Request
 {
+	public:
+		Request(void);
+		~Request(void);
+
+		int			            receiveFromClient(int client);
+		void		            parseRequest();
+		const std::string &		getMethod(void) const;
+		const std::string &		getLocation(void) const;
+		const std::string &		getRequestedInf(void) const;
+		const std::string &		getContentType(void) const;
+		const std::map<std::string, std::string> &	getQueryString(void) const;
+
 	private:
 		int									_contentLength;
 		std::string							_header;
-		std::string							_body;
+        std::string     			        _body;
 		std::string							_httpMessage;
 		std::string							_method;
 		std::string							_location;
 		std::string							_requestedInf;
 		std::string							_contentType;
 		std::map<std::string, std::string>	_queryString;
+        bool                                _ready;
+        std::string                         _delimeter;
+
 		Request(const Request& copy);
-		Request	&operator=(const Request &src);
+		Request	                &operator=(const Request &src);
+		void		            splitRequest(std::string & fullRequest, size_t & pos);
+		void		            parseQueryString(std::string queryString);
+		std::string	            urlDecoder(const std::string & url);
+        int                     checkBytesReceived(ssize_t bytes_received);
+		int			            getHeader(int client );
+		int			            getBody(int client, size_t contentLenght);
+		int			            getContentLenght();
+        bool                    appendFirstBody(std::string buffer);
 
-		void		splitRequest(std::string & fullRequest, size_t & pos);
-		void		parseQueryString(std::string queryString);
-		std::string	urlDecoder(const std::string & url);
-
-	public:
-		Request(void);
-		~Request(void);
-
-		int			receiveFromClient(int client);
-		int			getHeader(int client );
-		int			getBody(int client, size_t contentLenght);
-		int			getContentLenght();
-        int         checkBytesReceived(ssize_t bytes_received);
-		const std::string &							getMethod(void) const;
-		const std::string &							getLocation(void) const;
-		const std::string &							getRequestedInf(void) const;
-		const std::string &							getContentType(void) const;
-		const std::map<std::string, std::string> &	getQueryString(void) const;
-
-		void					parseRequest();
 };

@@ -1,6 +1,9 @@
 #include "Request.hpp"
 
-Request::Request(void) {}
+Request::Request(void) {
+	this->_delimeter = "\r\n\r\n";
+    this->_ready = false;
+}
 
 Request	&Request::operator=(const Request & src)
 {
@@ -52,18 +55,17 @@ int	Request::checkBytesReceived(ssize_t bytes_received)
 
 int		Request::getHeader(int client) {
 	char		buffer[BUFFER_SIZE];
-	std::string initBody = "\r\n\r\n";
 	int			bytes;
 
 	while ((bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK)) > 0) 
 	{
 		if (this->checkBytesReceived(bytes) == -1) return (-1);
-		char*	msg_pos = std::search(buffer, buffer + bytes, initBody.begin(), initBody.end());
+		char*	msg_pos = std::search(buffer, buffer + bytes, this->_delimeter.begin(), this->_delimeter.end());
         // Found the crlf in buff.
 		if (msg_pos != buffer + bytes) 
 		{
 			std::string str(buffer);
-			size_t i = str.find(initBody);
+			size_t i = str.find(this->_delimeter);
 			this->_header.append(buffer, i);
 			break;
 		}
@@ -95,10 +97,23 @@ int		Request::getContentLenght() {
 	return this->_contentLength;
 }
 
+bool        Request::appendFirstBody(std::string buffer)
+{
+    if (this->_body.empty())
+    {
+        std::string str(buffer);
+        size_t i = str.find(this->_delimeter) + this->_delimeter.size();
+        std::cout << "I will move forward -> " << i << " | Until -> " << str.end() - str.begin() << std::endl;
+        printYellow(str);
+        this->_body.append(str.begin() + i, str.end());
+        return (true);
+    }
+    return (false);
+}
+
 int		Request::getBody(int client, size_t contentLenght) {
 	char		buffer[BUFFER_SIZE];
 	int			bytes;
-	std::string initBody = "\r\n\r\n";
     int         cont = 1;
 
 	while (this->_body.size() < contentLenght)
@@ -110,19 +125,15 @@ int		Request::getBody(int client, size_t contentLenght) {
             return (-1);
         else if (this->checkBytesReceived(bytes) == 2) 
             continue;
+        if (appendFirstBody(buffer)) continue;
         // To separete the body from header.
-		if (this->_body.empty())
-		{
-			std::string str(buffer);
-			size_t i = str.find(initBody) + initBody.size();
-            std::cout << "I will move forward -> " << i << " | Until -> " << str.end() - str.begin() << std::endl;
-            printYellow(str);
-			this->_body.append(str.begin() + i, str.end());
-            continue;
-		}
 		this->_body.append(buffer, bytes);
 	}
-	printYellow("BODY: " + this->_body);
+    if (this->_body.size() == contentLenght)
+    {
+        this->_ready = true;
+        printYellow("BODY: " + this->_body);
+    }
 	return (0);
 }
 

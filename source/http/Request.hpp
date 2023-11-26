@@ -29,7 +29,7 @@ class	Request
 		const std::map<std::string, std::string> &	getQueryString(void) const;
 
 	private:
-		int									_contentLength;
+		size_t									_contentLength;
 		std::string							_header;
         std::string     			        _body;
 		std::string							_httpMessage;
@@ -48,8 +48,8 @@ class	Request
 		std::string	            urlDecoder(const std::string & url);
         int                     checkBytesReceived(ssize_t bytes_received);
 		int			            getHeader(int client );
-		int			            getBody(int client, size_t contentLenght);
-		int			            getContentLenght();
+		int			            getBody(int client);
+		void		            getContentLength();
         bool                    appendFirstBody(std::string buffer);
 
 };

@@ -73,7 +73,7 @@ int		Request::getHeader(int client) {
 	return (0);
 }
 
-int		Request::getContentLenght() {
+void		Request::getContentLength() {
 	size_t		pos;
 	size_t		end;
 
@@ -87,7 +87,6 @@ int		Request::getContentLenght() {
 	if (end != this->_header.size())
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
     // check if its too big with configfile.
-	return this->_contentLength;
 }
 
 bool        Request::appendFirstBody(std::string buffer)
@@ -103,12 +102,12 @@ bool        Request::appendFirstBody(std::string buffer)
     return (false);
 }
 
-int		Request::getBody(int client, size_t contentLenght) {
+int		Request::getBody(int client) {
 	char		buffer[BUFFER_SIZE];
 	int			bytes;
     int         cont = 1;
 
-	while (this->_body.size() < contentLenght)
+	while (this->_body.size() < this->_contentLength)
 	{
 		bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
         std::cout << "Round number: " << cont++ << " | Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
@@ -120,11 +119,11 @@ int		Request::getBody(int client, size_t contentLenght) {
         if (appendFirstBody(buffer)) continue;
 		this->_body.append(buffer, bytes);
 	}
-    // if (this->_body.size() == contentLenght)
-    // {
-    //     this->_ready = true;
-    //     printYellow("BODY: " + this->_body);
-    // }
+    if (this->_body.size() == this->_contentLength)
+    {
+        this->_ready = true;
+        printYellow("BODY: " + this->_body);
+    }
 	return (0);
 }
 
@@ -132,12 +131,10 @@ int		Request::getBody(int client, size_t contentLenght) {
 // What do I do with this return?
 int		Request::receiveFromClient(int client)
 {
-	size_t		contentLenght;
-
 	if (getHeader(client) < 0)
 		return (-1);
-	contentLenght = getContentLenght();
-	if (getBody(client, contentLenght) < 0)
+	getContentLength();
+	if (getBody(client) < 0)
 		return (-1);
 	this->_httpMessage = this->_header + this->_body;
 	// std::cout << "###### REQUEST ######" << std::endl << this->_httpMessage << std::endl;

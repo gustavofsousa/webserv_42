@@ -18,6 +18,8 @@ class	Request
 {
 	public:
 		Request(void);
+		Request(int newClient);
+		Request(Request const& copy);
 		~Request(void);
 
 		int			            receiveFromClient(int client);
@@ -26,10 +28,12 @@ class	Request
 		const std::string &		getLocation(void) const;
 		const std::string &		getRequestedInf(void) const;
 		const std::string &		getContentType(void) const;
+        bool                    isReady();
 		const std::map<std::string, std::string> &	getQueryString(void) const;
 
 	private:
-		size_t									_contentLength;
+        int                                 _fromClient;
+		size_t								_contentLength;
 		std::string							_header;
         std::string     			        _body;
 		std::string							_httpMessage;
@@ -41,8 +45,6 @@ class	Request
         bool                                _ready;
         std::string                         _delimeter;
 
-		Request(const Request& copy);
-		Request	                &operator=(const Request &src);
 		void		            splitRequest(std::string & fullRequest, size_t & pos);
 		void		            parseQueryString(std::string queryString);
 		std::string	            urlDecoder(const std::string & url);

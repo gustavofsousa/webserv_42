@@ -1,7 +1,5 @@
 #include "./Webserv.hpp"
 
-// Webserv::Webserv() {}
-
 Webserv::Webserv(std::vector<Server> const& newServers)
  : servers(newServers) {}
 
@@ -12,27 +10,35 @@ static void printError(std::string const& error) {
 }
 
 void    Webserv::readDataClient(int i) {
-	if (this->isRequestFromServer(i))
-		return this->conn.addClientSocket(this->servers[i].acceptCon());
+	if (this->isRequestFromServer(i)) {
+        int newClient = this->servers[i].acceptCon();
+	    this->conn.addClientSocket(newClient);
+        this->_requests.push_back(Request(newClient));
+        return;
+    }
+    int clientWithMessage = this->conn.getFd(i).fd;
+    int indexRequest = i - this->_nbrServers;
 
-	Request 	request;
-	int ok = request.receiveFromClient(this->conn.getFd(i).fd);
-	if (ok == -1)
-		return this->conn.closeConnection(i);
-	request.parseRequest();
-	Client		client(request, this->_response);
+	if (this->_requests[indexRequest].receiveFromClient(clientWithMessage))
+        this->_requests[indexRequest].parseRequest();
+    else
+       this->conn.closeConnection(i);
 }
 
 void    Webserv::sendDataClient(int i) {
-	// Check if size of response is greater than permited.
-	if (this->_response.httpMessage.empty())
-		return;
-	std::cout << "Sending data to client" << std::endl;
-	// std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
-	send(this->conn.getFd(i).fd,
-		this->_response.httpMessage.c_str(),
-		this->_response.httpMessage.size(), 0);
-	this->_response.httpMessage.clear();
+    if (this->_requests[i].isReady())
+    {
+        Client		client(this->_requests[i], this->_response);
+        // Check if size of response is greater than permited.
+        if (this->_response.httpMessage.empty())
+            return;
+        std::cout << "Sending data to client" << std::endl;
+        // std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
+        send(this->conn.getFd(i).fd,
+            this->_response.httpMessage.c_str(),
+            this->_response.httpMessage.size(), 0);
+        this->_response.httpMessage.clear();
+    }
 }
 
 int	Webserv::updateStatusPoll() {
@@ -70,7 +76,7 @@ void    Webserv::start() {
 }
 
 void    Webserv::setup(ParserServer configFile) {
-	this->nbrServers = configFile.getNbrServers();
+	this->_nbrServers = configFile.getNbrServers();
 	std::cout << "Doing the setup of webserv" << std::endl;
 }
 
@@ -87,5 +93,5 @@ bool	Webserv::pollError(int i) {
 }
 
 bool	Webserv::isRequestFromServer(int i) {
-	return (i < this->nbrServers);
+	return (i < this->_nbrServers);
 }

@@ -5,17 +5,10 @@ Request::Request(void) {
     this->_ready = false;
 }
 
-Request	&Request::operator=(const Request & src)
-{
-	if (this != &src)
-	{
-		this->_method = src._method;
-		this->_location = src._location;
-		this->_requestedInf = src._requestedInf;
-		this->_contentType = src._contentType;
-		this->_queryString = src._queryString;
-	}
-	return (*this);
+Request::Request(int newClient) {
+    this->_fromClient = newClient;
+	this->_delimeter = "\r\n\r\n";
+    this->_ready = false;
 }
 
 Request::Request(const Request & copy)
@@ -28,6 +21,10 @@ Request::~Request(void) {}
 
 static void printYellow(std::string const& str) {
 	std::cout << "\033[1;33m" << str << "\033[0m" << std::endl;
+}
+
+bool                    Request::isReady() {
+    return (this->_ready);
 }
 
 int	Request::checkBytesReceived(ssize_t bytes_received)
@@ -114,8 +111,6 @@ int		Request::getBody(int client) {
         // std::cout << "MY MESSAGE -> " << buffer << std::endl;
 		if (this->checkBytesReceived(bytes) != 1) 
             return (-1);
-        else if (this->checkBytesReceived(bytes) == 2) 
-            continue;
         if (appendFirstBody(buffer)) continue;
 		this->_body.append(buffer, bytes);
 	}

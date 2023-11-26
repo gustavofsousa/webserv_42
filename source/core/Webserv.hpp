@@ -3,12 +3,13 @@
 
 # include <vector>
 # include <cerrno>
-
 # include <cstring> //c_string()
+
 # include "./Server.hpp"
-# include "../config/ParserServer.hpp"
 # include "./Connection.hpp"
+# include "../config/ParserServer.hpp"
 # include "../http/Client.hpp"
+# include "../http/Request.hpp"
 
 class   Webserv {
     public:
@@ -26,8 +27,9 @@ class   Webserv {
         Connection  conn;
     private:
 
-        int         nbrServers;
-        Response    _response;
+        int                     _nbrServers;
+        Response                _response;
+        std::vector<Request>    _requests;
 
         bool	ableToWrite(int client);
         bool	ableToRead(int client);

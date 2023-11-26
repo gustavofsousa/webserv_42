@@ -22,13 +22,15 @@ class	Request
 		Request(Request const& copy);
 		~Request(void);
 
-		int			            receiveFromClient(int client);
+		bool		            receiveFromClient(int client);
 		void		            parseRequest();
 		const std::string &		getMethod(void) const;
 		const std::string &		getLocation(void) const;
 		const std::string &		getRequestedInf(void) const;
 		const std::string &		getContentType(void) const;
         bool                    isReady();
+        void                    setReadyFalse();
+        void                    clearAll();
 		const std::map<std::string, std::string> &	getQueryString(void) const;
 
 	private:

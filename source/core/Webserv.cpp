@@ -22,7 +22,11 @@ void    Webserv::readDataClient(int i) {
 	if (this->_requests[indexRequest].receiveFromClient(clientWithMessage))
         this->_requests[indexRequest].parseRequest();
     else
-       this->conn.closeConnection(i);
+    {
+        this->conn.closeConnection(i);
+        // this->_requests[i].clearAll();
+        this->_requests.erase(this->_requests.begin() + i);
+    }
 }
 
 void    Webserv::sendDataClient(int i) {
@@ -38,6 +42,8 @@ void    Webserv::sendDataClient(int i) {
             this->_response.httpMessage.c_str(),
             this->_response.httpMessage.size(), 0);
         this->_response.httpMessage.clear();
+        // this->_requests[i].clearAll();
+        this->_requests[i].setReadyFalse();
     }
 }
 

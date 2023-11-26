@@ -47,6 +47,9 @@ int		Request::getHeader(int client) {
 	char		buffer[BUFFER_SIZE];
 	int			bytes;
 
+    if (!this->_header.empty()) {
+        return (0);
+    }
 	while ((bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK)) > 0) 
 	{
 		if (this->checkBytesReceived(bytes) == -1) return (-1);
@@ -104,16 +107,14 @@ int		Request::getBody(int client) {
 	int			bytes;
     int         cont = 1;
 
-	while (this->_body.size() < this->_contentLength)
-	{
-		bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
-        std::cout << "Round number: " << cont++ << " | Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
-        // std::cout << "MY MESSAGE -> " << buffer << std::endl;
-		if (this->checkBytesReceived(bytes) != 1) 
-            return (-1);
-        if (appendFirstBody(buffer)) continue;
-		this->_body.append(buffer, bytes);
-	}
+    bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
+    std::cout << "Round number: " << cont++ << " | Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
+    // std::cout << "MY MESSAGE -> " << buffer << std::endl;
+    if (this->checkBytesReceived(bytes) != 1) 
+        return (-1);
+    if (appendFirstBody(buffer))
+        return 0;
+    this->_body.append(buffer, bytes);
     if (this->_body.size() == this->_contentLength)
     {
         this->_ready = true;
@@ -124,16 +125,16 @@ int		Request::getBody(int client) {
 
 // Check if it really is "return -1".
 // What do I do with this return?
-int		Request::receiveFromClient(int client)
+bool		Request::receiveFromClient(int client)
 {
 	if (getHeader(client) < 0)
-		return (-1);
+		return (false);
 	getContentLength();
 	if (getBody(client) < 0)
-		return (-1);
+		return (false);
 	this->_httpMessage = this->_header + this->_body;
 	// std::cout << "###### REQUEST ######" << std::endl << this->_httpMessage << std::endl;
-	return (1);
+	return (true);
 }
 
 const std::string &		Request::getMethod(void) const
@@ -240,4 +241,18 @@ std::string	Request::urlDecoder(const std::string & url)
 		i++;
 	}
 	return (ret);
+}
+
+void        Request::clearAll() {
+    printYellow("Cleaned all data in request");
+    this->_header.clear();
+    printYellow("Cleaned all data in request");
+    this->_body.clear();
+    printYellow("Cleaned all data in request");
+    this->_httpMessage.clear();
+    printYellow("Cleaned all data in request");
+}
+
+void        Request::setReadyFalse() {
+    this->_ready = false;
 }

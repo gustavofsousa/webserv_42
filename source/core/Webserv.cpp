@@ -1,6 +1,6 @@
 #include "./Webserv.hpp"
 
-bool serverRunning = true;
+//bool serverRunning = true;
 
 Webserv::Webserv(std::vector<Server> const& newServers, ParserServer const& configFile)
  : servers(newServers) {
@@ -84,7 +84,8 @@ void    Webserv::start() {
 	try {
 	// Inserting the sockets of servers to monitorate.
 	conn.addServersSockets(this->servers);
-	while (serverRunning)
+//	while (serverRunning)
+	while (Utils::_serverRunning)
 	{
 		if (updateStatusPoll() == -1)
 			return;

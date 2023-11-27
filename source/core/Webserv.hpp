@@ -10,6 +10,7 @@
 # include "../config/ParserServer.hpp"
 # include "../http/Client.hpp"
 # include "../http/Request.hpp"
+# include "../config/Utils.hpp"
 
 extern bool serverRunning;
 

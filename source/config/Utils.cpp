@@ -106,3 +106,6 @@ int	Utils::atoi(const std::string line)
 //	std::cout << "line in atoi: int    " << (nbr * signal) << std::endl;
 	return (nbr * signal);
 }
+
+
+bool	Utils::_serverRunning = true;

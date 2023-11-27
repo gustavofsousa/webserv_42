@@ -51,26 +51,20 @@ int		Request::getHeader(int client) {
     if (!this->_header.empty()) {
         return (0);
     }
-	while ((bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK)) > 0) 
+	bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK);
+	if (this->checkBytesReceived(bytes) == -1)
+		return (-1);
+	std::string str(buffer);
+	size_t pos = str.find(this->_delimeter);
+	if (pos != std::string::npos)
 	{
-		if (this->checkBytesReceived(bytes) == -1) return (-1);
-		char*	msg_pos = std::search(buffer, buffer + bytes, this->_delimeter.begin(), this->_delimeter.end());
-        // Found the crlf in buff.
-		if (msg_pos != buffer + bytes) 
-		{
-			std::string str(buffer);
-			size_t i = str.find(this->_delimeter);
-			this->_header.append(buffer, i);
-			break;
-		}
-        // the crlf not found in buff.
-		else 
-		{
-			this->_header.append(buffer, bytes);
-			recv(client, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT);
-		}
+		this->_header.append(buffer, pos);
 	}
-	// printYellow("header: " + this->_header);
+	else
+	{
+		printYellow("I need to read more in getHeader");
+	}
+	printYellow("header: " + this->_header);
 	return (0);
 }
 

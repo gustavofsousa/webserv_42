@@ -10,9 +10,9 @@ int main(int argc, char **argv) {
         if (argc > 2)
                 throw Error::InvalidArg();
         if (argc == 1)
-            configServer.createServer(DB); //essa parte do código precisa estar dentro de um try/catch, pois possui throw Error que precisam ser capturados.
+            configServer.createServer(DB);
         else
-            configServer.createServer(argv[1]); //idem ao anterior.
+            configServer.createServer(argv[1]);
 
         int nbrServers = configServer.getNbrServers();
         // int nbrServers = 1;
@@ -25,8 +25,7 @@ int main(int argc, char **argv) {
             servers[i].initialize();
         }
 
-        Webserv webserv(servers);
-        webserv.setup(configServer);
+        Webserv webserv(servers, configServer);
         webserv.start();
         for (int i = 0; i < nbrServers; i++) {
             servers[i].closeCon();

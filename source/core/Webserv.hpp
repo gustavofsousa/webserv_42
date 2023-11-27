@@ -14,19 +14,15 @@
 class   Webserv {
     public:
         //Webserv(); //VOLTAR PRA VER. TEM QUE SER CANONICO?
-        Webserv(std::vector<Server> const& newServers);
+        Webserv(std::vector<Server> const& newServers, ParserServer const& configFile);
         ~Webserv();
 
-        std::vector<Server> const&   servers;
-        void    setup(ParserServer configFile);
+        Connection                      conn;
+        std::vector<Server> const&      servers;
         void    start();
-
         void    readDataClient(int i);
         void    sendDataClient(int i);
-
-        Connection  conn;
     private:
-
         int                     _nbrServers;
         Response                _response;
         std::vector<Request>    _requests;

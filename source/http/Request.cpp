@@ -73,6 +73,7 @@ void		Request::getContentLength() {
 	size_t		pos;
 	size_t		end;
 
+printYellow("I will get the content length");
 	pos = this->_header.find("Content-Length: ");
 	if (pos == std::string::npos)
 		return ;
@@ -108,7 +109,6 @@ int		Request::getBody(int client) {
 
     bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
     std::cout << "Round number: " << cont++ << " | Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
-    // std::cout << "MY MESSAGE -> " << buffer << std::endl;
     if (this->checkBytesReceived(bytes) != 1) 
         return (-1);
     if (appendFirstBody(buffer))
@@ -242,9 +242,7 @@ std::string	Request::urlDecoder(const std::string & url)
 
 void        Request::clearAll() {
     printYellow("Cleaned all data in request");
-	printYellow(this->_header);
-	if (this->_header.size() > 0)
-    	this->_header.clear();
+	this->_header.clear();
     printYellow("Cleaned all data in request");
     this->_body.clear();
     printYellow("Cleaned all data in request");

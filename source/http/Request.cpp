@@ -9,6 +9,7 @@ Request::Request(int newClient) {
     this->_fromClient = newClient;
 	this->_delimeter = "\r\n\r\n";
     this->_ready = false;
+	this->_contentLength = 0;
 }
 
 Request::Request(const Request & copy)
@@ -47,24 +48,24 @@ int	Request::checkBytesReceived(ssize_t bytes_received)
 int		Request::getHeader(int client) {
 	char		buffer[BUFFER_SIZE];
 	int			bytes;
+	size_t		pos;
 
-    if (!this->_header.empty()) {
+    if (this->_header.empty() == false) {
         return (0);
-    }
+	}
 	bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK);
 	if (this->checkBytesReceived(bytes) == -1)
 		return (-1);
 	std::string str(buffer);
-	size_t pos = str.find(this->_delimeter);
+	pos = str.find(this->_delimeter);
 	if (pos != std::string::npos)
 	{
 		this->_header.append(buffer, pos);
+		getContentLength();
 	}
 	else
-	{
 		printYellow("I need to read more in getHeader");
-	}
-	printYellow("header: " + this->_header);
+	// printYellow("header: " + this->_header);
 	return (0);
 }
 
@@ -73,6 +74,8 @@ void		Request::getContentLength() {
 	size_t		end;
 
 	pos = this->_header.find("Content-Length: ");
+	if (pos == std::string::npos)
+		return ;
 	pos += 16;
 	end = pos;
 	while ((end != std::string::npos) && (std::isspace(this->_header[end])))
@@ -81,6 +84,7 @@ void		Request::getContentLength() {
 		end++;
 	if (end != this->_header.size())
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
+	std::cout << "Content-Length: " << this->_contentLength << std::endl;
     // check if its too big with configfile.
 }
 
@@ -113,7 +117,8 @@ int		Request::getBody(int client) {
     if (this->_body.size() == this->_contentLength)
     {
         this->_ready = true;
-        printYellow("Reach the size");
+		this->_httpMessage = this->_header + this->_body;
+        printYellow("Reached the size");
         // printYellow("BODY: " + this->_body);
     }
 	return (0);
@@ -125,10 +130,8 @@ bool		Request::receiveFromClient(int client)
 {
 	if (getHeader(client) < 0)
 		return (false);
-	getContentLength();
 	if (getBody(client) < 0)
 		return (false);
-	this->_httpMessage = this->_header + this->_body;
 	// std::cout << "###### REQUEST ######" << std::endl << this->_httpMessage << std::endl;
 	return (true);
 }

@@ -11,6 +11,8 @@
 # include "../http/Client.hpp"
 # include "../http/Request.hpp"
 
+extern bool serverRunning;
+
 class   Webserv {
     public:
         //Webserv(); //VOLTAR PRA VER. TEM QUE SER CANONICO?

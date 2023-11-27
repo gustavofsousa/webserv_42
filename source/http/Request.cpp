@@ -27,11 +27,12 @@ bool                    Request::isReady() {
     return (this->_ready);
 }
 
+// TIRAR ERRNO DAQUI
 int	Request::checkBytesReceived(ssize_t bytes_received)
 {
 	if (bytes_received == -1)
 	{
-		std::cerr << errno << " - Error in recv: " << strerror(errno) << std::endl;
+		std::cerr << "Error in recv: " << strerror(errno) << std::endl;
 		return (-1);
 	}
 	else if (bytes_received == 0)
@@ -69,7 +70,7 @@ int		Request::getHeader(int client) {
 			recv(client, buffer, BUFFER_SIZE - 1, MSG_DONTWAIT);
 		}
 	}
-	printYellow("header: " + this->_header);
+	// printYellow("header: " + this->_header);
 	return (0);
 }
 
@@ -118,7 +119,8 @@ int		Request::getBody(int client) {
     if (this->_body.size() == this->_contentLength)
     {
         this->_ready = true;
-        printYellow("BODY: " + this->_body);
+        printYellow("Reach the size");
+        // printYellow("BODY: " + this->_body);
     }
 	return (0);
 }
@@ -164,15 +166,13 @@ const std::map<std::string, std::string> &		Request::getQueryString(void) const
 
 void 	Request::parseRequest()
 {
-//	std::cout << "start | parserRequest: " << request << std::endl;
 	size_t			pos;
 
 	pos = this->_httpMessage.find(" HTTP/");
 	if (pos == std::string::npos)
-		std::cout << "Erro na requisição" << std::endl;
+		std::cout << "Error in parseRequest" << std::endl;
 	else
 		this->splitRequest(this->_httpMessage, pos);
-//	std::cout << "end   | parserRequest" << std::endl;
 }
 
 
@@ -245,7 +245,9 @@ std::string	Request::urlDecoder(const std::string & url)
 
 void        Request::clearAll() {
     printYellow("Cleaned all data in request");
-    this->_header.clear();
+	printYellow(this->_header);
+	if (this->_header.size() > 0)
+    	this->_header.clear();
     printYellow("Cleaned all data in request");
     this->_body.clear();
     printYellow("Cleaned all data in request");
@@ -255,4 +257,5 @@ void        Request::clearAll() {
 
 void        Request::setReadyFalse() {
     this->_ready = false;
+    this->_contentLength = 0;
 }

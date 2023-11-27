@@ -32,11 +32,12 @@ void    Webserv::readDataClient(int i) {
 void    Webserv::sendDataClient(int i) {
     if (this->_requests[i].isReady())
     {
+    std::cout << "I want to send data" << std::endl;
         Client		client(this->_requests[i], this->_response);
         // Check if size of response is greater than permited.
         if (this->_response.httpMessage.empty())
             return;
-        std::cout << "Sending data to client" << std::endl;
+        std::cout << "Sending data of client: " << i << std::endl;
         // std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
         send(this->conn.getFd(i).fd,
             this->_response.httpMessage.c_str(),

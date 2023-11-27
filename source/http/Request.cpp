@@ -245,11 +245,14 @@ std::string	Request::urlDecoder(const std::string & url)
 void        Request::clearAll() {
 	try {
     printYellow("Cleaned all data in request");
-	this->_header.clear();
+	if (this->_header.size())
+		this->_header.clear();
     printYellow("Cleaned all data in request");
-    this->_body.clear();
+	if (this->_body.size())
+		this->_body.clear();
     printYellow("Cleaned all data in request");
-    this->_httpMessage.clear();
+    if (this->_httpMessage.size())
+		this->_httpMessage.clear();
     printYellow("Cleaned all data in request");
 	}
 	catch (std::exception & e) {

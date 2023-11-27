@@ -24,10 +24,6 @@ static void printYellow(std::string const& str) {
 	std::cout << "\033[1;33m" << str << "\033[0m" << std::endl;
 }
 
-bool                    Request::isReady() {
-    return (this->_ready);
-}
-
 // TIRAR ERRNO DAQUI
 int	Request::checkBytesReceived(ssize_t bytes_received)
 {
@@ -54,6 +50,7 @@ int		Request::getHeader(int client) {
         return (0);
 	}
 	bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK);
+	buffer[bytes] = '\0';
 	if (this->checkBytesReceived(bytes) == -1)
 		return (-1);
 	std::string str(buffer);
@@ -61,7 +58,9 @@ int		Request::getHeader(int client) {
 	if (pos != std::string::npos)
 	{
 		this->_header.append(buffer, pos);
+		this->_httpMessage = this->_header;
 		getContentLength();
+		std::cout << "Content-Length after call: " << this->_contentLength << std::endl;
 	}
 	else
 		printYellow("I need to read more in getHeader");
@@ -80,8 +79,10 @@ printYellow("I will get the content length");
 	pos += 16;
 	end = pos;
 	while ((end != std::string::npos) && (std::isspace(this->_header[end])))
+	// while ((end < this->_header.size()) && (std::isspace(this->_header[end])))
 		end++;
 	while ((end != std::string::npos) && (!std::isspace(this->_header[end])))
+	// while ((end < this->_header.size()) && (!std::isspace(this->_header[end])))
 		end++;
 	if (end != this->_header.size())
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
@@ -108,6 +109,7 @@ int		Request::getBody(int client) {
     int         cont = 1;
 
     bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
+	buffer[bytes] = '\0';
     std::cout << "Round number: " << cont++ << " | Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
     if (this->checkBytesReceived(bytes) != 1) 
         return (-1);
@@ -241,6 +243,7 @@ std::string	Request::urlDecoder(const std::string & url)
 }
 
 void        Request::clearAll() {
+	try {
     printYellow("Cleaned all data in request");
 	this->_header.clear();
     printYellow("Cleaned all data in request");
@@ -248,9 +251,24 @@ void        Request::clearAll() {
     printYellow("Cleaned all data in request");
     this->_httpMessage.clear();
     printYellow("Cleaned all data in request");
+	}
+	catch (std::exception & e) {
+		std::cout << "Error in clearAll: " << e.what() << std::endl;
+	}
 }
 
-void        Request::setReadyFalse() {
-    this->_ready = false;
-    this->_contentLength = 0;
+void        Request::reset() {
+	try {
+		this->_ready = false;
+		this->_contentLength = 0;
+		this->_fromClient = 0;
+		this->clearAll();
+	}
+	catch (std::exception & e) {
+		std::cout << "Error in reset: " << e.what() << std::endl;
+	}
+}
+
+bool    	Request::isReady() {
+    return (this->_ready);
 }

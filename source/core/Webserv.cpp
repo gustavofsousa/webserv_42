@@ -30,7 +30,7 @@ void    Webserv::readDataClient(int i)
 		else
 		{
 			this->conn.closeConnection(i);
-			// this->_requests[i].clearAll();
+			this->_requests[indexRequest].reset();
 			this->_requests.erase(this->_requests.begin() + i);
 		}
 	}
@@ -40,22 +40,18 @@ void    Webserv::readDataClient(int i)
 }
 
 void    Webserv::sendDataClient(int i) {
+	Response	response;
 	try {
 		if (this->_requests[i].isReady())
 		{
 		std::cout << "I want to send data" << std::endl;
-			Client		client(this->_requests[i], this->_response);
+			Client		client(this->_requests[i], response);
 			// Check if size of response is greater than permited.
-			if (this->_response.httpMessage.empty())
-				return;
 			std::cout << "Sending data of client: " << i << std::endl;
 			// std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
-			send(this->conn.getFd(i).fd,
-				this->_response.httpMessage.c_str(),
-				this->_response.httpMessage.size(), 0);
-			this->_response.httpMessage.clear();
-			// this->_requests[i].clearAll();
-			this->_requests[i].setReadyFalse();
+			send(this->conn.getFd(i).fd, response.httpMessage.c_str(),
+				response.httpMessage.size(), 0);
+			this->_requests[i].reset();
 		}
 	}
 	catch (std::exception & e) {

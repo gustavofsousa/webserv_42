@@ -23,9 +23,8 @@ class   Webserv {
         void    readDataClient(int i);
         void    sendDataClient(int i);
     private:
-        int                     _nbrServers;
-        Response                _response;
         std::vector<Request>    _requests;
+        int                     _nbrServers;
 
         bool	ableToWrite(int client);
         bool	ableToRead(int client);

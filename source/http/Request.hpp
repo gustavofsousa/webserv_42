@@ -29,7 +29,7 @@ class	Request
 		const std::string &		getRequestedInf(void) const;
 		const std::string &		getContentType(void) const;
         bool                    isReady();
-        void                    setReadyFalse();
+        void                    reset();
         void                    clearAll();
 		const std::map<std::string, std::string> &	getQueryString(void) const;
 

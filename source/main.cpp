@@ -5,9 +5,6 @@
 static void signalHandlerSigint(int signum) {
   if (signum != SIGINT) return;
   serverRunning = false;
-  std::cout << "Server now stopping\nPress Ctrl+C again to force stop"
-            << std::endl;
-  signal(SIGINT, SIG_DFL);
 }
 
 int main(int argc, char **argv) {

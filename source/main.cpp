@@ -1,12 +1,14 @@
-#include "./core/Webserv.hpp"
 #include <signal.h>
-#define DB "./source/config/configs/default.conf"
+
+#include "./core/Webserv.hpp"
 #include "./config/Utils.hpp"
 
-static void signalHandlerSigint(int signum) {
-  if (signum != SIGINT) return;
+#define DB "./source/config/configs/default.conf"
+
+static void signalHandlerSigint(int signum)
+{
+    if (signum != SIGINT) return;
     Utils::_serverRunning = false;
-//  serverRunning = false;
 }
 
 int main(int argc, char **argv) {

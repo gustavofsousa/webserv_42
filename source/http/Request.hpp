@@ -19,7 +19,7 @@ class	Request
 	public:
 		Request(void);
 		Request(int newClient);
-		Request(Request const& copy);
+		// Request(Request const& copy);
 		~Request(void);
 
 		bool		            receiveFromClient(int client);
@@ -33,9 +33,9 @@ class	Request
         void                    clearAll();
 		const std::map<std::string, std::string> &	getQueryString(void) const;
 
-        bool                                _ready;
 	private:
         int                                 _fromClient;
+        bool                                _ready;
 		size_t								_contentLength;
 		std::string							_header;
         std::string     			        _body;

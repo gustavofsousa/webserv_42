@@ -115,10 +115,7 @@ int		Request::getBody(int client) {
     if (this->checkBytesReceived(bytes) != 1) 
         return (-1);
     if (appendFirstBody(buffer))
-	{
         return 0;
-	}
-	printYellow("Yeeeah, I'm appending");
     this->_body.append(buffer, bytes);
     if (this->_body.size() == this->_contentLength)
     {
@@ -130,8 +127,7 @@ int		Request::getBody(int client) {
 	return (0);
 }
 
-// Check if it really is "return -1".
-// What do I do with this return?
+
 bool		Request::receiveFromClient(int client)
 {
 	if (getHeader(client) < 0)
@@ -247,16 +243,9 @@ std::string	Request::urlDecoder(const std::string & url)
 
 void        Request::clearAll() {
 	try {
-    	printYellow("Cleaned all data in request");
-		// if (this->_body.size())
-		printYellow(this->_body);
+		this->_header.clear();
 		this->_body.clear();
-		printYellow("Cleaned all data in request");
-		// if (this->_httpMessage.size())
-			this->_httpMessage.clear();
-		printYellow("Cleaned all data in request");
-		// if (this->_header.size())
-		// 	this->_header.clear();
+		this->_httpMessage.clear();
 		printYellow("Cleaned all data in request");
 	}
 	catch (std::exception & e) {
@@ -268,7 +257,6 @@ void        Request::reset() {
 	try {
 		this->_ready = false;
 		this->_contentLength = 0;
-		this->_fromClient = 0;
 		this->clearAll();
 	}
 	catch (std::exception & e) {

@@ -16,7 +16,7 @@ Request::Request(const Request & copy)
 {
 	// this->_fromClient = copy._fromClient;
 	// this->_delimeter = "\r\n\r\n";
-    // this->_ready = false;
+    this->_ready = false;
 	// this->_contentLength = 0;
 	*this = copy;
 	return ;
@@ -64,7 +64,9 @@ int		Request::getHeader(int client) {
 		this->_header.append(buffer, pos);
 		this->_httpMessage = this->_header;
 		getContentLength();
-		std::cout << "Content-Length after call: " << this->_contentLength << std::endl;
+		if (this->_contentLength == 0) {
+			this->_ready = true;
+		}
 	}
 	else
 		printYellow("I need to read more in getHeader");
@@ -246,7 +248,7 @@ void        Request::clearAll() {
 		this->_header.clear();
 		this->_body.clear();
 		this->_httpMessage.clear();
-		printYellow("Cleaned all data in request");
+		// printYellow("Cleaned all data in request");
 	}
 	catch (std::exception & e) {
 		std::cout << "Error in clearAll: " << e.what() << std::endl;

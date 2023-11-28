@@ -20,8 +20,8 @@ class   Webserv {
         Connection                      conn;
         std::vector<Server> const&      servers;
         void    start();
-        void    readDataClient(int i);
-        void    sendDataClient(int i);
+        bool    readDataClient(int i);
+        bool    sendDataClient(int i);
     private:
         std::vector<Request>    _requests;
         int                     _nbrServers;
@@ -30,6 +30,7 @@ class   Webserv {
         bool	ableToRead(int client);
         bool	pollError(int i);
         bool    isRequestFromServer(int i);
+        bool	openNewConnection(int i);
 
         int     updateStatusPoll();
 

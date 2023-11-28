@@ -11,23 +11,26 @@ static void printError(std::string const& error) {
 	std::cout << "\033[1;31m" << error << "\033[0m" << std::endl;
 }
 
-void    Webserv::readDataClient(int i)
+bool		Webserv::openNewConnection(int i)
+{
+	int newClient;
+	newClient = this->servers[i].acceptCon();
+	this->conn.addClientSocket(newClient);
+
+	Request newRequest(newClient);
+	this->_requests.push_back(newRequest);
+
+	//Check if the flag _Ready is the same as the flag of the request.
+	std::cout << "out the flag is " << newRequest._ready << std::endl;
+	std::cout << "Inside the flag is " << this->_requests[i - this->_nbrServers]._ready << std::endl;
+	return true;
+}
+
+bool    Webserv::readDataClient(int i)
 {
 	try {
-		if (this->isRequestFromServer(i)) {
-			int newClient;
-			newClient = this->servers[i].acceptCon();
-
-			Request newRequest(newClient);
-			this->conn.addClientSocket(newClient);
-			this->_requests.push_back(newRequest);
-			std::cout << "out the flag is " << newRequest._ready << std::endl;
-
-			// int lastClient = this->_requests[].size() - 1;
-			// std::cout << "last client  fd is: " << lastClient << std::endl;
-			// std::cout << "flag ready is: " << this->_requests[lastClient]._ready << std::endl;
-			return;
-		}
+		if (this->isRequestFromServer(i))
+			return (this->openNewConnection(i));
 		int clientWithMessage = this->conn.getFd(i).fd;
 		int indexRequest = i - this->_nbrServers;
 
@@ -42,17 +45,19 @@ void    Webserv::readDataClient(int i)
 	}
 	catch (std::exception & e) {
 		std::cout << "Error in readDataClient: " << e.what() << std::endl;
+		return false;
 	}
+	return true;
 }
 
-void    Webserv::sendDataClient(int i) {
+bool    Webserv::sendDataClient(int i) {
 	Response	response;
 	try {
 		if (this->_requests[i].isReady())
 		{
 			Client		client(this->_requests[i], response);
 			// Check if size of response is greater than permited.
-			std::cout << "Sending data of client: " << i << std::endl;
+			// std::cout << "Sending data of client: " << i << std::endl;
 			// std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
 			send(this->conn.getFd(i).fd, response.httpMessage.c_str(),
 				response.httpMessage.size(), 0);
@@ -61,11 +66,13 @@ void    Webserv::sendDataClient(int i) {
 	}
 	catch (std::exception & e) {
 		std::cout << "Error in sendDataClient: " << e.what() << std::endl;
+		return false;
 	}
+	return true;
 }
 
-int	Webserv::updateStatusPoll() {
-	// std::cout << "Giving a poll" << std::endl;
+int	Webserv::updateStatusPoll()
+{
 	try
 	{
 		if (poll(this->conn.getPollFd().data(), this->conn.getPollFd().size(), -1) == -1)

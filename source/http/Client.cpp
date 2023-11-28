@@ -52,7 +52,7 @@ std::string Client::getMethod(void)
     text.append("<h1>Hello, World!</h1>\n");
     text.append("</body>\n");
     text.append("</html>\n" );*/
-    std::cout << "Response client: \n" << text << "\n\n";
+    // std::cout << "Response client: \n" << text << "\n\n";
     this->_response.httpMessage = text;
     _statusCode = 200;
     return (this->_response.httpMessage);

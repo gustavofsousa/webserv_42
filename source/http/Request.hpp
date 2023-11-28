@@ -33,6 +33,7 @@ class	Request
         void                    clearAll();
 		const std::map<std::string, std::string> &	getQueryString(void) const;
 
+        bool                                _ready;
 	private:
         int                                 _fromClient;
 		size_t								_contentLength;
@@ -44,7 +45,6 @@ class	Request
 		std::string							_requestedInf;
 		std::string							_contentType;
 		std::map<std::string, std::string>	_queryString;
-        bool                                _ready;
         std::string                         _delimeter;
 
 		void		            splitRequest(std::string & fullRequest, size_t & pos);
@@ -54,6 +54,6 @@ class	Request
 		int			            getHeader(int client );
 		int			            getBody(int client);
 		void		            getContentLength();
-        bool                    appendFirstBody(std::string buffer);
+        bool                    appendFirstBody(std::string const& buffer);
 
 };

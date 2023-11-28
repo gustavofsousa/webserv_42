@@ -1,7 +1,5 @@
 #include "./Webserv.hpp"
 
-//bool serverRunning = true;
-
 Webserv::Webserv(std::vector<Server> const& newServers, ParserServer const& configFile)
  : servers(newServers) {
 	this->_nbrServers = configFile.getNbrServers();
@@ -19,9 +17,15 @@ void    Webserv::readDataClient(int i)
 		if (this->isRequestFromServer(i)) {
 			int newClient;
 			newClient = this->servers[i].acceptCon();
+
 			Request newRequest(newClient);
 			this->conn.addClientSocket(newClient);
 			this->_requests.push_back(newRequest);
+			std::cout << "out the flag is " << newRequest._ready << std::endl;
+
+			// int lastClient = this->_requests[].size() - 1;
+			// std::cout << "last client  fd is: " << lastClient << std::endl;
+			// std::cout << "flag ready is: " << this->_requests[lastClient]._ready << std::endl;
 			return;
 		}
 		int clientWithMessage = this->conn.getFd(i).fd;
@@ -46,14 +50,13 @@ void    Webserv::sendDataClient(int i) {
 	try {
 		if (this->_requests[i].isReady())
 		{
-		std::cout << "I want to send data" << std::endl;
 			Client		client(this->_requests[i], response);
 			// Check if size of response is greater than permited.
 			std::cout << "Sending data of client: " << i << std::endl;
 			// std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
 			send(this->conn.getFd(i).fd, response.httpMessage.c_str(),
 				response.httpMessage.size(), 0);
-			this->_requests[i].reset();
+			this->_requests[i - this->_nbrServers].reset();
 		}
 	}
 	catch (std::exception & e) {
@@ -84,23 +87,18 @@ void    Webserv::start() {
 	try {
 	// Inserting the sockets of servers to monitorate.
 	conn.addServersSockets(this->servers);
-//	while (serverRunning)
 	while (Utils::_serverRunning)
 	{
 		if (updateStatusPoll() == -1)
 			return;
 		for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 		{
-			// std::cout << "Tamanho do vector -> " << this->conn.getPollFd().size() << std::endl;
 			if (ableToRead(i))
 				this->readDataClient(i);
-			else if (ableToWrite(i)){
+			else if (ableToWrite(i))
 				this->sendDataClient(i);
-			}
 			else if (pollError(i))
 				printError("Error for poll revents");
-			// else
-				// std::cout  << "on [" << i << "] my revent is ->" << this->conn.getFd(i).revents << std::endl;
 		}
 	}
 	}

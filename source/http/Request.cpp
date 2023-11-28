@@ -14,6 +14,10 @@ Request::Request(int newClient) {
 
 Request::Request(const Request & copy)
 {
+	// this->_fromClient = copy._fromClient;
+	// this->_delimeter = "\r\n\r\n";
+    // this->_ready = false;
+	// this->_contentLength = 0;
 	*this = copy;
 	return ;
 }
@@ -72,7 +76,6 @@ void		Request::getContentLength() {
 	size_t		pos;
 	size_t		end;
 
-printYellow("I will get the content length");
 	pos = this->_header.find("Content-Length: ");
 	if (pos == std::string::npos)
 		return ;
@@ -90,13 +93,11 @@ printYellow("I will get the content length");
     // check if its too big with configfile.
 }
 
-bool        Request::appendFirstBody(std::string buffer)
+bool        Request::appendFirstBody(std::string const& buffer)
 {
     if (this->_body.empty())
     {
-        size_t i = buffer.find(this->_delimeter) + this->_delimeter.size();
-        // std::cout << "I will move forward -> " << i << " | Until -> " << str.end() - str.begin() << std::endl;
-        // printYellow(str);
+		size_t i = buffer.find(this->_delimeter) + this->_delimeter.size();
         this->_body.append(buffer.begin() + i, buffer.end());
         return (true);
     }
@@ -114,7 +115,10 @@ int		Request::getBody(int client) {
     if (this->checkBytesReceived(bytes) != 1) 
         return (-1);
     if (appendFirstBody(buffer))
+	{
         return 0;
+	}
+	printYellow("Yeeeah, I'm appending");
     this->_body.append(buffer, bytes);
     if (this->_body.size() == this->_contentLength)
     {
@@ -134,7 +138,6 @@ bool		Request::receiveFromClient(int client)
 		return (false);
 	if (getBody(client) < 0)
 		return (false);
-	// std::cout << "###### REQUEST ######" << std::endl << this->_httpMessage << std::endl;
 	return (true);
 }
 
@@ -244,16 +247,17 @@ std::string	Request::urlDecoder(const std::string & url)
 
 void        Request::clearAll() {
 	try {
-    printYellow("Cleaned all data in request");
-	if (this->_header.size())
-		this->_header.clear();
-    printYellow("Cleaned all data in request");
-	if (this->_body.size())
+    	printYellow("Cleaned all data in request");
+		// if (this->_body.size())
+		printYellow(this->_body);
 		this->_body.clear();
-    printYellow("Cleaned all data in request");
-    if (this->_httpMessage.size())
-		this->_httpMessage.clear();
-    printYellow("Cleaned all data in request");
+		printYellow("Cleaned all data in request");
+		// if (this->_httpMessage.size())
+			this->_httpMessage.clear();
+		printYellow("Cleaned all data in request");
+		// if (this->_header.size())
+		// 	this->_header.clear();
+		printYellow("Cleaned all data in request");
 	}
 	catch (std::exception & e) {
 		std::cout << "Error in clearAll: " << e.what() << std::endl;

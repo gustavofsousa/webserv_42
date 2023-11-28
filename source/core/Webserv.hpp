@@ -12,11 +12,8 @@
 # include "../http/Request.hpp"
 # include "../config/Utils.hpp"
 
-extern bool serverRunning;
-
 class   Webserv {
     public:
-        //Webserv(); //VOLTAR PRA VER. TEM QUE SER CANONICO?
         Webserv(std::vector<Server> const& newServers, ParserServer const& configFile);
         ~Webserv();
 

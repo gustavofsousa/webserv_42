@@ -61,18 +61,17 @@ std::cout << "----Bytes: " << bytes << std::endl;
 	this->_header.append(buffer, pos);
 	getContentLength();
 	this->_httpMessage = this->_header;
-printYellow("header: " + this->_header);
+// printYellow("header: " + this->_header);
 	return (0);
 }
 
-void		Request::getContentLength() {
+bool		Request::getContentLength() {
 	size_t		pos;
 	size_t		end;
 
 	pos = this->_header.find("Content-Length: ");
 	if (pos == std::string::npos) {
-		printYellow("I didn't find the content-length in getHeader");
-		return ;
+		return true;
 	}
 	pos += 16;
 	end = pos;
@@ -82,8 +81,12 @@ void		Request::getContentLength() {
 		end++;
 	if (end != this->_header.size())
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
-    // check if its too big with configfile.
-}
+	// if (this->_contentLength > this->_maxContentLenght) {
+		// std::cout << "The size of file is to big" << std::endl;
+	// 	return false;
+	// }
+	return true;
+	}
 
 bool        Request::appendFirstBody(std::string const& buffer)
 {

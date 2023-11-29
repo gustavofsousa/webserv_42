@@ -53,7 +53,7 @@ class	Request
         int                     checkBytesReceived(ssize_t bytes_received);
 		int			            getHeader(int client );
 		int			            getBody(int client);
-		void		            getContentLength();
+		bool		            getContentLength();
         bool                    appendFirstBody(std::string const& buffer);
 
 };

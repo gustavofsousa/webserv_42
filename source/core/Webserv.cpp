@@ -54,15 +54,19 @@ bool    Webserv::sendDataClient(int i) {
 	int 		indexRequest;
 
 	try {
-std::cout << "I arrived at sendDataClient" << std::endl;
+// std::cout << "I arrived at sendDataClient" << std::endl;
 		indexRequest = i - this->_nbrServers;
 		if (this->_requests[indexRequest].isReady())
 		{
 			Client		client(this->_requests[indexRequest], response);
-			// std::cout << "Sending data of client: " << i << std::endl;
-			// std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
+			// std::cout << "####### RESPONSE ######" << std::endl << response.httpMessage << std::endl;
+			try {
 			send(this->conn.getFd(i).fd, response.httpMessage.c_str(),
-				response.httpMessage.size(), 0);
+				response.httpMessage.size(), MSG_NOSIGNAL);
+			}
+			catch (std::exception & error) {
+				std::cerr << error.what() << std::endl;
+			}
 			this->_requests[indexRequest].reset();
 		}
 	}
@@ -103,7 +107,6 @@ void    Webserv::start()
 				return;
 			for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 			{
-				std::cout << this->conn.getFd(i).revents << std::endl;
 				//isMoreThanReady(i);
 				if (this->ableToRead(i))
 					this->readDataClient(i);

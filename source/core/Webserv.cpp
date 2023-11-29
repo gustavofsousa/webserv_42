@@ -30,6 +30,8 @@ bool    Webserv::readDataClient(int i)
 	try {
 		if (this->isRequestFromServer(i))
 			return (this->openNewConnection(i));
+		if (this->_requests[i].isReady())
+			return true;
 		clientWithMessage = this->conn.getFd(i).fd;
 		indexRequest = i - this->_nbrServers;
 		if (this->_requests[indexRequest].receiveFromClient(clientWithMessage) == false)
@@ -55,6 +57,7 @@ bool    Webserv::sendDataClient(int i) {
 
 	try {
 // std::cout << "I arrived at sendDataClient" << std::endl;
+
 		indexRequest = i - this->_nbrServers;
 		if (this->_requests[indexRequest].isReady())
 		{
@@ -107,10 +110,10 @@ void    Webserv::start()
 				return;
 			for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 			{
-				//isMoreThanReady(i);
+				isMoreThanReady(i);
 				if (this->ableToRead(i))
 					this->readDataClient(i);
-				if (this->ableToWrite(i))
+				else if (this->ableToWrite(i))
 					this->sendDataClient(i);
 				else if (this->pollError(i))
 					printError("Error for poll revents");

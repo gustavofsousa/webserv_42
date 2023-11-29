@@ -37,9 +37,9 @@ bool    Webserv::readDataClient(int i)
 			this->conn.closeConnection(i);
 			this->_requests[indexRequest].reset();
 			this->_requests.erase(this->_requests.begin() + indexRequest);
+			return false;
 		}
 		this->_requests[indexRequest].parseRequest();
-std::cout << "I've parsed" << std::endl;
 	}
 	catch (std::exception & e) {
 		std::cout << "Error in readDataClient: " << e.what() << std::endl;
@@ -103,10 +103,11 @@ void    Webserv::start()
 				return;
 			for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 			{
-				isMoreThanReady(i);
+				std::cout << this->conn.getFd(i).revents << std::endl;
+				//isMoreThanReady(i);
 				if (this->ableToRead(i))
 					this->readDataClient(i);
-				else if (this->ableToWrite(i))
+				if (this->ableToWrite(i))
 					this->sendDataClient(i);
 				else if (this->pollError(i))
 					printError("Error for poll revents");

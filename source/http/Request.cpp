@@ -1,5 +1,8 @@
 #include "Request.hpp"
 
+/*******************************************************/
+/*						Constructors.		           */
+/*******************************************************/
 Request::Request(void) {
 	this->_delimeter = "\r\n\r\n";
     this->_ready = false;
@@ -131,6 +134,10 @@ bool		Request::receiveFromClient(int client)
 	return (true);
 }
 
+/*******************************************************/
+/*				Getters of HTTP request.               */
+/*******************************************************/
+
 const std::string &		Request::getMethod(void) const
 {
 	return (this->_method);
@@ -156,6 +163,10 @@ const std::map<std::string, std::string> &		Request::getQueryString(void) const
 	return (this->_queryString);
 }
 
+/*******************************************************/
+/*				Parse of HTTP request.					*/
+/*******************************************************/
+
 void 	Request::parseRequest()
 {
 	size_t			pos;
@@ -166,7 +177,6 @@ void 	Request::parseRequest()
 	else
 		this->splitRequest(this->_httpMessage, pos);
 }
-
 
 void	Request::splitRequest(std::string & fullRequest, size_t & pos) {
 	std::vector<std::string>			splitHeadRequest;
@@ -234,6 +244,10 @@ std::string	Request::urlDecoder(const std::string & url)
 	}
 	return (ret);
 }
+
+/*******************************************************/
+/*				Reset methods.							*/
+/*******************************************************/
 
 void        Request::clearAll() {
 	try {

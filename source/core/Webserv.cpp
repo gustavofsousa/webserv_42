@@ -39,6 +39,7 @@ bool    Webserv::readDataClient(int i)
 			this->_requests.erase(this->_requests.begin() + indexRequest);
 		}
 		this->_requests[indexRequest].parseRequest();
+std::cout << "I've parsed" << std::endl;
 	}
 	catch (std::exception & e) {
 		std::cout << "Error in readDataClient: " << e.what() << std::endl;
@@ -53,10 +54,10 @@ bool    Webserv::sendDataClient(int i) {
 	int 		indexRequest;
 
 	try {
+std::cout << "I arrived at sendDataClient" << std::endl;
 		indexRequest = i - this->_nbrServers;
 		if (this->_requests[indexRequest].isReady())
 		{
-			std::cout << "I'm ready!" << std::endl;
 			Client		client(this->_requests[indexRequest], response);
 			// std::cout << "Sending data of client: " << i << std::endl;
 			// std::cout << "####### RESPONSE ######" << std::endl << this->_response.httpMessage << std::endl;
@@ -102,11 +103,12 @@ void    Webserv::start()
 				return;
 			for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 			{
-				if (ableToRead(i))
+				isMoreThanReady(i);
+				if (this->ableToRead(i))
 					this->readDataClient(i);
-				else if (ableToWrite(i))
+				else if (this->ableToWrite(i))
 					this->sendDataClient(i);
-				else if (pollError(i))
+				else if (this->pollError(i))
 					printError("Error for poll revents");
 			}
 		}
@@ -114,6 +116,18 @@ void    Webserv::start()
 	catch (std::exception & e) {
 		std::cout << "Error in start: " << e.what() << std::endl;
 	}
+}
+
+bool	Webserv::isMoreThanReady(int i) {
+	int indexRequest;
+
+	indexRequest = i - this->_nbrServers;
+	if (indexRequest < 0 || this->ableToWrite(i) == false
+		|| this->_requests[indexRequest].isReady() == false)
+		return false;
+	std::cout << "I'm sending by a shortcut" << std::endl;
+	this->sendDataClient(i);
+	return true;
 }
 
 bool	Webserv::ableToRead(int i) {

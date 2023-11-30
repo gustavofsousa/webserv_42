@@ -1,7 +1,8 @@
 #include <signal.h>
 
 #include "./core/Webserv.hpp"
-#include "./config/Utils.hpp"
+//#include "./config/Utils.hpp"
+#include "Utils.hpp"
 
 #define DB "./source/config/configs/default.conf"
 

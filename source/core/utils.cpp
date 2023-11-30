@@ -1,3 +1,4 @@
+/*
 # include <fcntl.h>
 bool isNonBlocking(int fd) {
     int flags = fcntl(fd, F_GETFL, 0);
@@ -14,3 +15,4 @@ bool isNonBlocking(int fd) {
     //     std::cout << "The socket " << i << " is in blocking mode.\n";
 
 }
+*/

@@ -5,7 +5,7 @@ CXX 		= g++
 CXXFLAGS	= -Wall -Werror -Wextra -std=c++98
 
 #					Source and object file paths
-MAIN					=	main.cpp
+MAIN					=	main.cpp Utils.cpp
 
 CORE_DIR				=	core/
 CORE_FILES				=	Webserv.cpp Server.cpp Connection.cpp
@@ -16,7 +16,8 @@ HTTP_FILES				=	Request.cpp Response.cpp Client.cpp
 HTTP					=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
 
 CONFIG_DIR				=	config/
-CONFIG_FILES			=	ConfigFile.cpp Utils.cpp Location.cpp ParserServer.cpp Error.cpp
+CONFIG_FILES			=	ConfigFile.cpp Location.cpp ParserServer.cpp Error.cpp
+#CONFIG_FILES			=	ConfigFile.cpp Utils.cpp Location.cpp ParserServer.cpp Error.cpp
 CONFIG					=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
 
 SRC_DIR 				=	source/

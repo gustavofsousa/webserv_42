@@ -14,8 +14,9 @@
 
 # include <string>
 # include <vector>
-# include <iostream> /*verificar se precisa imprimir alguma coisa na tela*/
-# include "Error.hpp"/*verificar se precisa lançar exceção*/
+
+//# include <iostream> /*verificar se precisa imprimir alguma coisa na tela*/
+//# include "Error.hpp"/*verificar se precisa lançar exceção*/
 
 class	Utils
 {

@@ -15,6 +15,25 @@ Request::Request(int newClient) {
 	this->_contentLength = 0;
 }
 
+Request::Request(int newClient, ConfigFile _configFile) {
+    this->_fromClient = newClient;
+	this->_delimeter = "\r\n\r\n";
+    this->_ready = false;
+	this->_contentLength = 0;
+	this->_serverConf = _configFile;
+
+	std::cout << "construtor da Request port: " << this->_serverConf.getPort() << " getIndex: " << this->_serverConf.getIndex()[0] << std::endl;
+	std::cout << "tamanho do location: " << this->_serverConf.getLocation().size() << std::endl;
+/*
+	size_t	i = 0;
+	while (i < this->_serverConf.getLocation().size())
+	{
+		std::cout << "Location path: " << this->_serverConf.getLocation()[i].getPath() << std::endl;
+		i++;
+	}
+*/
+}
+
 Request::~Request(void) {}
 
 static void printYellow(std::string const& str) {

@@ -19,7 +19,8 @@ class   Webserv {
         ~Webserv();
 
         Connection                      conn;
-        std::vector<Server> const&      servers;
+        std::vector<Server>       servers;
+//        std::vector<Server> const&      servers;
         void    start();
         bool    readDataClient(int i);
         bool    sendDataClient(int i);

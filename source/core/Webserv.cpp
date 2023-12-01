@@ -3,6 +3,18 @@
 Webserv::Webserv(std::vector<Server> const& newServers, ParserServer const& configFile)
  : servers(newServers) {
 	this->_nbrServers = configFile.getNbrServers();
+ 
+ /*
+	std::cout << "construtor da webserver" << std::endl;
+	int i;
+	i = 0;
+	while (i < this->_nbrServers)
+	{
+		std::cout << "in server " << (i + 1) << " Port: " << this->servers[i].getServerConf().getPort() << std::endl;
+		i++;
+	}
+//	exit(1);
+*/
  }
 
 Webserv::~Webserv() {}
@@ -17,7 +29,8 @@ bool		Webserv::openNewConnection(int i)
 	newClient = this->servers[i].acceptCon();
 	this->conn.addClientSocket(newClient);
 
-	Request newRequest(newClient);
+//	Request newRequest(newClient);
+	Request newRequest(newClient, this->servers[i].getServerConf());
 	this->_requests.push_back(newRequest);
 	return true;
 }

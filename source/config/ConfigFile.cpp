@@ -27,6 +27,7 @@ ConfigFile	&ConfigFile::operator=( const ConfigFile &src )
 		this->_server_name = src.getServerName();
 		this->_index = src.getIndex();
 		this->_root = src.getRoot();
+		this->_vec_location = src.getLocation();		
 	}
 	return (*this);
 }

@@ -22,9 +22,9 @@ Request::Request(int newClient, ConfigFile _configFile) {
 	this->_contentLength = 0;
 	this->_serverConf = _configFile;
 
-	std::cout << "construtor da Request port: " << this->_serverConf.getPort() << " getIndex: " << this->_serverConf.getIndex()[0] << std::endl;
-	std::cout << "tamanho do location: " << this->_serverConf.getLocation().size() << std::endl;
 /*
+	std::cout << "construtor da Request port: " << this->_serverConf.getPort() << " path: " << this->_serverConf.getRoot() << " getIndex: " << this->_serverConf.getIndex()[0] << std::endl;
+	std::cout << "tamanho do location: " << this->_serverConf.getLocation().size() << std::endl;
 	size_t	i = 0;
 	while (i < this->_serverConf.getLocation().size())
 	{
@@ -94,9 +94,11 @@ bool		Request::getContentLength() {
 	}
 	pos += 16;
 	end = pos;
-	while ((end != std::string::npos) && (std::isspace(this->_header[end])))
+//	while ((end != std::string::npos) && (std::isspace(this->_header[end])))
+	while ((end < this->_header.size()) && (std::isspace(this->_header[end])))
 		end++;
-	while ((end != std::string::npos) && (!std::isspace(this->_header[end])))
+//	while ((end != std::string::npos) && (!std::isspace(this->_header[end])))
+	while ((end < this->_header.size()) && (!std::isspace(this->_header[end])))
 		end++;
 	if (end != this->_header.size())
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
@@ -192,12 +194,14 @@ const std::map<std::string, std::string> &		Request::getQueryString(void) const
 void 	Request::parseRequest()
 {
 	size_t			pos;
-
+	std::cout << "parseRequest: " << this->_httpMessage << std::endl; 
 	pos = this->_httpMessage.find(" HTTP/");
 	if (pos == std::string::npos)
 		std::cout << "Error in parseRequest" << std::endl;
 	else
 		this->splitRequest(this->_httpMessage, pos);
+	std::cout << "method: " << this->_method << " location: " << this->_location << " request inf: " << this->_requestedInf << std::endl;
+
 }
 
 void	Request::splitRequest(std::string & fullRequest, size_t & pos) {

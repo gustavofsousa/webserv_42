@@ -46,3 +46,13 @@ void Server::closeCon() {
 		close(this->_fd_socket);
 	}
 }
+
+void    Server::setServerConf(const ConfigFile & server)
+{
+	this->_serverConf = server;
+}
+
+const ConfigFile &   Server::getServerConf(void)
+{
+	return (this->_serverConf);
+}

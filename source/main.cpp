@@ -31,8 +31,19 @@ int main(int argc, char **argv) {
             int port = configServer.getServers()[i].getPort();
             std::cout << "Initializing server number " << i << " on port " << port << std::endl;
             servers.push_back(Server(port));
+            servers[i].setServerConf(configServer.getServers()[i]);
             servers[i].initialize();
         }
+/*
+        int i;
+        i = 0;
+        while (i < nbrServers)
+        {
+            std::cout << "in server " << ( i + 1) << " Port: " << servers[i].getServerConf().getPort() << std::endl;
+            i++;
+        }
+        return (0);
+*/
         Webserv webserv(servers, configServer);
         webserv.start();
         for (int i = 0; i < nbrServers; i++) {

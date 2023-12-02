@@ -1,4 +1,4 @@
-#include "../include/Server.hpp"
+#include "./Server.hpp"
 
 Server::Server() {}
 Server::~Server() {}
@@ -11,21 +11,16 @@ void Server::initialize() {
 		perror("Error creating socket.");
 		exit(1);
 	}
-
 	// Bind the socket to a specific IP address and port
 	struct sockaddr_in server_addr;
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(this->_port); //Reorganize order of bytes to network order.
-	server_addr.sin_addr.s_addr = INADDR_ANY; 
-
-	// Set the server socket to be non-blocking
-// fcntl(serverSocket, F_SETFL, O_NONBLOCK);
+	server_addr.sin_addr.s_addr = INADDR_ANY;
 
 	if (bind(this->_fd_socket, reinterpret_cast<struct sockaddr*>(&server_addr), sizeof(server_addr)) < 0) { // choose a port to itself.
 		perror("Error binding socket");
 		exit(1);
 	}
-
 	// Listen for incoming connections
 	if (listen(this->_fd_socket, 5) < 0) {
 		perror("Error listening for connections.");
@@ -35,10 +30,14 @@ void Server::initialize() {
 
 int Server::acceptCon() const {
 	// Accept incoming connections and get a file descriptor for reading and writing
-	struct sockaddr_in client_address;
-	socklen_t client_address_len = sizeof(client_address);
-	int client_socket = accept(this->_fd_socket, reinterpret_cast<struct sockaddr*>(&client_address), &client_address_len);
+	struct sockaddr_in	client_address;
+	socklen_t			client_address_len;
+	int					client_socket;
 
+	client_address_len = sizeof(client_address);
+	client_socket = accept(this->_fd_socket,
+		reinterpret_cast<struct sockaddr*>(&client_address),
+		&client_address_len);
 	return client_socket;
 }
 
@@ -46,4 +45,14 @@ void Server::closeCon() {
 	if (this->_fd_socket >= 0) {
 		close(this->_fd_socket);
 	}
+}
+
+void    Server::setServerConf(const ConfigFile & server)
+{
+	this->_serverConf = server;
+}
+
+const ConfigFile &   Server::getServerConf(void)
+{
+	return (this->_serverConf);
 }

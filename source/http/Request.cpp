@@ -125,12 +125,12 @@ int		Request::getBody(int client) {
 	char		buffer[BUFFER_SIZE];
 	int			bytes;
 
+    bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
 	if (this->_contentLength == 0) {
 		this->_ready = true;
 		printYellow("The request is ready without body");
 		return (0);
 	}
-    bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
 std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
     if (this->checkBytesReceived(bytes) != 1) return (-1);
 	buffer[bytes] = '\0';

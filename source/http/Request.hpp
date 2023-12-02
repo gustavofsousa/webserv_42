@@ -58,8 +58,8 @@ class	Request
 		std::string	            urlDecoder(const std::string & url);
         int                     checkBytesReceived(ssize_t bytes_received);
 		int			            getHeader(std::string const& buffer );
-		int			            getBody(std::string const& buffer);
+		int			            getBody(std::string const& buffer, int bytes);
 		bool		            getContentLength();
-        bool                    appendTheBody(std::string const& buffer);
+        bool                    appendTheBody(std::string const& buffer, int bytes);
 
 };

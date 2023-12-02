@@ -83,7 +83,6 @@ printYellow("The request is ready without body");
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
 	else
 		std::cout << "end == this->_header.size()" << std::endl;
-printYellow("Im in getContentLength");
 	// if (this->_contentLength > this->_maxContentLenght) {
 		// std::cout << "The size of file is to big" << std::endl;
 	// 	return false;
@@ -94,7 +93,6 @@ printYellow("Im in getContentLength");
 int		Request::getHeader(std::string const& buffer) {
 	size_t		pos;
 
-printYellow("Im in getHeader");
     if (this->_header.empty() == false) {
         return (0);
 	}
@@ -103,15 +101,13 @@ printYellow("Im in getHeader");
 		printYellow("I didn't find the delimeter in getHeader");
 		return (-1);
 	}
-printYellow("I found the delimeter in getHeader");
 	this->_header.append(buffer.begin(), buffer.begin() + pos);
-printYellow("I appended the header");
 	getContentLength();
-printYellow("header: " + this->_header);
+// printYellow("header: " + this->_header);
 	return (0);
 }
 
-bool        Request::appendTheBody(std::string const& buffer)
+bool        Request::appendTheBody(std::string const& buffer, int bytes)
 {
 	size_t i;
 
@@ -119,18 +115,17 @@ bool        Request::appendTheBody(std::string const& buffer)
     {
 		i = buffer.find(this->_delimeter) + this->_delimeter.size();
         this->_body.append(buffer.begin() + i, buffer.end());
-        return (true);
     }
-    return (false);
+	else
+	{
+		this->_body.append(buffer.begin(), buffer.begin() + bytes);
+	}
+	return (true);
 }
 
-int		Request::getBody(std::string const& buffer)
+int		Request::getBody(std::string const& buffer, int bytes)
 {
-printYellow("Im in getBody");
-    if (!appendTheBody(buffer))
-		this->_body.append(buffer.begin(), buffer.end());
-std::cout << "body size: " << this->_body.size() << std::endl;
-std::cout << "content length: " << this->_contentLength << std::endl;
+    appendTheBody(buffer, bytes);
     if (this->_body.size() == this->_contentLength)
     {
         this->_ready = true;
@@ -153,7 +148,7 @@ bool		Request::receiveFromClient(int client)
 std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
 	if (getHeader(buffer) < 0)
 		return (false);
-	if (getBody(buffer) < 0)
+	if (getBody(buffer, bytes) < 0)
 		return (false);
 	return (true);
 }

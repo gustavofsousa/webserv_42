@@ -35,9 +35,6 @@ class   Webserv {
         bool	openNewConnection(int i);
 
         int     updateStatusPoll();
-        bool	isMoreThanReady(int i);
-
-
 };
 
 #endif

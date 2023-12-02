@@ -123,7 +123,6 @@ void    Webserv::start()
 				return;
 			for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 			{
-				// isMoreThanReady(i);
 				if (this->ableToRead(i))
 					this->readDataClient(i);
 				else if (this->ableToWrite(i))
@@ -136,18 +135,6 @@ void    Webserv::start()
 	catch (std::exception & e) {
 		std::cout << "Error in start: " << e.what() << std::endl;
 	}
-}
-
-bool	Webserv::isMoreThanReady(int i) {
-	int indexRequest;
-
-	indexRequest = i - this->_nbrServers;
-	if (indexRequest < 0 || this->ableToWrite(i) == false
-		|| this->_requests[indexRequest].isReady() == false)
-		return false;
-	std::cout << "I'm sending by a shortcut" << std::endl;
-	this->sendDataClient(i);
-	return true;
 }
 
 bool	Webserv::ableToRead(int i) {

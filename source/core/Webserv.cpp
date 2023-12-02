@@ -44,7 +44,7 @@ bool    Webserv::readDataClient(int i)
 		indexRequest = i - this->_nbrServers;
 		if (this->isRequestFromServer(i))
 			return (this->openNewConnection(i));
-std::cout << "At read: is ready? " << this->_requests[indexRequest].isReady() << std::endl;
+// std::cout << "At read: is ready? " << this->_requests[indexRequest].isReady() << std::endl;
 		if (this->_requests[indexRequest].isReady())
 			return true;
 		clientWithMessage = this->conn.getFd(i).fd;
@@ -71,7 +71,7 @@ bool    Webserv::sendDataClient(int i) {
 
 	try {
 		indexRequest = i - this->_nbrServers;
-std::cout << "At send: is it ready? " << this->_requests[indexRequest].isReady() << std::endl;
+// std::cout << "At send: is it ready? " << this->_requests[indexRequest].isReady() << std::endl;
 		if (this->_requests[indexRequest].isReady())
 		{
 			Client		client(this->_requests[indexRequest], response);

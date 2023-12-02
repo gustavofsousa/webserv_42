@@ -57,8 +57,8 @@ class	Request
 		void		            parseQueryString(std::string queryString);
 		std::string	            urlDecoder(const std::string & url);
         int                     checkBytesReceived(ssize_t bytes_received);
-		int			            getHeader(int client );
-		int			            getBody(int client);
+		int			            getHeader(std::string const& buffer );
+		int			            getBody(std::string const& buffer);
 		bool		            getContentLength();
         bool                    appendTheBody(std::string const& buffer);
 

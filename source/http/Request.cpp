@@ -13,14 +13,17 @@ Request::Request(int newClient) {
 	this->_delimeter = "\r\n\r\n";
     this->_ready = false;
 	this->_contentLength = -1;
+	this->reset();
 }
 
 Request::Request(int newClient, ConfigFile _configFile) {
     this->_fromClient = newClient;
 	this->_delimeter = "\r\n\r\n";
-    this->_ready = false;
+	this->reset();
+	this->_ready = false;
 	this->_contentLength = -1;
 	this->_serverConf = _configFile;
+
 
 /*
 	std::cout << "construtor da Request port: " << this->_serverConf.getPort() << " path: " << this->_serverConf.getRoot() << " getIndex: " << this->_serverConf.getIndex()[0] << std::endl;
@@ -56,93 +59,84 @@ int	Request::checkBytesReceived(ssize_t bytes_received)
 	return (1);
 }
 
-
-int		Request::getHeader(int client) {
-	char		buffer[BUFFER_SIZE];
-	int			bytes;
-	size_t		pos;
-
-    if (this->_header.empty() == false) {
-        return (0);
-	}
-	bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK);
-std::cout << "----Bytes received at header: " << bytes << std::endl;
-	if (this->checkBytesReceived(bytes) != 1)
-		return (-1);
-	buffer[bytes] = '\0';
-	
-	std::string 		str(buffer);
-	pos = str.find(this->_delimeter);
-	if (pos == std::string::npos) {
-		printYellow("I didn't find the delimeter in getHeader");
-		return (-1);
-	}
-	this->_header.append(buffer, pos);
-	getContentLength();
-	this->_httpMessage = this->_header;
-// printYellow("header: " + this->_header);
-	return (0);
-}
-
+// Check back error handling
 bool		Request::getContentLength() {
 	size_t		pos;
 	size_t		end;
 
 	pos = this->_header.find("Content-Length: ");
-	if (pos == std::string::npos) {
+	if (pos == std::string::npos)
+	{
 		this->_contentLength = 0;
+		this->_ready = true;
+		this->_httpMessage = this->_header;
+printYellow("The request is ready without body");
 		return true;
 	}
 	pos += 16;
-	end = pos;
-	while ((end != std::string::npos) && (std::isspace(this->_header[end])))
-	// while ((end < this->_header.size()) && (std::isspace(this->_header[end])))
-		end++;
-	while ((end != std::string::npos) && (!std::isspace(this->_header[end])))
-	// while ((end < this->_header.size()) && (!std::isspace(this->_header[end])))
-		end++;
+    end = this->_header.find("\r\n");
+    if (end == std::string::npos) {
+		std::cout << "End of header not found" << std::endl;
+        return false;
+    }
 	if (end != this->_header.size())
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
+	else
+		std::cout << "end == this->_header.size()" << std::endl;
+printYellow("Im in getContentLength");
 	// if (this->_contentLength > this->_maxContentLenght) {
 		// std::cout << "The size of file is to big" << std::endl;
 	// 	return false;
 	// }
 	return true;
+}
+
+int		Request::getHeader(std::string const& buffer) {
+	size_t		pos;
+
+printYellow("Im in getHeader");
+    if (this->_header.empty() == false) {
+        return (0);
 	}
+	pos = buffer.find(this->_delimeter);
+	if (pos == std::string::npos) {
+		printYellow("I didn't find the delimeter in getHeader");
+		return (-1);
+	}
+printYellow("I found the delimeter in getHeader");
+	this->_header.append(buffer.begin(), buffer.begin() + pos);
+printYellow("I appended the header");
+	getContentLength();
+printYellow("header: " + this->_header);
+	return (0);
+}
 
 bool        Request::appendTheBody(std::string const& buffer)
 {
+	size_t i;
+
     if (this->_body.empty())
     {
-		size_t i = buffer.find(this->_delimeter) + this->_delimeter.size();
+		i = buffer.find(this->_delimeter) + this->_delimeter.size();
         this->_body.append(buffer.begin() + i, buffer.end());
         return (true);
     }
     return (false);
 }
 
-int		Request::getBody(int client) {
-	char		buffer[BUFFER_SIZE];
-	int			bytes;
-
-    bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
-	if (this->_contentLength == 0) {
-		this->_ready = true;
-		printYellow("The request is ready without body");
-		return (0);
-	}
-std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
-    if (this->checkBytesReceived(bytes) != 1) return (-1);
-	buffer[bytes] = '\0';
+int		Request::getBody(std::string const& buffer)
+{
+printYellow("Im in getBody");
     if (!appendTheBody(buffer))
-		this->_body.append(buffer, bytes);
+		this->_body.append(buffer.begin(), buffer.end());
 std::cout << "body size: " << this->_body.size() << std::endl;
+std::cout << "content length: " << this->_contentLength << std::endl;
     if (this->_body.size() == this->_contentLength)
     {
         this->_ready = true;
 		this->_httpMessage = this->_header + this->_body;
-        printYellow("Reached the size");
-        // printYellow("BODY: " + this->_body);
+printYellow("Reached the size");
+// printYellow("BODY: " + this->_body);
     }
 	return (0);
 }
@@ -150,9 +144,16 @@ std::cout << "body size: " << this->_body.size() << std::endl;
 
 bool		Request::receiveFromClient(int client)
 {
-	if (getHeader(client) < 0)
+	char		buffer[BUFFER_SIZE];
+	int			bytes;
+
+	bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
+    if (this->checkBytesReceived(bytes) != 1) return (false);
+	buffer[bytes] = '\0';
+std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
+	if (getHeader(buffer) < 0)
 		return (false);
-	if (getBody(client) < 0)
+	if (getBody(buffer) < 0)
 		return (false);
 	return (true);
 }
@@ -193,7 +194,10 @@ const std::map<std::string, std::string> &		Request::getQueryString(void) const
 void 	Request::parseRequest()
 {
 	size_t			pos;
-	// std::cout << "parseRequest: " << this->_httpMessage << std::endl; 
+
+// std::cout << "parseRequest: " << this->_httpMessage << std::endl;
+	if (this->_httpMessage.empty())
+		return ;
 	pos = this->_httpMessage.find(" HTTP/");
 	if (pos == std::string::npos)
 		std::cout << "Error in parseRequest" << std::endl;

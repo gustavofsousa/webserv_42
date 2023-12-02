@@ -12,14 +12,14 @@ Request::Request(int newClient) {
     this->_fromClient = newClient;
 	this->_delimeter = "\r\n\r\n";
     this->_ready = false;
-	this->_contentLength = 0;
+	this->_contentLength = -1;
 }
 
 Request::Request(int newClient, ConfigFile _configFile) {
     this->_fromClient = newClient;
 	this->_delimeter = "\r\n\r\n";
     this->_ready = false;
-	this->_contentLength = 0;
+	this->_contentLength = -1;
 	this->_serverConf = _configFile;
 
 /*
@@ -66,10 +66,10 @@ int		Request::getHeader(int client) {
         return (0);
 	}
 	bytes = recv(client, buffer, BUFFER_SIZE - 1, MSG_PEEK);
-std::cout << "----Bytes: " << bytes << std::endl;
-	buffer[bytes] = '\0';
-	if (this->checkBytesReceived(bytes) == -1)
+std::cout << "----Bytes received at header: " << bytes << std::endl;
+	if (this->checkBytesReceived(bytes) != 1)
 		return (-1);
+	buffer[bytes] = '\0';
 	
 	std::string 		str(buffer);
 	pos = str.find(this->_delimeter);
@@ -90,15 +90,16 @@ bool		Request::getContentLength() {
 
 	pos = this->_header.find("Content-Length: ");
 	if (pos == std::string::npos) {
+		this->_contentLength = 0;
 		return true;
 	}
 	pos += 16;
 	end = pos;
-//	while ((end != std::string::npos) && (std::isspace(this->_header[end])))
-	while ((end < this->_header.size()) && (std::isspace(this->_header[end])))
+	while ((end != std::string::npos) && (std::isspace(this->_header[end])))
+	// while ((end < this->_header.size()) && (std::isspace(this->_header[end])))
 		end++;
-//	while ((end != std::string::npos) && (!std::isspace(this->_header[end])))
-	while ((end < this->_header.size()) && (!std::isspace(this->_header[end])))
+	while ((end != std::string::npos) && (!std::isspace(this->_header[end])))
+	// while ((end < this->_header.size()) && (!std::isspace(this->_header[end])))
 		end++;
 	if (end != this->_header.size())
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
@@ -109,7 +110,7 @@ bool		Request::getContentLength() {
 	return true;
 	}
 
-bool        Request::appendFirstBody(std::string const& buffer)
+bool        Request::appendTheBody(std::string const& buffer)
 {
     if (this->_body.empty())
     {
@@ -123,7 +124,6 @@ bool        Request::appendFirstBody(std::string const& buffer)
 int		Request::getBody(int client) {
 	char		buffer[BUFFER_SIZE];
 	int			bytes;
-int         cont = 1;
 
 	if (this->_contentLength == 0) {
 		this->_ready = true;
@@ -131,13 +131,12 @@ int         cont = 1;
 		return (0);
 	}
     bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
+std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
+    if (this->checkBytesReceived(bytes) != 1) return (-1);
 	buffer[bytes] = '\0';
-std::cout << "Round number: " << cont++ << " | Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
-    if (this->checkBytesReceived(bytes) != 1) 
-        return (-1);
-    if (appendFirstBody(buffer))
-        return 0;
-    this->_body.append(buffer, bytes);
+    if (!appendTheBody(buffer))
+		this->_body.append(buffer, bytes);
+std::cout << "body size: " << this->_body.size() << std::endl;
     if (this->_body.size() == this->_contentLength)
     {
         this->_ready = true;
@@ -194,13 +193,13 @@ const std::map<std::string, std::string> &		Request::getQueryString(void) const
 void 	Request::parseRequest()
 {
 	size_t			pos;
-	std::cout << "parseRequest: " << this->_httpMessage << std::endl; 
+	// std::cout << "parseRequest: " << this->_httpMessage << std::endl; 
 	pos = this->_httpMessage.find(" HTTP/");
 	if (pos == std::string::npos)
 		std::cout << "Error in parseRequest" << std::endl;
 	else
 		this->splitRequest(this->_httpMessage, pos);
-	std::cout << "method: " << this->_method << " location: " << this->_location << " request inf: " << this->_requestedInf << std::endl;
+	// std::cout << "method: " << this->_method << " location: " << this->_location << " request inf: " << this->_requestedInf << std::endl;
 
 }
 
@@ -300,4 +299,8 @@ void        Request::reset() {
 
 bool    	Request::isReady() {
     return (this->_ready);
+}
+
+int         Request::totalLength() {
+    return (this->_contentLength);
 }

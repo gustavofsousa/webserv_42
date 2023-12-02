@@ -51,10 +51,10 @@ int	main( int argc, char **argv )
 */
 			ParserRequest	requestParser;
 			requestParser.parserRequest(REQUEST);
-			std::cout << "Method     : " << requestParser.getMethod() << std::endl;
-			std::cout << "Location   : " << requestParser.getLocation() << std::endl;
-			std::cout << "RequestInf : " << requestParser.getRequestedInf() << std::endl;
-			std::cout << "ContentType: " << requestParser.getContentType() << std::endl;
+			// std::cout << "Method     : " << requestParser.getMethod() << std::endl;
+			// std::cout << "Location   : " << requestParser.getLocation() << std::endl;
+			// std::cout << "RequestInf : " << requestParser.getRequestedInf() << std::endl;
+			// std::cout << "ContentType: " << requestParser.getContentType() << std::endl;
 		}		
 //		std::cout << "try end   | main" << std::endl;
 	}

@@ -41,12 +41,13 @@ bool    Webserv::readDataClient(int i)
 	int indexRequest;
 
 	try {
+		indexRequest = i - this->_nbrServers;
 		if (this->isRequestFromServer(i))
 			return (this->openNewConnection(i));
-		if (this->_requests[i].isReady())
+std::cout << "At read: is ready? " << this->_requests[indexRequest].isReady() << std::endl;
+		if (this->_requests[indexRequest].isReady())
 			return true;
 		clientWithMessage = this->conn.getFd(i).fd;
-		indexRequest = i - this->_nbrServers;
 		if (this->_requests[indexRequest].receiveFromClient(clientWithMessage) == false)
 		{
 			this->conn.closeConnection(i);
@@ -69,21 +70,20 @@ bool    Webserv::sendDataClient(int i) {
 	int 		indexRequest;
 
 	try {
-// std::cout << "I arrived at sendDataClient" << std::endl;
-
 		indexRequest = i - this->_nbrServers;
+std::cout << "At send: is it ready? " << this->_requests[indexRequest].isReady() << std::endl;
 		if (this->_requests[indexRequest].isReady())
 		{
 			Client		client(this->_requests[indexRequest], response);
 			// std::cout << "####### RESPONSE ######" << std::endl << response.httpMessage << std::endl;
-			try {
-			send(this->conn.getFd(i).fd, response.httpMessage.c_str(),
+		    send(this->conn.getFd(i).fd, response.httpMessage.c_str(),
 				response.httpMessage.size(), MSG_NOSIGNAL);
-			}
-			catch (std::exception & error) {
-				std::cerr << error.what() << std::endl;
-			}
+            // if (bytes != this->_response.totalLength())
+            //     std::cerr << "No send adequade number of bytes" << std::endl;
+            this->conn.closeConnection(i);
 			this->_requests[indexRequest].reset();
+			this->_requests.erase(this->_requests.begin() + indexRequest);
+            std::cout << "I deleted the request after send it. There is " << this->_requests.size() << " requests now" << std::endl;
 		}
 	}
 	catch (std::exception & e) {
@@ -123,7 +123,7 @@ void    Webserv::start()
 				return;
 			for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
 			{
-				isMoreThanReady(i);
+				// isMoreThanReady(i);
 				if (this->ableToRead(i))
 					this->readDataClient(i);
 				else if (this->ableToWrite(i))

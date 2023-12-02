@@ -35,6 +35,7 @@ class	Request
         bool                    isReady();
         void                    reset();
         void                    clearAll();
+        int                     totalLength();
 		const std::map<std::string, std::string> &	getQueryString(void) const;
 
 	private:
@@ -59,6 +60,6 @@ class	Request
 		int			            getHeader(int client );
 		int			            getBody(int client);
 		bool		            getContentLength();
-        bool                    appendFirstBody(std::string const& buffer);
+        bool                    appendTheBody(std::string const& buffer);
 
 };

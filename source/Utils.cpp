@@ -107,5 +107,21 @@ int	Utils::atoi(const std::string line)
 	return (nbr * signal);
 }
 
+int	Utils::getTypePath(const std::string & path)
+{
+	struct stat	buffer;
+
+	if ((stat(path.c_str(), &buffer)) == 0)
+	{
+		if (S_ISREG(buffer.st_mode))
+			return (1);
+		else if (S_ISDIR(buffer.st_mode))
+			return (2);
+		else
+			return (3);
+	}
+	else
+		return (-1);
+}
 
 bool	Utils::_serverRunning = true;

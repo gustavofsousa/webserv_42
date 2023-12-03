@@ -161,6 +161,12 @@ const std::string &		Request::getMethod(void) const
 {
 	return (this->_method);
 }
+/*
+const std::string &		Request::getLocation(void) const
+{
+	return (this->_path);
+}
+*/
 
 const std::string &		Request::getLocation(void) const
 {
@@ -267,6 +273,60 @@ std::string	Request::urlDecoder(const std::string & url)
 		i++;
 	}
 	return (ret);
+}
+std::string	Request::fileRequested(void)
+{
+	std::vector<std::string>::iterator	it00;
+	std::vector<std::string>::iterator	it01;
+	std::vector<std::string>			tmpVec00;
+	std::vector<std::string>			tmpVec01;
+	std::string							fileRequested;
+	size_t	i;
+
+//	this->_requestedInf = "woliveir.html"; //temporário para realizar testes no else abaixo!!!!!!
+//	this->_location = "/test/"; //temporário para realizar testes no else abaixo!!!!!!
+//	this->_requestedInf = "woliveir.html"; //temporário para realizar testes no else abaixo!!!!!!
+//	this->_location = "/woliveir/"; //temporário para realizar testes no else abaixo!!!!!!
+//	std::cout << "ReqInf: " << this->getRequestedInf() << " in path: " << this->getLocation() << " root: " << this->_serverConf.getRoot() << std::endl;
+
+	tmpVec00 = this->_serverConf.getIndex();
+	it00 = find(tmpVec00.begin(), tmpVec00.end(), this->getRequestedInf());
+	if ((this->getLocation() == this->_serverConf.getRoot()) && \
+		((it00 != tmpVec00.end()) || this->getRequestedInf().empty()))
+	{
+		if (it00 != tmpVec00.end())
+			fileRequested.append(".").append(this->getLocation()).append(this->getRequestedInf());
+		else
+			fileRequested.append(".").append(this->getLocation()).append(tmpVec00[0]);
+	}
+	else
+	{
+		i = 0;
+		while (i < this->_serverConf.getLocation().size())
+		{
+			tmpVec00 = this->_serverConf.getLocation()[i].getIndex();
+			it00 = find(tmpVec00.begin(), tmpVec00.end(), this->getRequestedInf());
+			tmpVec01 = this->_serverConf.getLocation()[i].getMethods();
+			it01 = find(tmpVec01.begin(), tmpVec01.end(), getMethod());
+			if ((it00 != tmpVec00.end()) && (it01 != tmpVec01.end()) &&\
+				(this->_serverConf.getLocation()[i].getPath() == this->getLocation()))
+			{
+				fileRequested.append(".").append(this->getLocation()).append(this->getRequestedInf());
+				break ;
+			}
+			i++;
+		}
+	}
+	if (fileRequested.empty())
+		fileRequested.append("./static_pages/error/404.html");
+	if (Utils::getTypePath(fileRequested) != 1)
+	{
+//		std::cout << "request file: " << fileRequested << " not exits" << std::endl; //para teste !!!!!!!
+		fileRequested.erase().append("./static_pages/error/505.html");
+	}
+	std::cout << "send    file: " << fileRequested << std::endl; ///para testes!!!!!1
+//	exit(1); ////para a realização de testes neste bloco
+	return (fileRequested);
 }
 
 /*******************************************************/

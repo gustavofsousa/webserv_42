@@ -17,7 +17,7 @@
 # include <unistd.h> //getcwd na setroot
 # include <sys/types.h> //open/close dir na setroot
 # include <dirent.h> //open/close dir na setroot
-
+#include <algorithm>    // std::find
 # include <vector>
 # include "Error.hpp"
 # include "../Utils.hpp"

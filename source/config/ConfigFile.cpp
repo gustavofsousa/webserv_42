@@ -167,6 +167,7 @@ void					ConfigFile::setLocation(myItVecS &i, myVecS & sp_server)
 {
 //	std::cout << "init    de setLocation: " << *i << std::endl;
 	myVecS		vecLocation;
+	myVecS		vecIndex;
 	Location	indorLocation;
 
 	if ((*i).compare(0, 1, "{") == 0)
@@ -177,15 +178,36 @@ void					ConfigFile::setLocation(myItVecS &i, myVecS & sp_server)
 //	std::cout << "palavra: " << *i << std::endl;
 	while((i != sp_server.end()) && ((*i).compare(0, 1, "}") != 0))
 	{
+//		std::cout << "palavra: " << *i << " pré index" << std::endl;
+		if (((*i).compare(0, 5, "index") == 0))
+		{
+			i++;
+			while((i != sp_server.end()) && ((*i).compare(0, 1, "}") != 0) && \
+				(((*i).find(";")) == std::string::npos))
+			{
+//				std::cout << "index00: " << *i << std::endl;
+				vecIndex.push_back(*i++);
+			}
+			if (((*i).find(";")) != std::string::npos)
+			{
+//				std::cout << "index01: " << *i << std::endl;
+				this->isTokenValid(*i);
+//				std::cout << "index01: " << *i << std::endl;
+				vecIndex.push_back(*i++);
+			}
+			indorLocation.setIndex(vecIndex);			
+		}
+//		std::cout << "palavra: " << *i << " pré methods" << std::endl;
 		if (((*i).compare(0, 13, "allow_methods") == 0) || ((*i).compare(0, 7, "methods") == 0))
 		{
 			i++;
-			while((i != sp_server.end()))
+			while((i != sp_server.end()) && ((*i).compare(0, 1, "}") != 0))
 			{
+//				std::cout << "método: " << *i << std::endl;
 				if (((*i).find(";")) != std::string::npos)
 				{
 					this->isTokenValid(*i);
-					if (((*i).compare(0, 6, "DELETE") == 0) || ((*i).compare(0, 3, "GET") == 0) || ((*i).compare(0, 4, "POST") == 0))
+					if (find(indorLocation._methods.begin(), indorLocation._methods.end(), *i) != indorLocation._methods.end())
 						vecLocation.push_back(*i++);
 					else
 						throw Error::InvalidParameter();
@@ -193,7 +215,7 @@ void					ConfigFile::setLocation(myItVecS &i, myVecS & sp_server)
 				}
 				else
 				{
-					if (((*i).compare(0, 6, "DELETE") == 0) || ((*i).compare(0, 3, "GET") == 0) || ((*i).compare(0, 4, "POST") == 0))
+					if (find(indorLocation._methods.begin(), indorLocation._methods.end(), *i) != indorLocation._methods.end())
 						vecLocation.push_back(*i++);
 					else
 						throw Error::InvalidParameter();
@@ -206,7 +228,8 @@ void					ConfigFile::setLocation(myItVecS &i, myVecS & sp_server)
 		}
 		else
 		{
-			while((i != sp_server.end()) && ((*i).compare(0, 1, "}") != 0))
+//			while((i != sp_server.end()) && ((*i).compare(0, 1, "}") != 0))
+			if (i != sp_server.end())
 				i++;
 		}
 	}
@@ -298,14 +321,14 @@ bool					ConfigFile::isHostValid(std::string & _parameter)
 bool					ConfigFile::isTokenValid( std::string & _parameter)
 {
 	size_t	pos;
-//	std::cout << " pré _p: " << _p << std::endl;
+//	std::cout << " pré _p: " << _parameter << std::endl;
 
 	pos = _parameter.find(";");
 	if(pos != (_parameter.size() - 1))
 		throw Error::InvalidParameter();
 	else
 		_parameter.erase(pos);
-//	std::cout << " pós _p: " << _p << std::endl;
+//	std::cout << " pós _p: " << _parameter << std::endl;
 	return (true);
 }
 

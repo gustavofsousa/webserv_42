@@ -35,11 +35,23 @@ int main(int argc, char **argv) {
             servers[i].initialize();
         }
 /*
-        int i;
-        i = 0;
+        int i = 0;
+        size_t j;
+        size_t k;
         while (i < nbrServers)
         {
-            std::cout << "in server " << ( i + 1) << " Port: " << servers[i].getServerConf().getPort() << std::endl;
+            j = 0;
+            while (j < servers[i].getServerConf().getLocation().size())
+            {
+                k = 0;
+                while ( k < servers[i].getServerConf().getLocation()[j].getIndex().size())
+                {
+                    std::cout << "in server " << i << " Location: " << j << " index para k: " << k << " é: " << servers[i].getServerConf().getLocation()[j].getIndex()[k] << std::endl;
+                    k++;
+                }
+                j++;
+            }
+//            std::cout << "in server " << (i + 1) << " Port: " << servers[i].getServerConf().getPort() << std::endl;
             i++;
         }
         return (0);

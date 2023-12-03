@@ -44,6 +44,7 @@ int Server::acceptCon() const {
 void Server::closeCon() {
 	if (this->_fd_socket >= 0) {
 		close(this->_fd_socket);
+		this->_fd_socket = -1;
 	}
 }
 

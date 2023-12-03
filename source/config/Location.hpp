@@ -23,16 +23,20 @@ class	Location
 	private:
 		std::string					_path;
 		std::vector<std::string>	_allowed_methods;
+		std::vector<std::string>	_index;
 	
 	public:
+		std::vector<std::string>	_methods;
 		Location( void );
 		Location( const Location& copy );
 		Location	&operator=( const Location &src );
 		~Location( void );
 
 		const std::string &					getPath(void) const;
-		const std::vector<std::string>		getMethods(void) const;
+		const std::vector<std::string>	&	getMethods(void) const;
+		const std::vector<std::string>	&	getIndex(void) const;
 
 		void								setPath(std::string & path);
 		void								setMethods(std::vector<std::string> & vecLocation);
+		void								setIndex(std::vector<std::string> & vecIndex);
 };

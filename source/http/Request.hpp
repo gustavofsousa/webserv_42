@@ -29,16 +29,15 @@ class	Request
 		bool		            receiveFromClient(int client);
 		void		            parseRequest();
 		const std::string &		getMethod(void) const;
-//		const std::string &		getPath(void) const;
 		const std::string &		getLocation(void) const;
 		const std::string &		getRequestedInf(void) const;
 		const std::string &		getContentType(void) const;
+		const ConfigFile  &		getServerConf(void) const;
         bool                    isReady();
         void                    reset();
         void                    clearAll();
         int                     totalLength();
 		const std::map<std::string, std::string> &	getQueryString(void) const;
-		std::string				fileRequested(void);
 
 	private:
         int                                 _fromClient;
@@ -48,7 +47,6 @@ class	Request
         std::string     			        _body;
 		std::string							_httpMessage;
 		std::string							_method;
-//		std::string							_path;
 		std::string							_location;
 		std::string							_requestedInf;
 		std::string							_contentType;

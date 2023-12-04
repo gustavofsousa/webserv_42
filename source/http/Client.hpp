@@ -29,6 +29,7 @@ class Client
         Request const&      _request;
         Response &          _response;
         int                 _statusCode;
+        std::string	        fileRequested(void);
 };
 
 #endif

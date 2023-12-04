@@ -66,7 +66,7 @@ bool    Webserv::readDataClient(int i)
 			return false;
 		}
 		this->_requests[indexRequest].parseRequest();
-		this->_requests[indexRequest].fileRequested();
+//		this->_requests[indexRequest].fileRequested();
 	}
 	catch (std::exception & e) {
 		std::cout << "Error in readDataClient: " << e.what() << std::endl;

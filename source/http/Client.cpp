@@ -14,7 +14,8 @@ Client::~Client()
 
 std::string Client::getMethod(void)
 {
-    std::string pagePath("./static_pages/index.html");
+//    std::string pagePath("./static_pages/index.html");
+    std::string pagePath(this->fileRequested());
 
     // I need to receive information from the header
     std::ifstream file(pagePath.c_str());
@@ -79,4 +80,56 @@ std::string Client::readFile(std::string name){
         _statusCode = 404;
         return "404 Not Found";
     }
+}
+
+std::string	Client::fileRequested(void)
+{
+	std::vector<std::string>::iterator	it00;
+	std::vector<std::string>::iterator	it01;
+	std::vector<std::string>			tmpVec00;
+	std::vector<std::string>			tmpVec01;
+	size_t	i;
+	std::string							fileRequested;
+
+	tmpVec00 = this->_request.getServerConf().getIndex();
+	it00 = find(tmpVec00.begin(), tmpVec00.end(), this->_request.getRequestedInf());
+	if ((this->_request.getLocation() == this->_request.getServerConf().getRoot()) && \
+		((it00 != tmpVec00.end()) || this->_request.getRequestedInf().empty()))
+	{
+		if (it00 != tmpVec00.end())
+			fileRequested.append(".").append(this->_request.getLocation()).append(this->_request.getRequestedInf());
+		else
+			fileRequested.append(".").append(this->_request.getLocation()).append(tmpVec00[0]);
+        this->_statusCode = 200;
+	}
+	else
+	{
+		i = 0;
+		while (i < this->_request.getServerConf().getLocation().size())
+		{
+			tmpVec00 = this->_request.getServerConf().getLocation()[i].getIndex();
+			it00 = find(tmpVec00.begin(), tmpVec00.end(), this->_request.getRequestedInf());
+			tmpVec01 = this->_request.getServerConf().getLocation()[i].getMethods();
+			it01 = find(tmpVec01.begin(), tmpVec01.end(), this->_request.getMethod());
+			if ((it00 != tmpVec00.end()) && (it01 != tmpVec01.end()) &&\
+				(this->_request.getServerConf().getLocation()[i].getPath() == this->_request.getLocation()))
+			{
+				fileRequested.append(".").append(this->_request.getLocation()).append(this->_request.getRequestedInf());
+                this->_statusCode = 200;
+				break ;
+			}
+			i++;
+		}
+	}
+	if (fileRequested.empty())
+    {
+		fileRequested.append("./static_pages/error/404.html");
+        this->_statusCode = 404;
+    }
+	if (Utils::getTypePath(fileRequested) != 1)
+	{
+		fileRequested.erase().append("./static_pages/error/500.html");
+        this->_statusCode = 500;
+	}
+	return (fileRequested);
 }

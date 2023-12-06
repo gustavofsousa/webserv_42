@@ -47,16 +47,16 @@
                 // Adicione um corpo vazio, já que o método DELETE não tem um corpo de requisição significativo
                 // body: JSON.stringify({}),
             })
-            .then(response => {
-                if (response.ok) {
-                    console.log(`Post ${postId} excluído com sucesso.`);
-                    
+//            .then(response => {
+//                if (response.ok) {
+//                    console.log(`Post ${postId} excluído com sucesso.`);
+//                    
                     // Após a exclusão bem-sucedida, faça uma nova requisição GET para atualizar a página
-                    return fetch('http://localhost:8000/api/posts'); // Substitua pela URL correta
-                } else {
-                    console.error(`Falha ao excluir o post ${postId}.`);
-                }
-            })
+//                    return fetch('http://localhost:8000/api/posts'); // Substitua pela URL correta
+//                } else {
+//                    console.error(`Falha ao excluir o post ${postId}.`);
+//                }
+//            })
             .then(updatedResponse => {
                 if (updatedResponse.ok) {
                     console.log('Dados atualizados com sucesso.');

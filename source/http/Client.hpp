@@ -30,6 +30,7 @@ class Client
         Response &          _response;
         int                 _statusCode;
         std::string	        fileRequested(void);
+        void                buildDeleteFile(const std::string & path, const std::string & idValue);
 };
 
 #endif

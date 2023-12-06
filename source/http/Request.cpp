@@ -201,7 +201,7 @@ void 	Request::parseRequest()
 {
 	size_t			pos;
 
-// std::cout << "parseRequest: " << this->_httpMessage << std::endl;
+//	std::cout << "parseRequest: " << this->_httpMessage << std::endl;
 	if (this->_httpMessage.empty())
 		return ;
 	pos = this->_httpMessage.find(" HTTP/");

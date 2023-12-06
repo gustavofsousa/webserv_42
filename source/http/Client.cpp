@@ -131,5 +131,68 @@ std::string	Client::fileRequested(void)
 		fileRequested.erase().append("./static_pages/error/500.html");
         this->_statusCode = 500;
 	}
+
+    if ((this->_request.getMethod().compare(0, 6, "DELETE") == 0) && \
+        (this->_request.getQueryString().size() == 1))
+    {
+        std::map<std::string, std::string> tmpMap;
+        std::map<std::string, std::string>::iterator itMap;
+        tmpMap = this->_request.getQueryString();
+        itMap = tmpMap.begin();
+//        std::cout << "o tamanho de tmpMap é: " << tmpMap.size() << " first: " << itMap->first << " second: " << itMap->second << std::endl;
+        this->buildDeleteFile(fileRequested, itMap->second);
+    }
+//    else
+//    {
+//        std::cout << "a requisição é do método: " << this->_request.getMethod() << std::endl;
+//    }
 	return (fileRequested);
+}
+
+void    Client::buildDeleteFile(const std::string & path, const std::string & idValue)
+{
+//    std::cout << "start | buildDeleteFile path: " << path << " id Value: " << idValue << std::endl;
+	std::ifstream	ifs;
+    std::ofstream   ofs;
+	std::string		line;
+	std::string		page;
+
+	ifs.open(path.c_str());
+	if (ifs.is_open())
+	{
+//        std::cout << "início do 1º if | arquivo: " << path << " está aberto coomo leitura" << std::endl;
+		while(std::getline(ifs, line))
+		{
+            if (line.find(idValue, 0) != std::string::npos)
+            {
+        		while(std::getline(ifs, line))
+		        {
+                    if (line.find("</div>", 0) != std::string::npos)
+                    {
+                        std::getline(ifs, line);
+                        std::getline(ifs, line);
+                        break ;
+                    }
+                }
+            }
+            page += line.append("\n");
+		}
+		ifs.close();
+//        std::cout << "Final  do 1º if | arquivo: " << path << " está aberto coomo leitura" << std::endl;
+	}
+//    std::cout << "Inserir o conteudo para o arquivo: " << path << std::endl;
+    if (!page.empty())
+    {
+        ofs.open(path.c_str(), std::ios::out | std::ios::trunc);
+        if (ofs.is_open())
+        {
+//            std::cout << "início do 2º if | arquivo: " << path << " está aberto coomo leitura" << std::endl;
+            ofs << page;
+            ofs.close();
+//            std::cout << "Final  do 2º if | arquivo: " << path << " está aberto coomo leitura" << std::endl;
+        }
+//        else
+//            std::cout << "Não abriu o truncat do arquivo: " << path << std::endl;
+    }
+//        std::cout << "end   | buildDeleteFile" << std::endl;
 }

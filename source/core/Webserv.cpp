@@ -23,6 +23,15 @@ static void printError(std::string const& error) {
 	std::cout << "\033[1;31m" << error << "\033[0m" << std::endl;
 }
 
+bool		Webserv::deleteConnection(int i, int indReq)
+{
+	this->conn.closeConnection(i);
+	this->_requests[indReq].reset();
+	this->_requests.erase(this->_requests.begin() + indReq);
+	std::cout << "I deleted the request after send it. There is " << this->_requests.size() << " requests now" << std::endl;
+	return true;
+}
+
 bool		Webserv::openNewConnection(int i)
 {
 	int newClient;
@@ -35,27 +44,22 @@ bool		Webserv::openNewConnection(int i)
 	return true;
 }
 
-bool    Webserv::readDataClient(int i)
+bool    Webserv::readDataClient(int i, int indReq)
 {
 	int clientWithMessage;
-	int indexRequest;
 
 	try {
-		indexRequest = i - this->_nbrServers;
 		if (this->isRequestFromServer(i))
 			return (this->openNewConnection(i));
-// std::cout << "At read: is ready? " << this->_requests[indexRequest].isReady() << std::endl;
-		if (this->_requests[indexRequest].isReady())
+		if (this->_requests[indReq].isReady())
 			return true;
 		clientWithMessage = this->conn.getFd(i).fd;
-		if (this->_requests[indexRequest].receiveFromClient(clientWithMessage) == false)
+		if (this->_requests[indReq].receiveFromClient(clientWithMessage) == false)
 		{
-			this->conn.closeConnection(i);
-			this->_requests[indexRequest].reset();
-			this->_requests.erase(this->_requests.begin() + indexRequest);
+			this->deleteConnection(i, indReq);
 			return false;
 		}
-		this->_requests[indexRequest].parseRequest();
+		this->_requests[indReq].parseRequest();
 	}
 	catch (std::exception & e) {
 		std::cout << "Error in readDataClient: " << e.what() << std::endl;
@@ -65,25 +69,19 @@ bool    Webserv::readDataClient(int i)
 }
 
 // Check if size of response is greater than permited.
-bool    Webserv::sendDataClient(int i) {
+bool    Webserv::sendDataClient(int i, int indReq) {
 	Response	response;
-	int 		indexRequest;
 
 	try {
-		indexRequest = i - this->_nbrServers;
-// std::cout << "At send: is it ready? " << this->_requests[indexRequest].isReady() << std::endl;
-		if (this->_requests[indexRequest].isReady())
+		if (this->_requests[indReq].isReady())
 		{
-			Client		client(this->_requests[indexRequest], response);
+			Client		client(this->_requests[indReq], response);
 			// std::cout << "####### RESPONSE ######" << std::endl << response.httpMessage << std::endl;
 		    send(this->conn.getFd(i).fd, response.httpMessage.c_str(),
 				response.httpMessage.size(), MSG_NOSIGNAL);
             // if (bytes != this->_response.totalLength())
             //     std::cerr << "No send adequade number of bytes" << std::endl;
-            this->conn.closeConnection(i);
-			this->_requests[indexRequest].reset();
-			this->_requests.erase(this->_requests.begin() + indexRequest);
-            std::cout << "I deleted the request after send it. There is " << this->_requests.size() << " requests now" << std::endl;
+			this->deleteConnection(i, indReq);
 		}
 	}
 	catch (std::exception & e) {
@@ -114,6 +112,8 @@ int	Webserv::updateStatusPoll()
 
 void    Webserv::start()
 {
+	int 		indReq;
+
 	try {
 		// Inserting the sockets of servers to monitorate.
 		conn.addServersSockets(this->servers);
@@ -121,13 +121,14 @@ void    Webserv::start()
 		{
 			if (updateStatusPoll() == -1)
 				return;
-			for (size_t i = 0; i < this->conn.getPollFd().size(); i++)
+			for (size_t indServ = 0; indServ < this->conn.getPollFd().size(); indServ++)
 			{
-				if (this->ableToRead(i))
-					this->readDataClient(i);
-				else if (this->ableToWrite(i))
-					this->sendDataClient(i);
-				else if (this->pollError(i))
+				indReq = indServ - this->_nbrServers;
+				if (this->ableToRead(indServ))
+					this->readDataClient(indServ, indReq);
+				else if (this->ableToWrite(indServ))
+					this->sendDataClient(indServ, indReq);
+				else if (this->pollError(indServ))
 					printError("Error for poll revents");
 			}
 		}

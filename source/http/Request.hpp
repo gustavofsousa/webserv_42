@@ -56,6 +56,7 @@ class	Request
 		void		            splitRequest(std::string & fullRequest, size_t & pos);
 		void		            parseQueryString(std::string queryString);
 		std::string	            urlDecoder(const std::string & url);
+		
         int                     checkBytesReceived(ssize_t bytes_received);
 		int			            getHeader(std::string const& buffer );
 		int			            getBody(std::string const& buffer, int bytes);

@@ -19,22 +19,23 @@ class   Webserv {
         ~Webserv();
 
         Connection                      conn;
-        std::vector<Server>       servers;
+        std::vector<Server>             servers;
 //        std::vector<Server> const&      servers;
         void    start();
-        bool    readDataClient(int i);
-        bool    sendDataClient(int i);
+
     private:
         std::vector<Request>    _requests;
         int                     _nbrServers;
 
         bool	ableToWrite(int client);
         bool	ableToRead(int client);
+        bool    readDataClient(int i, int indReq);
+        bool    sendDataClient(int i, int indReq);
         bool	pollError(int i);
         bool    isRequestFromServer(int i);
-        bool	openNewConnection(int i);
-
         int     updateStatusPoll();
+        bool	openNewConnection(int i);
+        bool	deleteConnection(int i, int indReq);
 };
 
 #endif

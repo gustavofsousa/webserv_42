@@ -39,8 +39,33 @@ Request::Request(int newClient, ConfigFile _configFile) {
 
 Request::~Request(void) {}
 
+
+/*******************************************************/
+/*						Static.				           */
+/*******************************************************/
+
 static void printYellow(std::string const& str) {
 	std::cout << "\033[1;33m" << str << "\033[0m" << std::endl;
+}
+
+/*******************************************************/
+/*						Head and Body.		           */
+/*******************************************************/
+
+bool		Request::receiveFromClient(int client)
+{
+	char		buffer[BUFFER_SIZE];
+	int			bytes;
+
+	bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
+    if (this->checkBytesReceived(bytes) != 1) return (false);
+	buffer[bytes] = '\0';
+std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
+	if (getHeader(buffer) < 0)
+		return (false);
+	if (getBody(buffer, bytes) < 0)
+		return (false);
+	return (true);
 }
 
 // TIRAR ERRNO DAQUI
@@ -59,36 +84,6 @@ int	Request::checkBytesReceived(ssize_t bytes_received)
 	return (1);
 }
 
-// Check back error handling
-bool		Request::getContentLength() {
-	size_t		pos;
-	size_t		end;
-
-	pos = this->_header.find("Content-Length: ");
-	if (pos == std::string::npos)
-	{
-		this->_contentLength = 0;
-		this->_ready = true;
-		this->_httpMessage = this->_header;
-printYellow("The request is ready without body");
-		return true;
-	}
-	pos += 16;
-    end = this->_header.find("\r\n");
-    if (end == std::string::npos) {
-		std::cout << "End of header not found" << std::endl;
-        return false;
-    }
-	if (end != this->_header.size())
-		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
-	else
-		std::cout << "end == this->_header.size()" << std::endl;
-	// if (this->_contentLength > this->_maxContentLenght) {
-		// std::cout << "The size of file is to big" << std::endl;
-	// 	return false;
-	// }
-	return true;
-}
 
 int		Request::getHeader(std::string const& buffer) {
 	size_t		pos;
@@ -104,6 +99,19 @@ int		Request::getHeader(std::string const& buffer) {
 	this->_header.append(buffer.begin(), buffer.begin() + pos);
 	getContentLength();
 // printYellow("header: " + this->_header);
+	return (0);
+}
+
+int		Request::getBody(std::string const& buffer, int bytes)
+{
+    appendTheBody(buffer, bytes);
+    if (this->_body.size() == this->_contentLength)
+    {
+        this->_ready = true;
+		this->_httpMessage = this->_header + this->_body;
+printYellow("Reached the size");
+// printYellow("BODY: " + this->_body);
+    }
 	return (0);
 }
 
@@ -123,34 +131,42 @@ bool        Request::appendTheBody(std::string const& buffer, int bytes)
 	return (true);
 }
 
-int		Request::getBody(std::string const& buffer, int bytes)
-{
-    appendTheBody(buffer, bytes);
-    if (this->_body.size() == this->_contentLength)
-    {
-        this->_ready = true;
-		this->_httpMessage = this->_header + this->_body;
-printYellow("Reached the size");
-// printYellow("BODY: " + this->_body);
+/*******************************************************/
+/*					Content Length.			           */
+/*******************************************************/
+
+// Check back error handling
+bool		Request::getContentLength() {
+	size_t		pos;
+	size_t		end;
+
+	pos = this->_header.find("Content-Length: ");
+	if (pos == std::string::npos)
+		return (isReadyWithoutBody());
+	pos += 16;
+    end = this->_header.find("\r\n");
+    if (end == std::string::npos) {
+		std::cout << "End of header not found" << std::endl;
+        return false;
     }
-	return (0);
+	if (end != this->_header.size())
+		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
+	else
+		std::cout << "end == this->_header.size()" << std::endl;
+	// if (this->_contentLength > this->_maxContentLenght) {
+		// std::cout << "The size of file is to big" << std::endl;
+	// 	return false;
+	// }
+	return true;
 }
 
-
-bool		Request::receiveFromClient(int client)
+bool		Request::isReadyWithoutBody()
 {
-	char		buffer[BUFFER_SIZE];
-	int			bytes;
-
-	bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
-    if (this->checkBytesReceived(bytes) != 1) return (false);
-	buffer[bytes] = '\0';
-std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
-	if (getHeader(buffer) < 0)
-		return (false);
-	if (getBody(buffer, bytes) < 0)
-		return (false);
-	return (true);
+	this->_contentLength = 0;
+	this->_ready = true;
+	this->_httpMessage = this->_header;
+printYellow("The request is ready without body");
+	return true;
 }
 
 /*******************************************************/

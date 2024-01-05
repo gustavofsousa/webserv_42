@@ -17,7 +17,7 @@ class Client
         ~Client();
 
         void        choiceMethod();
-        std::string getMethod(void);
+        void        handleHTTPMethod(void);
         void        postMethod(void);
         void        deleteMethod(void);
         int         getStatusCode(void);
@@ -29,6 +29,7 @@ class Client
         Request const&      _request;
         Response &          _response;
         int                 _statusCode;
+        bool                _isCGI;
         std::string	        fileRequested(void);
         void                buildDeleteFile(const std::string & path, const std::string & idValue);
 };

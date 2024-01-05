@@ -3,7 +3,8 @@
 Client::Client(const Request &request, Response &response) : 
     _request(request), 
     _response(response),
-    _statusCode(0)
+    _statusCode(0),
+    _isCGI(false)
 {
     this->handleHTTPMethod();
 }
@@ -21,16 +22,17 @@ void Client::handleHTTPMethod(void)
 	std::cout << "StatusCode: " << _statusCode << std::endl;
 	std::cout << "Method: " << _request.getMethod() << std::endl; 
 
+    if (_isCGI){
+        //exec CGI
+    }
     if(_request.getMethod() == "GET" && _statusCode < 400){
         this->_response.processFileForHTTPResponse(pagePath, this->_statusCode);
         this->_response.send();
         std::cout << "Estou no get" << std::endl;
     }
     else if(_request.getMethod() == "POST" && _statusCode < 400){
-        std::cout << "Estou no post" << std::endl;
-        std::cout << "Qual e o arquivo " << this->_request.getLocation() << " " << this->_request.getRequestedInf() << std::endl;
-        // if (str.find(".py") != std::string::npos)
-        //     std::cout << this->_request.getRequestedInf() << std::endl;
+        _statusCode = 401;
+        //implement error page 401
     }
     else if(_request.getMethod() == "DELETE" && _statusCode > 400){
         std::cout << "Delete" << std::endl;
@@ -40,8 +42,6 @@ void Client::handleHTTPMethod(void)
         pagePath = "./static_pages/error/404.html";
         this->_response.processFileForHTTPResponse(pagePath, this->_statusCode);
         this->_response.send();
-
-        std::cout << "Error Page not found" << std::endl;
     }
 }
 
@@ -56,6 +56,12 @@ std::string	Client::fileRequested(void)
 
 	tmpVec00 = this->_request.getServerConf().getIndex();
 	it00 = find(tmpVec00.begin(), tmpVec00.end(), this->_request.getRequestedInf());
+
+    if(this->_request.getRequestedInf().find(".py") != std::string::npos){
+        this->_statusCode = 200;
+        this->_isCGI = true;
+        return this->_request.getLocation() + this->_request.getRequestedInf();
+    }
 	if ((this->_request.getLocation() == this->_request.getServerConf().getRoot()) && \
 		((it00 != tmpVec00.end()) || this->_request.getRequestedInf().empty()))
 	{

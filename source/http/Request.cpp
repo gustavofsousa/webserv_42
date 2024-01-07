@@ -193,6 +193,12 @@ const std::map<std::string, std::string> &		Request::getQueryString(void) const
 	return (this->_queryString);
 }
 
+const std::string &		Request::getQueryStringS(void) const
+{
+	return (this->_queryStringS);
+}
+
+
 /*******************************************************/
 /*				Parse of HTTP request.					*/
 /*******************************************************/
@@ -227,6 +233,7 @@ void	Request::splitRequest(std::string & fullRequest, size_t & pos) {
 	j = this->_requestedInf.find("?");
 	if (j != std::string::npos)
 	{
+		this->_queryStringS = this->_requestedInf.substr((j + 1));
 		this->parseQueryString(this->_requestedInf.substr((j + 1)));
 		this->_requestedInf = this->_requestedInf.substr(0, j);
 	}

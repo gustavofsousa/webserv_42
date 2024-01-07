@@ -23,6 +23,8 @@ void Client::handleHTTPMethod(void)
 	std::cout << "Method: " << _request.getMethod() << std::endl; 
 
     if (_isCGI){
+        std::map<std::string, std::string>	queryString = _request.getQueryString();
+        std::cout << queryString.size() << std::endl;
         //exec CGI
     }
     if(_request.getMethod() == "GET" && _statusCode < 400){

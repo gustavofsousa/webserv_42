@@ -38,6 +38,7 @@ class	Request
         void                    clearAll();
         int                     totalLength();
 		const std::map<std::string, std::string> &	getQueryString(void) const;
+		const std::string &		getQueryStringS(void) const;
 
 	private:
         int                                 _fromClient;
@@ -53,6 +54,7 @@ class	Request
 		std::map<std::string, std::string>	_queryString;
         std::string                         _delimeter;
     	ConfigFile							_serverConf;
+		std::string							_queryStringS;
 
 		void		            splitRequest(std::string & fullRequest, size_t & pos);
 		void		            parseQueryString(std::string queryString);

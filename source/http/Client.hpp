@@ -6,9 +6,11 @@
 #include <fstream>
 #include <sstream>
 #include <sstream>
+#include <map>
 
-#include "Request.hpp"
+# include "Request.hpp"
 # include "Response.hpp"
+# include "CGI.hpp"
 
 class Client
 {

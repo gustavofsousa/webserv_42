@@ -6,15 +6,36 @@
     <title>Document</title>
   </head>
   <body>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#sobre">Sobre</a></li>
+      <li><a href="./calc.html">Calculador</a></li>
+    </ul>
     <h1>Web Server</h1>
-    <a href="./upload/upload.html">Upload file</a>
-    <h2>Test Post CGI</h2>
-    <form action="/cgi/post.py" method="post">
-      <label for="fname">First name:</label><br />
-      <input type="text" id="fname" name="fname" /><br />
-      <label for="lname">Last name:</label><br />
-      <input type="text" id="lname" name="lname" /><br /><br />
-      <button type="submit">Submit</button>
+
+  </br>
+  </br>
+    <h2>Test Get CGI</h2>
+
+    <form method="get" action="./cgi/get.py">
+      <p>
+        <label>Primeiro número:</label>
+        <input type="text" name="num1" required />
+      </p>
+      <p>
+        <label>Segundo número:</label>
+        <input type="text" name="num2" required />
+      </p>
+      <p>
+        <label>Operação:</label>
+        <select name="operacao">
+          <option value="+">+</option>
+          <option value="-">-</option>
+          <option value="*">*</option>
+          <option value="/">/</option>
+        </select>
+      </p>
+      <input type="submit" value="Calcular" />
     </form>
   </body>
 </html>

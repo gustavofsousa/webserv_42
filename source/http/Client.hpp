@@ -6,7 +6,6 @@
 #include <fstream>
 #include <sstream>
 #include <sstream>
-#include <map>
 
 # include "Request.hpp"
 # include "Response.hpp"

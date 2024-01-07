@@ -17,27 +17,20 @@ void Client::handleHTTPMethod(void)
 {
     std::string pagePath(this->fileRequested());
 
-    std::cout << pagePath << std::endl;
-
-	std::cout << "StatusCode: " << _statusCode << std::endl;
-	std::cout << "Method: " << _request.getMethod() << std::endl; 
-
     if (_isCGI){
-        std::map<std::string, std::string>	queryString = _request.getQueryString();
-        std::cout << queryString.size() << std::endl;
-        //exec CGI
+        CGI cgi(pagePath, this->_request);
+        this->_response.setBody(cgi.getBody());
+        this->_response.createHTTPHeader(200, "Content-Type: text/html; charset=utf-8", cgi.getBody().size());
+        this->_response.send();
+        return;
     }
     if(_request.getMethod() == "GET" && _statusCode < 400){
         this->_response.processFileForHTTPResponse(pagePath, this->_statusCode);
         this->_response.send();
-        std::cout << "Estou no get" << std::endl;
     }
     else if(_request.getMethod() == "POST" && _statusCode < 400){
         _statusCode = 401;
         //implement error page 401
-    }
-    else if(_request.getMethod() == "DELETE" && _statusCode > 400){
-        std::cout << "Delete" << std::endl;
     }
     else{
         this->_statusCode = 404;
@@ -62,7 +55,8 @@ std::string	Client::fileRequested(void)
     if(this->_request.getRequestedInf().find(".py") != std::string::npos){
         this->_statusCode = 200;
         this->_isCGI = true;
-        return this->_request.getLocation() + this->_request.getRequestedInf();
+        std::string res =  "." + this->_request.getLocation() + this->_request.getRequestedInf();
+        return res;
     }
 	if ((this->_request.getLocation() == this->_request.getServerConf().getRoot()) && \
 		((it00 != tmpVec00.end()) || this->_request.getRequestedInf().empty()))

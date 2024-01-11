@@ -19,17 +19,16 @@ CGI::CGI(std::string path, Request const & request):
     }
 }
 
-CGI::~CGI(){
+CGI::~CGI(){ }
 
-}
-
-void CGI::initEnvGET(std::string query){
+void CGI::initEnvGET(std::string query) {
 
     _env.push_back(strdup(("QUERY_STRING=" + query).c_str()));
+
     _env.push_back(NULL);
 }
 
-void CGI::execute(){
+void CGI::execute() {
     
     int pipefd[2];
     // int requestFD[2];
@@ -59,9 +58,9 @@ void CGI::execute(){
         execve(_path.c_str(), args, _env.data());
 
         free(args[0]);
-        std::cerr << "Error ao executar execvp" << std::endl;
+        std::cerr << "Error ao executar execve" << std::endl;
         return;
-    } else{
+    } else {
         close(pipefd[1]);
 
         char buffer[1024];

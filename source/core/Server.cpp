@@ -28,23 +28,25 @@ void Server::initialize() {
 	}
 }
 
-int Server::acceptCon() const {
+struct clientInfo 	Server::acceptCon() const {
 	// Accept incoming connections and get a file descriptor for reading and writing
-	struct sockaddr_in	client_address;
-	socklen_t			client_address_len;
-	int					client_socket;
+	struct clientInfo	clientInfo;
 
-	client_address_len = sizeof(client_address);
-	client_socket = accept(this->_fd_socket,
-		reinterpret_cast<struct sockaddr*>(&client_address),
-		&client_address_len);
-	return client_socket;
+	clientInfo.addressLen = sizeof(clientInfo.address);
+	clientInfo.socket = accept(this->_fd_socket,
+			reinterpret_cast<struct sockaddr*>(&clientInfo.address),
+		&clientInfo.addressLen);
+
+	clientInfo.port = ntohs(clientInfo.address.sin_port);
+	// Use if needs to convert ip to string
+	// client.ipString = inet_ntoa(clientInfo.address.sin_addr);
+  	clientInfo.ip = ntohl(clientInfo.address.sin_addr.s_addr);
+	return clientInfo;
 }
 
 void Server::closeCon() {
 	if (this->_fd_socket >= 0) {
 		close(this->_fd_socket);
-		this->_fd_socket = -1;
 	}
 }
 

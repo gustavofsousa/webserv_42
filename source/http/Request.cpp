@@ -16,14 +16,15 @@ Request::Request(int newClient) {
 	this->reset();
 }
 
-Request::Request(int newClient, ConfigFile _configFile) {
-    this->_fromClient = newClient;
+Request::Request(struct clientInfo clientInfo, ConfigFile _configFile) {
+    this->_fromClient = clientInfo.socket;
+	this->_portClient = clientInfo.port;
+	this->_ipClient = clientInfo.ip;
 	this->_delimeter = "\r\n\r\n";
 	this->reset();
 	this->_ready = false;
 	this->_contentLength = -1;
 	this->_serverConf = _configFile;
-
 
 /*
 	std::cout << "construtor da Request port: " << this->_serverConf.getPort() << " path: " << this->_serverConf.getRoot() << " getIndex: " << this->_serverConf.getIndex()[0] << std::endl;

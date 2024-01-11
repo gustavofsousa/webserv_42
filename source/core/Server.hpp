@@ -18,15 +18,24 @@ public:
     Server(int port);
 
     void    initialize();
-    int     acceptCon() const;
     void    closeCon();
     int     _fd_socket; //better be private
     void    setServerConf(const ConfigFile & server);
     const ConfigFile &   getServerConf(void);
+    struct clientInfo       acceptCon() const;
 
 private:
     int     _port;
     ConfigFile  _serverConf;
+};
+
+struct clientInfo {
+    int                 socket;
+    int                 port;
+    uint32_t            ip;
+    socklen_t           addressLen; 
+    std::string         ipString;
+    struct sockaddr_in  address;
 };
 
 #endif

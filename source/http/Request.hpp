@@ -13,6 +13,7 @@
 # include <string> //to_string()
 # include <algorithm> //for search
 # include "../config/ConfigFile.hpp"
+# include "../core/Server.hpp"
 
 # define BUFFER_SIZE 4096
 
@@ -21,7 +22,7 @@ class	Request
 	public:
 		Request(void);
 		Request(int newClient);
-		Request(int newClient, ConfigFile _configFile);
+		Request(struct clientInfo clientInfo, ConfigFile _configFile);
 //		Request(int newClient, const ConfigFile & confFile);
 		// Request(Request const& copy);
 		~Request(void);
@@ -42,6 +43,8 @@ class	Request
 
 	private:
         int                                 _fromClient;
+		int									_ipClient;
+		int									_portClient;
         bool                                _ready;
 		size_t								_contentLength;
 		std::string							_header;

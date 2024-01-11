@@ -35,12 +35,13 @@ static void printError(std::string const& error) {
 
 bool		Webserv::openNewConnection(int i)
 {
-	int newClient;
-	newClient = this->servers[i].acceptCon();
-	this->conn.addClientSocket(newClient);
+	clientInfo clientInfo;
+	clientInfo = this->servers[i].acceptCon();
+	// Puxar o ip e a porta do cliente.
 
-//	Request newRequest(newClient);
-	Request newRequest(newClient, this->servers[i].getServerConf());
+	this->conn.addClientSocket(clientInfo.socket);
+
+	Request newRequest(clientInfo, this->servers[i].getServerConf());
 	this->_requests.push_back(newRequest);
 	return true;
 }

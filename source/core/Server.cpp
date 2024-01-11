@@ -59,3 +59,8 @@ const ConfigFile &   Server::getServerConf(void)
 {
 	return (this->_serverConf);
 }
+
+int   Server::getPort(void) const
+{
+	return (this->_port);
+}

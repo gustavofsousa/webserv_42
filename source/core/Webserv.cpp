@@ -37,7 +37,7 @@ bool		Webserv::openNewConnection(int i)
 {
 	clientInfo clientInfo;
 	clientInfo = this->servers[i].acceptCon();
-	// Puxar o ip e a porta do cliente.
+	clientInfo.portServer = this->servers[i].getPort();
 
 	this->conn.addClientSocket(clientInfo.socket);
 

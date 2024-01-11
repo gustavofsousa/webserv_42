@@ -20,6 +20,7 @@ Request::Request(struct clientInfo clientInfo, ConfigFile _configFile) {
     this->_fromClient = clientInfo.socket;
 	this->_portClient = clientInfo.port;
 	this->_ipClient = clientInfo.ip;
+	this->_portServer = clientInfo.portServer;
 	this->_delimeter = "\r\n\r\n";
 	this->reset();
 	this->_ready = false;
@@ -198,7 +199,6 @@ const std::string &		Request::getQueryStringS(void) const
 {
 	return (this->_queryStringS);
 }
-
 
 /*******************************************************/
 /*				Parse of HTTP request.					*/

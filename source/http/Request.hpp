@@ -45,6 +45,7 @@ class	Request
         int                                 _fromClient;
 		int									_ipClient;
 		int									_portClient;
+		int									_portServer;
         bool                                _ready;
 		size_t								_contentLength;
 		std::string							_header;

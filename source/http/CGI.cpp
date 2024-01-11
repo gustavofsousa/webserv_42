@@ -24,7 +24,6 @@ CGI::~CGI(){ }
 void CGI::initEnvGET(std::string query) {
 
     _env.push_back(strdup(("QUERY_STRING=" + query).c_str()));
-
     _env.push_back(NULL);
 }
 

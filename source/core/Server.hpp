@@ -23,6 +23,7 @@ public:
     void    setServerConf(const ConfigFile & server);
     const ConfigFile &   getServerConf(void);
     struct clientInfo       acceptCon() const;
+    int                     getPort() const;
 
 private:
     int     _port;
@@ -36,6 +37,7 @@ struct clientInfo {
     socklen_t           addressLen; 
     std::string         ipString;
     struct sockaddr_in  address;
+    int                 portServer;
 };
 
 #endif

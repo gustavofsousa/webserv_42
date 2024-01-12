@@ -362,7 +362,7 @@ int         Request::totalLength() {
     return (this->_contentLength);
 }
 
-const std::string   Request::totalLengthS() {
+std::string   Request::totalLengthS(void) const{
 	std::stringstream ss;
 
 	ss << _contentLength;

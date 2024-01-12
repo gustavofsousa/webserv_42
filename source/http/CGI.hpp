@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include "Client.hpp"
+#include "Request.hpp"
 
 #define BUFFER_SIZE_CGI 64 * 1024  // 64 KB
 #define TIME_LIMIT 30
@@ -23,18 +24,22 @@ class CGI
         pid_t               _cgi_pid;
         int                 _requestFD[2];
         time_t              _start_time;
+        bool                _isActive;
 
     public:
         CGI(std::string path, Request const & request);
         ~CGI();
     
         void executeGET(void);
+        void executePOST(void);
+
         void initEnvGET(std::string queryString);
         void initEnvPOST(std::string queryString);
+
         void routineCheck(void);
+
         void readFD(int fd);
         bool writeFD(std::string body);
-        void executePOST(void);
 
         std::string getBody(void) const;
         

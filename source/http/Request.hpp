@@ -43,7 +43,7 @@ class	Request
 		const std::map<std::string, std::string> &	getQueryString(void) const;
 		const std::string &		getQueryStringS(void) const;
 		const std::string &		returnBody(void) const;
-		const std::string 	    totalLengthS();
+		std::string 	    	totalLengthS(void) const;
 
 	private:
         int                                 _fromClient;

@@ -20,6 +20,7 @@ CGI::CGI(std::string path, Request const & request):
             return;
         //creat variavel para fd de response
         initEnvPOST(_request.getQueryStringS());
+        executePOST();
         //start timer
 
     }
@@ -33,19 +34,12 @@ void CGI::initEnvGET(std::string queryString){
     _env.push_back(NULL);
 }
 
-//init env for post python
-void CGI::initEnvPOST(std::string queryString){
-
-    _env.push_back(strdup(("QUERY_STRING=" + queryString).c_str()));
-    _env.push_back(NULL);
-}
-
 void CGI::initEnvPOST(std::string queryString){
     
     _env.push_back(strdup(("QUERY_STRING=" + queryString).c_str()));
     _env.push_back(strdup(("CONTENT_TYPE=" + _request.getContentType()).c_str()));
-    _env.push_back(strdup(("CONTENT_LENGTH=" + _request.totalLengthS()).c_string()));
-    _env.push_back(strdup(("PATH_INFO=" + this->_path()).c_str()));
+    _env.push_back(strdup(("CONTENT_LENGTH=" + _request.totalLengthS()).c_str()));
+    _env.push_back(strdup(("PATH_INFO=" + this->_path).c_str()));
     _env.push_back(strdup("AUTH_TYPE=Basic"));
     _env.push_back(strdup("REQUEST_METHOD=POST"));
     _env.push_back(strdup("SERVER_PROTOCOL=HTTP/1.1"));
@@ -71,7 +65,7 @@ void CGI::executeGET(){
     }
 
     pid_t pid = fork();
-
+    this->_isActive = true;
     if (pid == -1){
         std::cerr << "Error no fork" << std::endl;
         return ;
@@ -101,10 +95,9 @@ void CGI::executeGET(){
 
 //creat execute execve for python file
 void CGI::executePOST(void){
-    int requestFD[2];
     int responseFD[2];
 
-    if(pipe(requestFD) == -1){
+    if(pipe(_requestFD) == -1){
         std::cerr << "Erro ao criar o pipe" << std::endl;
         return ;
     }
@@ -114,18 +107,21 @@ void CGI::executePOST(void){
         return ;
     }
 
+
     pid_t pid = fork();
+
+    this->_isActive = true;
 
     if (pid == -1){
         std::cerr << "Error no fork" << std::endl;
         return ;
     }
     else if (pid == 0){
-        close(requestFD[1]);
+        close(_requestFD[1]);
         close(responseFD[0]);
 
-        dup2(requestFD[0], STDIN_FILENO);
-        close(requestFD[0]);
+        dup2(_requestFD[0], STDIN_FILENO);
+        close(_requestFD[0]);
 
         dup2(responseFD[1], STDOUT_FILENO);
         close(responseFD[1]);
@@ -140,10 +136,10 @@ void CGI::executePOST(void){
         std::cerr << "Error ao executar execve" << std::endl;
         return;
     } else {
-        close(requestFD[0]);
+        close(_requestFD[0]);
         close(responseFD[1]);
 
-        writeFD(requestFD[1]);
+        //writeFD(_requestFD[1]);
         readFD(responseFD[0]);
         wait(NULL);
     }
@@ -170,21 +166,19 @@ std::string CGI::getBody(void) const{
 }
 
 void CGI::routineCheck(void){
-
-
-
     time_t current_time = time(NULL);
 
-    while(isActive){
+    while(_isActive){
         if(current_time - this->_start_time >= TIME_LIMIT){
             kill(this->_cgi_pid, SIGKILL);
+            this->_isActive = false;
         }
     }
 }
 
 //write fd with while loop, write all body
 bool CGI::writeFD(std::string body){
-    int bytesWritten = 0;
+    size_t bytesWritten = 0;
 
     while (bytesWritten < body.length()){
         int bytes = write(this->_requestFD[1], body.c_str() + bytesWritten, body.length() - bytesWritten);

@@ -14,8 +14,12 @@ CGI::CGI(std::string path, Request const & request):
         //start timer
     }else if(_request.getMethod() == "POST"){
         //creat fd body;
+        if(!writeFD(_request.getBody()))
+            return;
         //creat variavel para fd de response
+        initEnvPOST(_request.getQueryStringS());
         //start timer
+
     }
 }
 
@@ -23,17 +27,19 @@ CGI::~CGI(){
 
 }
 
-void CGI::initEnvGET(std::string query){
+void CGI::initEnvGET(std::string queryString){
 
-    _env.push_back(strdup(("QUERY_STRING=" + query).c_str()));
+    _env.push_back(strdup(("QUERY_STRING=" + queryString).c_str()));
     _env.push_back(NULL);
 }
 
-void CGI::execute(){
+void CGI::initEnvPOST(std::string queryString){
+    (void) queryString;
+}
+
+void CGI::executeGET(){
     
     int pipefd[2];
-    // int requestFD[2];
-    // int responseFD[2];
 
     if(pipe(pipefd) == -1){
         std::cerr << "Erro ao criar o pipe" << std::endl;
@@ -63,25 +69,55 @@ void CGI::execute(){
         return;
     } else{
         close(pipefd[1]);
-
-        char buffer[1024];
-        int bytesRead = read(pipefd[0], buffer, sizeof(buffer));
-        if (bytesRead > 0) {
-            std::cout << "Resposta do filho: ";
-            this->_response.append(buffer, bytesRead);
-            std::cout << this->_response << std::endl;
-            std::cout << std::endl;
-        } else {
-            std::cerr << "Erro na leitura da resposta do filho" << std::endl;
-        }
-
+        readFD(pipefd[0]);
         wait(NULL);
     }
 
     return;
 }
 
+void CGI::executePOST(void){
+    int requestFD[2];
+    int responseFD[2];
+
+    
+
+}
+
+void CGI::readFD(int fd){
+    char buffer[BUFFER_SIZE_CGI];
+    int bytesRead = read(fd, buffer, sizeof(buffer));
+    if (bytesRead > 0) {
+        // std::cout << "Resposta do filho: ";
+        this->_response.append(buffer, bytesRead);
+        // std::cout << this->_response << std::endl;
+        // std::cout << std::endl;
+    } else {
+        std::cerr << "Erro na leitura da resposta do filho" << std::endl;
+        //fazer uma classe de log
+    }
+}
 
 std::string CGI::getBody(void) const{
     return this->_response;
+}
+
+void CGI::routineCheck(void){
+    time_t current_time = time(NULL);
+
+    while(isActive){
+        if(current_time - this->_start_time >= TIME_LIMIT){
+            kill(this->_cgi_pid, SIGKILL);
+        }
+    }
+}
+
+bool CGI::writeFD(std::string body){
+    ssize_t bytesWritten = write(_request[2], body, body.length());
+
+    if (bytesWritten == -1){
+        std::cerr << "error";
+        return false;
+    }
+    return true;
 }

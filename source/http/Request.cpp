@@ -45,7 +45,6 @@ static void printYellow(std::string const& str) {
 	std::cout << "\033[1;33m" << str << "\033[0m" << std::endl;
 }
 
-// TIRAR ERRNO DAQUI
 int	Request::checkBytesReceived(ssize_t bytes_received)
 {
 	if (bytes_received == -1)
@@ -61,7 +60,6 @@ int	Request::checkBytesReceived(ssize_t bytes_received)
 	return (1);
 }
 
-// Check back error handling
 bool		Request::getContentLength() {
 	size_t		pos;
 	size_t		end;
@@ -85,10 +83,10 @@ printYellow("The request is ready without body");
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
 	else
 		std::cout << "end == this->_header.size()" << std::endl;
-	// if (this->_contentLength > this->_maxContentLenght) {
-		// std::cout << "The size of file is to big" << std::endl;
-	// 	return false;
-	// }
+	if (this->_contentLength > this->_serverConf.getMaxBodySize()) {
+		std::cout << "The size of file is to big, max is: " << this->_serverConf.getMaxBodySize() << std::endl;
+		return false;
+	}
 	return true;
 }
 
@@ -104,7 +102,8 @@ int		Request::getHeader(std::string const& buffer) {
 		return (-1);
 	}
 	this->_header.append(buffer.begin(), buffer.begin() + pos);
-	getContentLength();
+	if (getContentLength() == false)
+		return (-1);
 // printYellow("header: " + this->_header);
 	return (0);
 }
@@ -163,6 +162,7 @@ const std::string &		Request::getMethod(void) const
 {
 	return (this->_method);
 }
+
 /*
 const std::string &		Request::getLocation(void) const
 {
@@ -293,7 +293,8 @@ std::string	Request::urlDecoder(const std::string & url)
 /*******************************************************/
 
 void        Request::clearAll() {
-	try {
+	try
+	{
 		this->_header.clear();
 		this->_body.clear();
 		this->_httpMessage.clear();
@@ -305,7 +306,8 @@ void        Request::clearAll() {
 }
 
 void        Request::reset() {
-	try {
+	try
+	{
 		this->_ready = false;
 		this->_contentLength = 0;
 		this->clearAll();

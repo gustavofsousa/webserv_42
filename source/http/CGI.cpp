@@ -18,13 +18,13 @@ CGI::CGI(std::string path, Request const & request):
         if(!writeFD(_request.returnBody()))
             return;
         //creat variavel para fd de response
-        initEnvPOST(_request.getQueryStringS());
+       // initEnvPOST(_request.getQueryStringS());
         //start timer
 
     }
 }
 
-CGI::~CGI(){ }
+CGI::~CGI(){}
 
 void CGI::initEnvGET(std::string queryString){
 
@@ -32,9 +32,20 @@ void CGI::initEnvGET(std::string queryString){
     _env.push_back(NULL);
 }
 
-void CGI::initEnvPOST(std::string queryString){
-    (void) queryString;
-}
+// void CGI::initEnvPOST(std::string queryString){
+
+//     _env.push_back(strdup(("QUERY_STRING=" + queryString).c_str()));
+//     _env.push_back(NULL);
+// }
+
+// void CGI::initEnvPOST(std::string queryString){
+//     _env.push_back(strdup(("QUERY_STRING=" + queryString).c_str()));
+//     _env.push_back(strdup(("CONTENT_TYPE=" + _request.getContentType()).c_str()));
+//     _env.push_back(strdup(("CONTENT_LENGTH=" + _request.totalLengthS()).c_string()));
+//     _env.push_back(strdup(("PATH_INFO=" + this->_path()).c_str()));
+//     //_env.push_back(strdup("HTTP_USER_AGENT=").c_str());
+//     //_env.push_back(strdup("SCRIPT_NAME=" + );
+// }
 
 void CGI::executeGET(){
     
@@ -77,8 +88,6 @@ void CGI::executeGET(){
 // void CGI::executePOST(void){
 //     int requestFD[2];
 //     int responseFD[2];
-
-    
 
 // }
 

@@ -328,3 +328,12 @@ bool    	Request::isReady() {
 int         Request::totalLength() {
     return (this->_contentLength);
 }
+
+const std::string   Request::totalLengthS() {
+	std::stringstream ss;
+
+	ss << _contentLength;
+	std::string str = ss.str();
+    return (str);
+}
+

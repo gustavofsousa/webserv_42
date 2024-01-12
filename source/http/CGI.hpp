@@ -22,7 +22,6 @@ class CGI
         std::string         _response;
         pid_t               _cgi_pid;
         int                 _requestFD[2];
-        int                 _fdOut;
         time_t              _start_time;
 
     public:

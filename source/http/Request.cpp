@@ -200,6 +200,10 @@ const std::string &		Request::getQueryStringS(void) const
 	return (this->_queryStringS);
 }
 
+const std::string & Request::returnBody(void) const{
+	return (this->_body);
+}
+
 /*******************************************************/
 /*				Parse of HTTP request.					*/
 /*******************************************************/

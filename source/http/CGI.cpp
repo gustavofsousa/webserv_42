@@ -4,7 +4,8 @@ CGI::CGI(std::string path, Request const & request):
     _path(path),
     _request(request)
 {
-    if (_request.getMethod() == "GET"){
+    if (_request.getMethod() == "GET")
+    {
         std::cout << "Path: " << _path << std::endl;
         std::cout << "Request: " << _request.getQueryStringS() << std::endl;
 
@@ -12,7 +13,7 @@ CGI::CGI(std::string path, Request const & request):
         //read fd
         execute();
         //start timer
-    }else if(_request.getMethod() == "POST"){
+    } else if (_request.getMethod() == "POST"){
         //creat fd body;
         //creat variavel para fd de response
         //start timer
@@ -67,18 +68,14 @@ void CGI::execute() {
         if (bytesRead > 0) {
             std::cout << "Resposta do filho: ";
             this->_response.append(buffer, bytesRead);
-            std::cout << this->_response << std::endl;
-            std::cout << std::endl;
+            std::cout << this->_response << std::endl << std::endl;
         } else {
             std::cerr << "Erro na leitura da resposta do filho" << std::endl;
         }
-
         wait(NULL);
     }
-
     return;
 }
-
 
 std::string CGI::getBody(void) const{
     return this->_response;

@@ -83,10 +83,10 @@ printYellow("The request is ready without body");
 		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
 	else
 		std::cout << "end == this->_header.size()" << std::endl;
-	if (this->_contentLength > this->_serverConf.getMaxBodySize()) {
-		std::cout << "The size of file is to big, max is: " << this->_serverConf.getMaxBodySize() << std::endl;
-		return false;
-	}
+	// if (this->_contentLength > this->_serverConf.getMaxBodySize()) {
+	// 	std::cout << "The size of file is to big, max is: " << this->_serverConf.getMaxBodySize() << std::endl;
+	// 	return false;
+	// }
 	return true;
 }
 

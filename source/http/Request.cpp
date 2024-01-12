@@ -204,6 +204,16 @@ const std::string & Request::returnBody(void) const{
 	return (this->_body);
 }
 
+const std::string &		Request::getUserAgent(void) const
+{
+	return (this->_userAgent);
+}
+
+const std::string &		Request::getHost(void) const
+{
+	return (this->_host);
+}
+
 /*******************************************************/
 /*				Parse of HTTP request.					*/
 /*******************************************************/
@@ -228,6 +238,7 @@ void	Request::splitRequest(std::string & fullRequest, size_t & pos) {
 	std::vector<std::string>			splitHeadRequest;
 	std::vector<std::string>::iterator	i;
 	size_t								j;
+	int									len_word;
 
 	splitHeadRequest = Utils::split(fullRequest.substr(0, pos), " \t\n");
 	i = splitHeadRequest.begin();
@@ -241,6 +252,28 @@ void	Request::splitRequest(std::string & fullRequest, size_t & pos) {
 		this->_queryStringS = this->_requestedInf.substr((j + 1));
 		this->parseQueryString(this->_requestedInf.substr((j + 1)));
 		this->_requestedInf = this->_requestedInf.substr(0, j);
+	}
+	j = fullRequest.find("User-Agent:");
+	if (j != std::string::npos)
+	{
+		len_word = 0;
+		j += 12;
+		while (fullRequest[j] == ' ')
+			j++;
+		while (fullRequest[j + len_word] != '\r')
+			len_word++;
+		this->_userAgent = fullRequest.substr(j, len_word);
+	}
+	j = fullRequest.find("Host:");
+	if (j != std::string::npos)
+	{
+		len_word = 0;
+		j += 6;
+		while (fullRequest[j] == ' ')
+			j++;
+		while (fullRequest[j + len_word] != '\r')
+			len_word++;
+		this->_host = fullRequest.substr(j, len_word);
 	}
 	j = fullRequest.find("Content-Type:");
 	if (j != std::string::npos)

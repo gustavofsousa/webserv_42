@@ -33,6 +33,8 @@ class	Request
 		const std::string &		getLocation(void) const;
 		const std::string &		getRequestedInf(void) const;
 		const std::string &		getContentType(void) const;
+		const std::string &		getUserAgent(void) const;
+		const std::string &		getHost(void) const;
 		const ConfigFile  &		getServerConf(void) const;
         bool                    isReady();
         void                    reset();
@@ -56,6 +58,8 @@ class	Request
 		std::string							_method;
 		std::string							_location;
 		std::string							_requestedInf;
+		std::string							_userAgent;
+		std::string							_host;
 		std::string							_contentType;
 		std::map<std::string, std::string>	_queryString;
         std::string                         _delimeter;

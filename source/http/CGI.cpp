@@ -4,6 +4,7 @@ CGI::CGI(std::string path, Request const & request):
     _path(path),
     _request(request)
 {
+    //std::cout << "Header: " << _request.returnHeader() << std::endl;
     if (_request.getMethod() == "GET")
     {
         std::cout << "Path: " << _path << std::endl;
@@ -16,12 +17,12 @@ CGI::CGI(std::string path, Request const & request):
         //start timer
     } else if (_request.getMethod() == "POST"){
         //creat fd body;
-        if(!writeFD(_request.returnBody()))
-            return;
         //creat variavel para fd de response
+
         initEnvPOST(_request.getQueryStringS());
         executePOST();
         //start timer
+        std::cout << _request.returnBody() << std::endl;
 
     }
 }
@@ -48,10 +49,10 @@ void CGI::initEnvPOST(std::string queryString){
     _env.push_back(strdup("REDIRECT_STATUS=200"));
     _env.push_back(strdup("DOCUMENT_ROOT=./"));
     _env.push_back(strdup("TRANSLATED_PATH_INFO=.//"));
-    //_env.push_back(strdup("SCRIPT_NAME=/cgi-bin/script.py"));
-    //_env.push_back(strdup("SERVER_PORT=8080"));
-    //_env.push_back(strdup("REquest_URI=/cgi-bin/script.py"));
-    //_env.push_back(strdup("PATH_TRANSLATED=/cgi-bin/script.py"));
+    _env.push_back(strdup(("SERVER_PORT=" + _request.returnPort()).c_str()));
+    _env.push_back(strdup(("PATH_TRANSLATED=" + _path).c_str()));
+    _env.push_back(strdup(("SCRIPT_NAME=" + _path).c_str()));
+    _env.push_back(strdup(("REQUEST_URI=" + _request.getHost()).c_str()));
     _env.push_back(NULL);
 }
 
@@ -107,6 +108,8 @@ void CGI::executePOST(void){
         return ;
     }
 
+    if(!writeFD(_request.returnBody()))
+            return;
 
     pid_t pid = fork();
 
@@ -121,6 +124,8 @@ void CGI::executePOST(void){
         close(responseFD[0]);
 
         dup2(_requestFD[0], STDIN_FILENO);
+        
+
         close(_requestFD[0]);
 
         dup2(responseFD[1], STDOUT_FILENO);
@@ -141,7 +146,7 @@ void CGI::executePOST(void){
 
         //writeFD(_requestFD[1]);
         readFD(responseFD[0]);
-        wait(NULL);
+        waitpid(pid, NULL, 0);
     }
 
 
@@ -151,10 +156,10 @@ void CGI::readFD(int fd){
     char buffer[BUFFER_SIZE_CGI];
     int bytesRead = read(fd, buffer, sizeof(buffer));
     if (bytesRead > 0) {
-        // std::cout << "Resposta do filho: ";
+        std::cout << "Read: ";
         this->_response.append(buffer, bytesRead);
-        // std::cout << this->_response << std::endl;
-        // std::cout << std::endl;
+        std::cout << this->_response << std::endl;
+        std::cout << std::endl;
     } else {
         std::cerr << "Erro na leitura da resposta do filho" << std::endl;
         //fazer uma classe de log
@@ -189,14 +194,5 @@ bool CGI::writeFD(std::string body){
         bytesWritten += bytes;
     }
     return true;
-
-    // ssize_t bytesWritten = write(_fdOut, body.c_str(), body.length());
-
-    // if (bytesWritten == -1){
-    //     std::cerr << "error";
-    //     return false;
-    // }
-    // return true;
-
 
 }

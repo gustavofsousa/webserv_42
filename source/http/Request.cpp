@@ -131,8 +131,8 @@ int		Request::getBody(std::string const& buffer, int bytes)
     {
         this->_ready = true;
 		this->_httpMessage = this->_header + this->_body;
-printYellow("Reached the size");
-// printYellow("BODY: " + this->_body);
+	 printYellow("Reached the size");
+	 printYellow(_header);
     }
 	return (0);
 }
@@ -214,6 +214,19 @@ const std::string &		Request::getHost(void) const
 	return (this->_host);
 }
 
+const std::string & Request::returnHeader(void) const{
+	return (this->_header);
+}
+
+const std::string Request::returnPort(void) const{
+	std::stringstream ss;
+
+	ss << _portServer;
+	std::string str = ss.str();
+    return (str);
+	
+}
+
 /*******************************************************/
 /*				Parse of HTTP request.					*/
 /*******************************************************/
@@ -276,8 +289,15 @@ void	Request::splitRequest(std::string & fullRequest, size_t & pos) {
 		this->_host = fullRequest.substr(j, len_word);
 	}
 	j = fullRequest.find("Content-Type:");
-	if (j != std::string::npos)
-		this->_contentType = fullRequest.substr(j, (fullRequest.size() - j));
+	if (j != std::string::npos){
+		len_word = 0;
+		j += 13;
+		while(fullRequest[j] == ' ')
+			j++;
+		while (fullRequest[j + len_word] != '\r')
+			len_word++;
+		this->_contentType = fullRequest.substr(j, len_word);
+	}
 }
 
 void	Request::parseQueryString(std::string queryString)

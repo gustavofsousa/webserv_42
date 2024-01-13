@@ -44,6 +44,8 @@ class	Request
 		const std::string &		getQueryStringS(void) const;
 		const std::string &		returnBody(void) const;
 		std::string 	    	totalLengthS(void) const;
+		const std::string &		returnHeader(void) const;
+		const std::string 		returnPort(void) const;
 
 	private:
         int                                 _fromClient;

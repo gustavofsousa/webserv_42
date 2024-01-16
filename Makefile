@@ -12,12 +12,11 @@ CORE_FILES				=	Webserv.cpp Server.cpp Connection.cpp
 CORE					=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 
 HTTP_DIR				=	http/
-HTTP_FILES				=	Request.cpp Response.cpp Client.cpp
+HTTP_FILES				=	Request.cpp Response.cpp Client.cpp RequestParser.cpp
 HTTP					=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
 
 CONFIG_DIR				=	config/
 CONFIG_FILES			=	ConfigFile.cpp Location.cpp ParserServer.cpp Error.cpp
-#CONFIG_FILES			=	ConfigFile.cpp Utils.cpp Location.cpp ParserServer.cpp Error.cpp
 CONFIG					=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
 
 SRC_DIR 				=	source/

@@ -3,28 +3,6 @@
 Webserv::Webserv(std::vector<Server> const& newServers, ParserServer const& configFile)
  : servers(newServers) {
 	this->_nbrServers = configFile.getNbrServers();
-/*
-        int i = 0;
-        size_t j;
-        size_t k;
-        while (i < this->_nbrServers)
-        {
-            j = 0;
-            while (j < this->servers[i].getServerConf().getLocation().size())
-            {
-                k = 0;
-                while ( k < this->servers[i].getServerConf().getLocation()[j].getIndex().size())
-                {
-                    std::cout << "in server " << i << " Location: " << j << " index para k: " << k << " é: " << this->servers[i].getServerConf().getLocation()[j].getIndex()[k] << std::endl;
-                    k++;
-                }
-                j++;
-            }
-//            std::cout << "in server " << (i + 1) << " Port: " << servers[i].getServerConf().getPort() << std::endl;
-            i++;
-        }
-        exit(1);
-*/
 }
 
 Webserv::~Webserv() {}
@@ -65,7 +43,7 @@ bool    Webserv::readDataClient(int i)
 			this->_requests.erase(this->_requests.begin() + indexRequest);
 			return false;
 		}
-		this->_requests[indexRequest].parseRequest();
+		// this->_requests[indexRequest].parseRequest();
 //		this->_requests[indexRequest].fileRequested();
 	}
 	catch (std::exception & e) {

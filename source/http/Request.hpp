@@ -1,5 +1,6 @@
 #pragma	once
 
+# include "RequestParser.hpp"
 # include <fstream>
 # include <string>
 # include <iostream> //confirmar se será necessário para a entrega
@@ -16,51 +17,77 @@
 
 # define BUFFER_SIZE 4096
 
+class RequestParser;
+
+struct requestInfo
+{
+		size_t								contentLength; // inicializa com -1.
+		std::string							method;
+		std::string							location;
+		std::string							requestedInf;
+		std::string							contentType;
+		std::map<std::string, std::string>	queryString;
+		std::string							queryStringS;
+		std::string							userAgent;
+		std::string							host;
+};
+
+
 class	Request
 {
 	public:
-		Request(void);
-		Request(int newClient);
 		Request(int newClient, ConfigFile _configFile);
-//		Request(int newClient, const ConfigFile & confFile);
-		// Request(Request const& copy);
+		Request 			&operator=(Request const & other);
+		Request(Request const & other);
 		~Request(void);
 
+
+		//methods
 		bool		            receiveFromClient(int client);
-		void		            parseRequest();
-		const std::string &		getMethod(void) const;
-		const std::string &		getLocation(void) const;
-		const std::string &		getRequestedInf(void) const;
-		const std::string &		getContentType(void) const;
-		const ConfigFile  &		getServerConf(void) const;
         bool                    isReady();
         void                    reset();
         void                    clearAll();
-        int                     totalLength();
+
+		//getters
+		const std::string &		getMethod(void) const;
+		const std::string &		getLocation(void) const;
+		const std::string &		getRequestedInf(void) const;
+		const std::string &		getUserAgent(void) const;
+		const std::string &		getHost(void) const;
+		const std::string &		getContentType(void) const;
+        int                     getContentLength();
+		const std::string &		getQueryStringS(void) const;
 		const std::map<std::string, std::string> &	getQueryString(void) const;
 
-	private:
-        int                                 _fromClient;
-        bool                                _ready;
-		size_t								_contentLength;
-		std::string							_header;
-        std::string     			        _body;
-		std::string							_httpMessage;
-		std::string							_method;
-		std::string							_location;
-		std::string							_requestedInf;
-		std::string							_contentType;
-		std::map<std::string, std::string>	_queryString;
-        std::string                         _delimeter;
-    	ConfigFile							_serverConf;
+		const ConfigFile  &		getServerConf(void) const;
+		const std::string &		getHeader(void) const;
+		const std::string &		getBody(void) const;
 
-		void		            splitRequest(std::string & fullRequest, size_t & pos);
-		void		            parseQueryString(std::string queryString);
-		std::string	            urlDecoder(const std::string & url);
+		// Setters
+		void					setMethod(std::string newMethod);
+		void					setLocation(std::string newLocation);
+		void					setRequestedInf(std::string newInfo);
+		void					setUserAgent(std::string newAgent);
+		void					setHost(std::string newHost);
+		void					setContentType(std::string newContentType);
+		void					setQueryStringS(std::string newQueryStringS);
+		void					setQueryString(std::string key, std::string value);
+		void					setContentLength(int value);
+
+	private:
+        bool                        _ready;
+		std::string					_header;
+        std::string			        _body;
+        std::string                 _delimeter;
+		std::string					_httpMessage;
+        int                         _fromClient; // comes from constuctor. It is the socket of server.
+    	ConfigFile					_serverConf;
+		struct requestInfo			_info;
+		RequestParser				_parser;
+
         int                     checkBytesReceived(ssize_t bytes_received);
-		int			            getHeader(std::string const& buffer );
-		int			            getBody(std::string const& buffer, int bytes);
-		bool		            getContentLength();
+		int			            extractHeader(std::string const& buffer );
+		int			            extractBody(std::string const& buffer, int bytes);
         bool                    appendTheBody(std::string const& buffer, int bytes);
 
 };

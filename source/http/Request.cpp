@@ -3,38 +3,32 @@
 /*******************************************************/
 /*						Constructors.		           */
 /*******************************************************/
-Request::Request(void) {
-	this->_delimeter = "\r\n\r\n";
-    this->_ready = false;
-}
 
-Request::Request(int newClient) {
-    this->_fromClient = newClient;
-	this->_delimeter = "\r\n\r\n";
-    this->_ready = false;
-	this->_contentLength = -1;
-	this->reset();
-}
 
-Request::Request(int newClient, ConfigFile _configFile) {
-    this->_fromClient = newClient;
-	this->_delimeter = "\r\n\r\n";
-	this->reset();
-	this->_ready = false;
-	this->_contentLength = -1;
+Request::Request(int newClient, ConfigFile _configFile) : _parser(*this){
 	this->_serverConf = _configFile;
+    this->_fromClient = newClient;
+	this->_info.contentLength = -1;
+	this->_delimeter = "\r\n\r\n";
+	this->_ready = false;
+	this->reset();
+}
 
-
-/*
-	std::cout << "construtor da Request port: " << this->_serverConf.getPort() << " path: " << this->_serverConf.getRoot() << " getIndex: " << this->_serverConf.getIndex()[0] << std::endl;
-	std::cout << "tamanho do location: " << this->_serverConf.getLocation().size() << std::endl;
-	size_t	i = 0;
-	while (i < this->_serverConf.getLocation().size())
-	{
-		std::cout << "Location path: " << this->_serverConf.getLocation()[i].getPath() << std::endl;
-		i++;
+Request&			Request::operator=(Request const & other) {
+	if (this != &other) {
+		this->_info = other._info;
+		this->_serverConf = other._serverConf;
+		this->_parser = other._parser;
+		this->_delimeter = other._delimeter;
+		this->_ready = other._ready;
+		this->_header = other._header;
+		this->_body = other._body;
 	}
-*/
+	return (*this);
+}
+
+Request::Request(Request const & other) : _parser(*this) {
+	*this = other;
 }
 
 Request::~Request(void) {}
@@ -43,7 +37,6 @@ static void printYellow(std::string const& str) {
 	std::cout << "\033[1;33m" << str << "\033[0m" << std::endl;
 }
 
-// TIRAR ERRNO DAQUI
 int	Request::checkBytesReceived(ssize_t bytes_received)
 {
 	if (bytes_received == -1)
@@ -59,38 +52,7 @@ int	Request::checkBytesReceived(ssize_t bytes_received)
 	return (1);
 }
 
-// Check back error handling
-bool		Request::getContentLength() {
-	size_t		pos;
-	size_t		end;
-
-	pos = this->_header.find("Content-Length: ");
-	if (pos == std::string::npos)
-	{
-		this->_contentLength = 0;
-		this->_ready = true;
-		this->_httpMessage = this->_header;
-printYellow("The request is ready without body");
-		return true;
-	}
-	pos += 16;
-    end = this->_header.find("\r\n");
-    if (end == std::string::npos) {
-		std::cout << "End of header not found" << std::endl;
-        return false;
-    }
-	if (end != this->_header.size())
-		this->_contentLength = Utils::atoi(this->_header.substr(pos, (end - pos)));
-	else
-		std::cout << "end == this->_header.size()" << std::endl;
-	// if (this->_contentLength > this->_maxContentLenght) {
-		// std::cout << "The size of file is to big" << std::endl;
-	// 	return false;
-	// }
-	return true;
-}
-
-int		Request::getHeader(std::string const& buffer) {
+int		Request::extractHeader(std::string const& buffer) {
 	size_t		pos;
 
     if (this->_header.empty() == false) {
@@ -102,7 +64,6 @@ int		Request::getHeader(std::string const& buffer) {
 		return (-1);
 	}
 	this->_header.append(buffer.begin(), buffer.begin() + pos);
-	getContentLength();
 // printYellow("header: " + this->_header);
 	return (0);
 }
@@ -123,13 +84,13 @@ bool        Request::appendTheBody(std::string const& buffer, int bytes)
 	return (true);
 }
 
-int		Request::getBody(std::string const& buffer, int bytes)
+int		Request::extractBody(std::string const& buffer, int bytes)
 {
-    appendTheBody(buffer, bytes);
-    if (this->_body.size() == this->_contentLength)
+    this->appendTheBody(buffer, bytes);
+    if (this->_body.size() == this->_info.contentLength)
     {
         this->_ready = true;
-		this->_httpMessage = this->_header + this->_body;
+		this->_header = this->_header + this->_body;
 printYellow("Reached the size");
 // printYellow("BODY: " + this->_body);
     }
@@ -146,138 +107,11 @@ bool		Request::receiveFromClient(int client)
     if (this->checkBytesReceived(bytes) != 1) return (false);
 	buffer[bytes] = '\0';
 std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
-	if (getHeader(buffer) < 0)
+	if (this->extractHeader(buffer) < 0 || this->_parser.parse() == false)
 		return (false);
-	if (getBody(buffer, bytes) < 0)
+	if (this->extractBody(buffer, bytes) < 0)
 		return (false);
 	return (true);
-}
-
-/*******************************************************/
-/*				Getters of HTTP request.               */
-/*******************************************************/
-
-const std::string &		Request::getMethod(void) const
-{
-	return (this->_method);
-}
-/*
-const std::string &		Request::getLocation(void) const
-{
-	return (this->_path);
-}
-*/
-
-const std::string &		Request::getLocation(void) const
-{
-	return (this->_location);
-}
-
-const std::string &		Request::getRequestedInf(void) const
-{
-	return (this->_requestedInf);
-}
-
-const std::string &		Request::getContentType(void) const
-{
-	return (this->_contentType);
-}
-
-const ConfigFile  &		Request::getServerConf(void) const
-{
-	return (this->_serverConf);
-}
-
-const std::map<std::string, std::string> &		Request::getQueryString(void) const
-{
-	return (this->_queryString);
-}
-
-/*******************************************************/
-/*				Parse of HTTP request.					*/
-/*******************************************************/
-
-void 	Request::parseRequest()
-{
-	size_t			pos;
-
-//	std::cout << "parseRequest: " << this->_httpMessage << std::endl;
-	if (this->_httpMessage.empty())
-		return ;
-	pos = this->_httpMessage.find(" HTTP/");
-	if (pos == std::string::npos)
-		std::cout << "Error in parseRequest" << std::endl;
-	else
-		this->splitRequest(this->_httpMessage, pos);
-	// std::cout << "method: " << this->_method << " location: " << this->_location << " request inf: " << this->_requestedInf << std::endl;
-
-}
-
-void	Request::splitRequest(std::string & fullRequest, size_t & pos) {
-	std::vector<std::string>			splitHeadRequest;
-	std::vector<std::string>::iterator	i;
-	size_t								j;
-
-	splitHeadRequest = Utils::split(fullRequest.substr(0, pos), " \t\n");
-	i = splitHeadRequest.begin();
-	this->_method = *(i++);
-	j = (*i).rfind("/");
-	this->_location = (*i).substr(0, (j + 1));
-	this->_requestedInf = (*i).substr((j + 1), ((*i).size() - (j + 1)));
-	j = this->_requestedInf.find("?");
-	if (j != std::string::npos)
-	{
-		this->parseQueryString(this->_requestedInf.substr((j + 1)));
-		this->_requestedInf = this->_requestedInf.substr(0, j);
-	}
-	j = fullRequest.find("Content-Type:");
-	if (j != std::string::npos)
-		this->_contentType = fullRequest.substr(j, (fullRequest.size() - j));
-}
-
-void	Request::parseQueryString(std::string queryString)
-{
-	std::vector<std::string>	splitQueryString;
-	size_t						i;
-	size_t						j;
-	std::string					key;
-	std::string					value;
-
-	splitQueryString = Utils::split(queryString, "&");
-	i = 0;
-	while (i < splitQueryString.size())
-	{
-		j = splitQueryString[i].find("=");
-		key = splitQueryString[i].substr(0, j);
-		value = splitQueryString[i].substr((j + 1));
-		this->_queryString[this->urlDecoder(key)] = this->urlDecoder(value);
-		i++;
-	}
-}
-
-std::string	Request::urlDecoder(const std::string & url)
-{
-	size_t		i;
-	int			hexVal;
-	std::string	ret;
-
-	i = 0;
-	while (i < url.size())
-	{
-		if (url.compare(i, 1, "+") == 0)
-			ret += ' ';
-		else if ((url.compare(i, 1, "%") == 0) && ((i + 2) < url.size()))
-		{
-			std::istringstream	hexStream(url.substr((i + 1), 2));
-			hexStream >> std::hex >> hexVal;
-			ret += static_cast<char>(hexVal);
-			i += 2;			
-		}
-		else
-			ret += url[i];
-		i++;
-	}
-	return (ret);
 }
 
 /*******************************************************/
@@ -288,7 +122,7 @@ void        Request::clearAll() {
 	try {
 		this->_header.clear();
 		this->_body.clear();
-		this->_httpMessage.clear();
+		this->_header.clear();
 		// printYellow("Cleaned all data in request");
 	}
 	catch (std::exception & e) {
@@ -299,7 +133,7 @@ void        Request::clearAll() {
 void        Request::reset() {
 	try {
 		this->_ready = false;
-		this->_contentLength = 0;
+		this->_info.contentLength = 0;
 		this->clearAll();
 	}
 	catch (std::exception & e) {
@@ -311,6 +145,117 @@ bool    	Request::isReady() {
     return (this->_ready);
 }
 
-int         Request::totalLength() {
-    return (this->_contentLength);
+
+/*******************************************************/
+/*				Getters of HTTP request.               */
+/*******************************************************/
+
+int         Request::getContentLength() {
+    return (this->_info.contentLength);
 }
+
+const std::string &		Request::getMethod(void) const
+{
+	return (this->_info.method);
+}
+
+const std::string &		Request::getLocation(void) const
+{
+	return (this->_info.location);
+}
+
+const std::string &		Request::getRequestedInf(void) const
+{
+	return (this->_info.requestedInf);
+}
+
+const std::string &		Request::getContentType(void) const
+{
+	return (this->_info.contentType);
+}
+
+const std::map<std::string, std::string> &		Request::getQueryString(void) const
+{
+	return (this->_info.queryString);
+}
+const ConfigFile  &		Request::getServerConf(void) const
+{
+	return (this->_serverConf);
+}
+
+const std::string &		Request::getUserAgent(void) const
+{
+	return (this->_info.userAgent);
+}
+
+const std::string &		Request::getHost(void) const
+{
+	return (this->_info.host);
+}
+
+const std::string &		Request::getQueryStringS(void) const
+{
+	return (this->_info.queryStringS);
+}
+
+const std::string &		Request::getHeader(void) const
+{
+	return (this->_header);
+}
+
+const std::string &		Request::getBody(void) const
+{
+	return (this->_body);
+}
+
+/*******************************************************/
+/*				Setters of HTTP request.               */
+/*******************************************************/
+
+void					Request::setMethod(std::string newMethod)
+{
+	this->_info.method = newMethod;
+}
+
+void					Request::setLocation(std::string newLocation)
+{
+	this->_info.location = newLocation;
+}
+
+void					Request::setRequestedInf(std::string newInfo)
+{
+	this->_info.requestedInf = newInfo;
+}
+
+void					Request::setUserAgent(std::string newAgent)
+{
+	this->_info.userAgent = newAgent;
+}
+
+void					Request::setHost(std::string newHost)
+{
+	this->_info.host = newHost;
+}
+
+void					Request::setContentType(std::string newContentType)
+{
+	this->_info.contentType = newContentType;
+}
+
+void					Request::setQueryStringS(std::string newQueryStringS)
+{
+	this->_info.queryStringS = newQueryStringS;
+}
+
+void					Request::setQueryString(std::string key, std::string value)
+{
+	this->_info.queryString[key] = value;
+}
+
+void					Request::setContentLength(int value) {
+	this->_info.contentLength = value;
+}
+
+
+
+

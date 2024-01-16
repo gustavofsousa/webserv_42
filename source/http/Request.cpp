@@ -227,6 +227,16 @@ const std::string Request::returnPort(void) const{
 	
 }
 
+const time_t &			Request::getStartTime(void) const
+{
+	return (this->_start_time);
+}
+
+void					Request::setStart_time(time_t start_time)
+{
+	this->_start_time = start_time;
+}
+
 /*******************************************************/
 /*				Parse of HTTP request.					*/
 /*******************************************************/

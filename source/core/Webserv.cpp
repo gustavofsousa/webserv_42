@@ -86,6 +86,7 @@ bool    Webserv::sendDataClient(int i) {
 // std::cout << "At send: is it ready? " << this->_requests[indexRequest].isReady() << std::endl;
 		if (this->_requests[indexRequest].isReady())
 		{
+			this->_requests[indexRequest].setStart_time(time(NULL));
 			Client		client(this->_requests[indexRequest], response);
 			// std::cout << "####### RESPONSE ######" << std::endl << response.httpMessage << std::endl;
 		    send(this->conn.getFd(i).fd, response.httpMessage.c_str(),

@@ -14,6 +14,7 @@
 # include <algorithm> //for search
 # include "../config/ConfigFile.hpp"
 # include "../core/Server.hpp"
+# include <sys/time.h>
 
 # define BUFFER_SIZE 4096
 
@@ -36,6 +37,7 @@ class	Request
 		const std::string &		getUserAgent(void) const;
 		const std::string &		getHost(void) const;
 		const ConfigFile  &		getServerConf(void) const;
+		const time_t &			getStartTime(void) const;
         bool                    isReady();
         void                    reset();
         void                    clearAll();
@@ -46,6 +48,7 @@ class	Request
 		std::string 	    	totalLengthS(void) const;
 		const std::string &		returnHeader(void) const;
 		const std::string 		returnPort(void) const;
+		void					setStart_time(time_t start_time);
 
 	private:
         int                                 _fromClient;
@@ -67,6 +70,7 @@ class	Request
         std::string                         _delimeter;
     	ConfigFile							_serverConf;
 		std::string							_queryStringS;
+		time_t								_start_time;
 
 		void		            splitRequest(std::string & fullRequest, size_t & pos);
 		void		            parseQueryString(std::string queryString);

@@ -6,12 +6,13 @@
 #include <sys/wait.h>
 #include <vector>
 #include <string.h>
+#include <ctime>
 
 #include "Client.hpp"
 #include "Request.hpp"
 
-#define BUFFER_SIZE_CGI 64 * 1024  // 64 KB
-#define TIME_LIMIT 30
+#define BUFFER_SIZE_CGI 64 * 1024
+#define TIME_LIMIT 2
 
 class CGI
 {
@@ -23,7 +24,6 @@ class CGI
         std::string         _response;
         pid_t               _cgi_pid;
         int                 _requestFD[2];
-        time_t              _start_time;
         bool                _isActive;
 
     public:
@@ -38,7 +38,7 @@ class CGI
 
         void routineCheck(void);
 
-        void readFD(int fd);
+        int readFD(int fd);
         bool writeFD(std::string body);
 
         std::string getBody(void) const;

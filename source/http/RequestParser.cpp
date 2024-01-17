@@ -12,8 +12,7 @@ RequestParser& RequestParser::operator=(RequestParser const & other) {
     return (*this);
 }
 
-RequestParser::RequestParser(RequestParser const & other) {
-    this->_request = other._request;
+RequestParser::RequestParser(RequestParser const & other) : _request(other._request) {
     *this = other;
 }
 

@@ -53,3 +53,13 @@ void Response::processFileForHTTPResponse(std::string &file, int statusCode)
     this->_body = content;
     this->createHTTPHeader(statusCode, "text/html", this->_body.size());
 }
+
+//create header and body for timeout error
+void Response::sendErrorTimeOut()
+{
+
+    std::string body = "<html><body><h1>408 Request Timeout</h1></body></html>";
+    this->setBody(body);
+    this->createHTTPHeader(408, "text/html",  body.size());
+    this->send();
+}

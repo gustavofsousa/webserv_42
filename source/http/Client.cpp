@@ -19,10 +19,19 @@ void Client::handleHTTPMethod(void)
 
     if (_isCGI){
         CGI cgi(pagePath, this->_request);
-        this->_response.setBody(cgi.getBody());
-        this->_response.createHTTPHeader(200, "Content-Type: text/html; charset=utf-8", cgi.getBody().size());
-        this->_response.send();
-        return;
+
+        int cgiResponse = cgi.executeCGI();
+        if(cgiResponse){
+         this->_response.setBody(cgi.getBody());
+         this->_response.createHTTPHeader(200, "Content-Type: text/html; charset=utf-8", cgi.getBody().size());
+         this->_response.send();
+            return;
+        } else {
+            std::cout << "Erro na execução do CGI" << std::endl;
+            this->_response.sendErrorTimeOut();
+            this->_response.send();
+            return;
+        }
     }
     if(_request.getMethod() == "GET" && _statusCode < 400){
         this->_response.processFileForHTTPResponse(pagePath, this->_statusCode);

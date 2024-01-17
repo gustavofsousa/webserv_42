@@ -16,6 +16,7 @@ class   Response {
         std::string toString(int number);
         std::string httpMessage;
         void        processFileForHTTPResponse(std::string &file, int statusCode);
+        void        sendErrorTimeOut();
     
     private:
         std::string _body;

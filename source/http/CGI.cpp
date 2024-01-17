@@ -4,16 +4,6 @@ CGI::CGI(std::string path, Request const & request):
     _path(path),
     _request(request)
 {
-    std::cout << "CGI constructor" << std::endl;
-    std::cout << "StartTime Request: " << _request.getStartTime() << std::endl;
-    if (_request.getMethod() == "GET")
-    {
-        initEnvGET(_request.getQueryStringS());
-        executeGET();
-    } else if (_request.getMethod() == "POST"){
-        initEnvPOST(_request.getQueryStringS());
-        executePOST();
-    }
 }
 
 CGI::~CGI(){}
@@ -45,26 +35,50 @@ void CGI::initEnvPOST(std::string queryString){
     _env.push_back(NULL);
 }
 
-void CGI::executeGET(){
+
+bool CGI::executeCGI(){
+    if (_request.getMethod() == "GET")
+    {
+        initEnvGET(_request.getQueryStringS());
+        int result = executeGET();
+        if (result == 1)
+            return true;
+        else if (result == -1)
+            return false;
+    } else if (_request.getMethod() == "POST"){
+        initEnvPOST(_request.getQueryStringS());
+        executePOST();
+        //alterar para verificar se o filho esta ativo
+        return true;
+    }
+    return false;
+}
+
+int CGI::executeGET(){
     
     int pipefd[2];
 
     if(pipe(pipefd) == -1){
         std::cerr << "Erro ao criar o pipe" << std::endl;
-        return ;
+        return 0;
     }
 
+    fcntl(pipefd[0], F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+	fcntl(pipefd[1], F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+    
     this->_cgi_pid = fork();
     this->_isActive = true;
     if (this->_cgi_pid == -1){
         std::cerr << "Error no fork" << std::endl;
-        return ;
+        return 0;
     }
     else if (this->_cgi_pid == 0){
         close(pipefd[0]);
 
         dup2(pipefd[1], STDOUT_FILENO);
         close(pipefd[1]);
+
+        this->_isActive = true;
 
         char* args[2];
         args[0] = strdup(_path.c_str());
@@ -74,54 +88,46 @@ void CGI::executeGET(){
 
         free(args[0]);
         std::cerr << "Error ao executar execve" << std::endl;
-        return;
+        return 0;
     } else {
         close(pipefd[1]);
        int bytes = readFD(pipefd[0]);
        if (bytes <= 0){
-            time_t now = time(NULL);
-            while (bytes <= 0){
-                bytes = readFD(pipefd[0]);
-                std::cout << "Time limit: " << difftime(now, this->_request.getStartTime()) << std::endl;
-                if (difftime(now, this->_request.getStartTime()) >= TIME_LIMIT){
-                    kill(this->_cgi_pid, SIGKILL);
-                    // this->_isActive = false;
-                    std::cerr << "Timeout" << std::endl;
-                    return;
-                }
-                now = time(NULL);
-            }
+           routineCheck(bytes, pipefd[0]);
+           return -1;
        }
-       return;
+       return 1;
     }
-    return;
+    return 0;
 }
 
-void CGI::executePOST(void){
+int CGI::executePOST(void){
     int responseFD[2];
 
     if(pipe(_requestFD) == -1){
         std::cerr << "Erro ao criar o pipe" << std::endl;
-        return ;
+        return 0;
     }
 
     if(pipe(responseFD) == -1){
         std::cerr << "Erro ao criar o pipe" << std::endl;
-        return ;
+        return 0;
     }
 
-    if(!writeFD(_request.returnBody()))
-            return;
+    configurePipesAsNonBlocking(responseFD);
 
-    pid_t pid = fork();
+    if(!writeFD(_request.returnBody()))
+            return 0;
+
+    this->_cgi_pid = fork();
 
     this->_isActive = true;
 
-    if (pid == -1){
+    if (this->_cgi_pid == -1){
         std::cerr << "Error no fork" << std::endl;
-        return ;
+        return 0;
     }
-    else if (pid == 0){
+    else if (this->_cgi_pid == 0){
         close(_requestFD[1]);
         close(responseFD[0]);
 
@@ -141,17 +147,18 @@ void CGI::executePOST(void){
 
         free(args[0]);
         std::cerr << "Error ao executar execve" << std::endl;
-        return;
+        return 0;
     } else {
         close(_requestFD[0]);
         close(responseFD[1]);
-
-        //writeFD(_requestFD[1]);
-        readFD(responseFD[0]);
-        waitpid(pid, NULL, 0);
+        int bytes =   readFD(responseFD[0]);
+        if (bytes <= 0){
+           routineCheck(bytes, responseFD[0]);
+           return -1;
+        }
+       return 1;
     }
-
-
+    return 0;
 }
 
 int CGI::readFD(int fd){
@@ -161,8 +168,6 @@ int CGI::readFD(int fd){
         this->_response.append(buffer, bytesRead);
         return bytesRead;
     } 
-    
-    std::cerr << "Erro na leitura da resposta do filho" << std::endl;
     return 0;
 }
 
@@ -170,16 +175,21 @@ std::string CGI::getBody(void) const{
     return this->_response;
 }
 
-// void CGI::routineCheck(void){
-//     time_t current_time = time(NULL);
+void CGI::routineCheck(int bytes, int pipefd){
+    time_t now = time(NULL);
 
-//     while(_isActive){
-//         if(current_time - this->_start_time >= TIME_LIMIT){
-//             kill(this->_cgi_pid, SIGKILL);
-//             this->_isActive = false;
-//         }
-//     }
-// }
+    while (bytes <= 0 || !this->_isActive){
+        bytes = readFD(pipefd);
+      //  std::cout << "Time limit: " << difftime(now, this->_request.getStartTime()) << std::endl;
+        if (difftime(now, this->_request.getStartTime()) >= TIME_LIMIT){
+            kill(this->_cgi_pid, SIGKILL);
+            this->_isActive = false;
+            return;
+        }
+        now = time(NULL);
+    }
+    return;
+}
 
 bool CGI::writeFD(std::string body){
     size_t bytesWritten = 0;
@@ -194,4 +204,12 @@ bool CGI::writeFD(std::string body){
     }
     return true;
 
+}
+
+
+void CGI::configurePipesAsNonBlocking(int* pip) {
+	fcntl(pip[0], F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+	fcntl(pip[1], F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+	fcntl(this->_requestFD[0], F_SETFL, O_NONBLOCK, FD_CLOEXEC);
+	fcntl(this->_requestFD[1], F_SETFL, O_NONBLOCK, FD_CLOEXEC);
 }

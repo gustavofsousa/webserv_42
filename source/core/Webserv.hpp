@@ -1,9 +1,8 @@
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
 
+# include <iostream>
 # include <vector>
-# include <cerrno>
-# include <cstring> //c_string()
 
 # include "./Server.hpp"
 # include "./Connection.hpp"
@@ -11,30 +10,28 @@
 # include "../http/Client.hpp"
 # include "../http/Request.hpp"
 # include "../Utils.hpp"
-//# include "../config/Utils.hpp"
 
-class   Webserv {
-    public:
-        Webserv(std::vector<Server> const& newServers, ParserServer const& configFile);
-        ~Webserv();
-
-        Connection                      conn;
-        std::vector<Server>       servers;
-//        std::vector<Server> const&      servers;
-        void    start();
-        bool    readDataClient(int i);
-        bool    sendDataClient(int i);
+class   Webserv
+{
     private:
-        std::vector<Request>    _requests;
         int                     _nbrServers;
+        std::vector<Server>     _servers;
+        Connection              _conn;
+        std::vector<Request>    _requests;
+        void                    start(void);
+        bool                    updateStatusPoll(void);
+        bool                    isAbleToRead(int i);
+        bool                    isAbleToWrite(int i);
+        bool                    isPollError(int i);
+        bool                    isRequestFromServer(int i);
+        void                    openNewConnection(int i);
+        void                    readDataClient(const int & i);
+        void                    sendDataClient(const int & i);
 
-        bool	ableToWrite(int client);
-        bool	ableToRead(int client);
-        bool	pollError(int i);
-        bool    isRequestFromServer(int i);
-        bool	openNewConnection(int i);
-
-        int     updateStatusPoll();
+    public:
+        Webserv(const std::vector<Server> & newServers);
+		Webserv(const Webserv & copy);
+		Webserv				&	operator=(const Webserv & src);
+        ~Webserv(void);
 };
-
 #endif

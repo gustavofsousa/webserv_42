@@ -1,59 +1,96 @@
 #include "./Server.hpp"
 
-Server::Server() {}
-Server::~Server() {}
+Server::Server(int port, ConfigFile virtualServer) : \
+	_fd_socket(-1), _port(port) , _serverConf(virtualServer) {}
 
-Server::Server(int port) :_fd_socket(-1), _port(port) {}
-
-void Server::initialize() {
-	this->_fd_socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->_fd_socket < 0) {
-		perror("Error creating socket.");
-		exit(1);
+Server				&	Server::operator=(const Server & src)
+{
+	if (this != &src)
+	{
+		this->_fd_socket = src.getSocket();
+		this->_port = src._port;
+		this->_serverConf = src.getServerConf();
 	}
-	// Bind the socket to a specific IP address and port
-	struct sockaddr_in server_addr;
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(this->_port); //Reorganize order of bytes to network order.
-	server_addr.sin_addr.s_addr = INADDR_ANY;
-
-	if (bind(this->_fd_socket, reinterpret_cast<struct sockaddr*>(&server_addr), sizeof(server_addr)) < 0) { // choose a port to itself.
-		perror("Error binding socket");
-		exit(1);
-	}
-	// Listen for incoming connections
-	if (listen(this->_fd_socket, 5) < 0) {
-		perror("Error listening for connections.");
-		exit(1);
-	}
+	return (*this);
 }
 
-int Server::acceptCon() const {
-	// Accept incoming connections and get a file descriptor for reading and writing
+Server::Server(const Server & copy)
+{
+	*this = copy;
+	return ;
+}
+
+Server::~Server(void)
+{
+	_fd_socket = -1;
+	_port = 0;
+}
+
+const int			&	Server::getSocket(void) const
+{
+	return (this->_fd_socket);
+}
+
+const int			&	Server::getPort(void) const
+{
+	return (this->_port);
+}
+
+const ConfigFile	&	Server::getServerConf(void) const
+{
+	return (this->_serverConf);
+}
+
+bool					Server::initialize(void)
+{
+	struct sockaddr_in	server_addr;
+	int					value;
+
+	value = 1;
+	this->_fd_socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+	if (this->_fd_socket == -1)
+	{
+		std::cout << "Error creating socket." << std::endl;
+		return (false);
+	}
+	setsockopt(this->_fd_socket, SOL_SOCKET, SO_REUSEADDR, \
+				&value, sizeof(int));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = htons(this->_port);
+	server_addr.sin_addr.s_addr = this->_serverConf.getHost();
+	if (bind(this->_fd_socket, \
+		reinterpret_cast<struct sockaddr*>(&server_addr), \
+		sizeof(server_addr)) == -1)
+	{
+		std::cout << "Error binding socket" << std::endl;
+		return (false);
+	}
+	if (listen(this->_fd_socket, 1024) == -1)
+	{
+		std::cout << "Error listening for connections." << std::endl;
+		return (false);
+	}
+	return (true);
+}
+
+int						Server::acceptCon(void) const
+{
 	struct sockaddr_in	client_address;
 	socklen_t			client_address_len;
 	int					client_socket;
 
 	client_address_len = sizeof(client_address);
-	client_socket = accept(this->_fd_socket,
-		reinterpret_cast<struct sockaddr*>(&client_address),
+	client_socket = accept(this->_fd_socket, \
+		reinterpret_cast<struct sockaddr*>(&client_address), \
 		&client_address_len);
-	return client_socket;
+	return (client_socket);
 }
 
-void Server::closeCon() {
-	if (this->_fd_socket >= 0) {
+void					Server::closeCon(void)
+{
+	if (this->_fd_socket >= 0)
+	{
 		close(this->_fd_socket);
 		this->_fd_socket = -1;
 	}
-}
-
-void    Server::setServerConf(const ConfigFile & server)
-{
-	this->_serverConf = server;
-}
-
-const ConfigFile &   Server::getServerConf(void)
-{
-	return (this->_serverConf);
 }

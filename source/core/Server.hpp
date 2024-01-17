@@ -1,32 +1,26 @@
-#ifndef SERVER_HPP
-# define SERVER_HPP
-
+#pragma once
 # include <iostream>
-# include <cstring>
 # include <unistd.h>
 # include <sys/socket.h>
-# include <netinet/in.h>
-# include <cstdio> //perror
-# include <stdlib.h> //exit()
-//# include <fcntl.h> //fcntl()
-#include "../config/ConfigFile.hpp"
+# include "../config/ConfigFile.hpp"
 
-class Server {
-public:
-    Server();
-    ~Server();
-    Server(int port);
+class   Server
+{
+    private:
+        int                     _fd_socket;
+        int                     _port;
+        ConfigFile              _serverConf;
 
-    void    initialize();
-    int     acceptCon() const;
-    void    closeCon();
-    int     _fd_socket; //better be private
-    void    setServerConf(const ConfigFile & server);
-    const ConfigFile &   getServerConf(void);
+    public:
+        Server(int port, ConfigFile server);
+        Server(const Server & copy);
+        Server              &   operator=(const Server & src);
+        ~Server(void);
 
-private:
-    int     _port;
-    ConfigFile  _serverConf;
+        bool                    initialize(void);
+        int                     acceptCon(void) const;
+        void                    closeCon(void);
+        const int           &   getSocket(void) const;
+        const int           &   getPort(void) const;
+        const ConfigFile    &   getServerConf(void) const;
 };
-
-#endif

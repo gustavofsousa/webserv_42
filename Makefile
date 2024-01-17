@@ -5,18 +5,18 @@ CXX 		= g++
 CXXFLAGS	= -Wall -Werror -Wextra -std=c++98
 
 #					Source and object file paths
-MAIN					=	main.cpp Utils.cpp
+MAIN					=	main.cpp Utils.cpp Error.cpp
 
 CORE_DIR				=	core/
 CORE_FILES				=	Webserv.cpp Server.cpp Connection.cpp
 CORE					=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 
 HTTP_DIR				=	http/
-HTTP_FILES				=	Request.cpp Response.cpp Client.cpp
+HTTP_FILES				=	Request.cpp Response.cpp Client.cpp CGI.cpp
 HTTP					=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
 
 CONFIG_DIR				=	config/
-CONFIG_FILES			=	ConfigFile.cpp Location.cpp ParserServer.cpp Error.cpp
+CONFIG_FILES			=	ConfigFile.cpp Location.cpp ParserServer.cpp 
 #CONFIG_FILES			=	ConfigFile.cpp Utils.cpp Location.cpp ParserServer.cpp Error.cpp
 CONFIG					=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
 
@@ -32,6 +32,7 @@ ALL_OBJ_DIR				=	$(sort $(dir $(OBJS)))
 all: $(ALL_OBJ_DIR) $(NAME)
 
 # Create the object directory if it doesn't exist
+
 $(ALL_OBJ_DIR):
 	@mkdir -p $(ALL_OBJ_DIR)
 

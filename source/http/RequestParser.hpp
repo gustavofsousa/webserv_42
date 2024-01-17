@@ -17,7 +17,6 @@ class RequestParser
 	private:
 		Request &							_request;
 		std::string							_header;
-        struct requestInfo					_info;
 
 		void		            splitRequest(size_t & pos);
 		void		            parseQueryString(std::string queryString);

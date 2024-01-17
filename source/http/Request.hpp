@@ -1,6 +1,5 @@
 #pragma	once
 
-# include "RequestParser.hpp"
 # include <fstream>
 # include <string>
 # include <iostream> //confirmar se será necessário para a entrega
@@ -8,12 +7,12 @@
 # include <map>
 # include "./../config/Error.hpp"
 # include "../Utils.hpp"
-//# include "./../config/Utils.hpp"
 # include <sys/socket.h>
 # include <string.h>
 # include <string> //to_string()
 # include <algorithm> //for search
 # include "../config/ConfigFile.hpp"
+# include "RequestParser.hpp"
 
 # define BUFFER_SIZE 4096
 
@@ -83,7 +82,7 @@ class	Request
         int                         _fromClient; // comes from constuctor. It is the socket of server.
     	ConfigFile					_serverConf;
 		struct requestInfo			_info;
-		RequestParser				_parser;
+		RequestParser*				_parser;
 
         int                     checkBytesReceived(ssize_t bytes_received);
 		int			            extractHeader(std::string const& buffer );

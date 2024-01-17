@@ -5,7 +5,8 @@
 /*******************************************************/
 
 
-Request::Request(int newClient, ConfigFile _configFile) : _parser(*this){
+Request::Request(int newClient, ConfigFile _configFile){
+	this->_parser = new RequestParser(*this);
 	this->_serverConf = _configFile;
     this->_fromClient = newClient;
 	this->_info.contentLength = -1;
@@ -27,11 +28,14 @@ Request&			Request::operator=(Request const & other) {
 	return (*this);
 }
 
-Request::Request(Request const & other) : _parser(*this) {
+Request::Request(Request const & other) {
+	this->_parser = new RequestParser(*this);
 	*this = other;
 }
 
-Request::~Request(void) {}
+Request::~Request(void) {
+	delete this->_parser;
+}
 
 static void printYellow(std::string const& str) {
 	std::cout << "\033[1;33m" << str << "\033[0m" << std::endl;
@@ -107,7 +111,7 @@ bool		Request::receiveFromClient(int client)
     if (this->checkBytesReceived(bytes) != 1) return (false);
 	buffer[bytes] = '\0';
 std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
-	if (this->extractHeader(buffer) < 0 || this->_parser.parse() == false)
+	if (this->extractHeader(buffer) < 0 || this->_parser->parse() == false)
 		return (false);
 	if (this->extractBody(buffer, bytes) < 0)
 		return (false);

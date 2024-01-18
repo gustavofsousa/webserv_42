@@ -32,7 +32,7 @@ class Client
         bool                _isCGI;
         const std::string   &   getStatusCode(void);
         void                buildMessage(void);
-        std::string	    fileRequested(void);
+        std::string 	    fileRequested(void);
         void                selectContent(std::string & fileRequested, size_t & i);
         void                buildGetfileRequested(std::string & fileRequested);
         void                buildDeletefileRequested(std::string & fileRequested);
@@ -48,6 +48,7 @@ class Client
                             std::string errorCode);
         void                buildDefaultErrorPage(std::string & page, \
                             const std::string & errorCode);
+        void                validRequest(std::string & fileRequested);
 };
 
 #endif

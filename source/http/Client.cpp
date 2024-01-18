@@ -157,7 +157,7 @@ void                    Client::validRequest(std::string & fileRequested)
         tmpVec00 = this->_request.getServerConf().getServerName();
         if (((inet_addr(tmpString.c_str()) != \
                 this->_request.getServerConf().getHost()) \
-            && (std::find(tmpVec00.begin(), tmpVec00.end(), tmpString) != \
+            && (std::find(tmpVec00.begin(), tmpVec00.end(), tmpString) == \
                 tmpVec00.end())) || (j < k))
             fileRequested.append("Error500");
     }

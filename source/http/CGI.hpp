@@ -2,16 +2,17 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <vector>
+#include <fcntl.h>
 #include <string.h>
 
 #include "Client.hpp"
 #include "Request.hpp"
 
 #define BUFFER_SIZE_CGI 64 * 1024  // 64 KB
-#define TIME_LIMIT 3
+#define TIME_LIMIT 5
 
 class   CGI
 {
@@ -26,12 +27,13 @@ class   CGI
         const Request   &   _request;
         std::vector<char*>  _env;
         int                 executeGET(void);
-        int                executePOST(void);
+        int                 executePOST(void);
         void                initEnvGET(std::string queryString);
         void                initEnvPOST(std::string queryString);
-        int                readFD(int fd);
+        int                 readFD(int fd);
         bool                writeFD(std::string body);
-        void                routineCheck(int bytes, int pipefd);
+        bool                routineCheck(int pipefd);
+        void                noBlockingFD(int *pipe1, int *pipe2);
     
     public:
         CGI(std::string path, const Request & request);

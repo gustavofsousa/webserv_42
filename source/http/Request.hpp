@@ -82,7 +82,7 @@ class	Request
         int                         _fromClient; // comes from constuctor. It is the socket of server.
     	ConfigFile					_serverConf;
 		struct requestInfo			_info;
-		RequestParser*				_parser;
+		// RequestParser*				_parser;
 
         int                     checkBytesReceived(ssize_t bytes_received);
 		int			            extractHeader(std::string const& buffer );

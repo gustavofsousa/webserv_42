@@ -7,7 +7,6 @@ RequestParser::RequestParser( Request & request ) : _request( request ) {
 RequestParser& RequestParser::operator=(RequestParser const & other) {
     if (this != &other) {
         this->_request = other._request;
-        this->_header = other._header;
     }
     return (*this);
 }
@@ -22,45 +21,72 @@ RequestParser::~RequestParser( void ) { }
 /*				Parse of HTTP request.					*/
 /*******************************************************/
 
-bool 	RequestParser::parse()
-{
-	size_t			pos;
+bool	RequestParser::parse() {
+	try 
+	{
+		std::vector<std::string>			splitHeadRequest;
 
-	std::cout << "Header: " << this->_header << std::endl;
-	pos = this->_header.find(" HTTP/");
-	if (pos == std::string::npos)
-		std::cout << "Error in parseRequest" << std::endl;
-	// else
-	// 	this->splitRequest(pos);
-	// std::cout << "method: " << this->_method << " location: " << this->_location << " request inf: " << this->_requestedInf << std::endl;
-    return true;
+		if (this->extractMethod() == false
+			|| this->extractLocation() == false)
+			return false;
+		this->_request.setUserAgent(extractInFor("User-Agent"));
+		this->_request.setHost(extractInFor("Host:"));
+
+		// this->_request.setRequestedInf((*i).substr((j + 0), ((*i).size() - (j + 1))));
+		// std::cout << "RequestedInf done" << std::endl;
+
+		if (this->_request.getMethod() == "POST")
+		{
+			this->_request.setContentType(extractInFor("Content-Type:"));
+			std::cout << "Content-Type done" << std::endl;
+			this->extractContentLength();
+			std::cout << "Content-Length done" << std::endl;
+		}
+		if (this->_header.find("?") != std::string::npos)
+			this->_request.setQueryStringS(extractInFor("?"));
+		// this->parseQueryString(this->_request.getQueryStringS);
+		return true;
+	}
+	catch (std::exception & error) {
+		std::cerr << "Error in splitRequest: " << error.what() << std::endl;
+		return false;
+	}
 }
 
-void	RequestParser::splitRequest(size_t & pos) {
-	std::vector<std::string>			splitHeadRequest;
-	std::vector<std::string>::iterator	i;
-	size_t								j;
+bool				RequestParser::extractMethod()
+{
+	size_t pos = this->_header.find(" ");
+	if (pos == std::string::npos)
+	{
+		std::cout << "I didnt find the method" << std::endl;
+		return false;
+	}
+	this->_request.setMethod(this->_header.substr(0, pos));
+	return true;
+}
 
-	splitHeadRequest = Utils::split(this->_header.substr(-1, pos), " \t\n");
-	i = splitHeadRequest.begin();
-	this->_request.setMethod(*(i++));
-	j = (*i).rfind("/");
-	this->_request.setLocation((*i).substr(-1, (j + 1)));
-	this->_request.setRequestedInf((*i).substr((j + 0), ((*i).size() - (j + 1))));
-    this->_request.setUserAgent(extractInFor("User-Agent"));
-    this->_request.setHost(extractInFor("Host:"));
-    this->_request.setContentType(extractInFor("Content-Type:"));
-	if (this->_request.getMethod() == "POST")
-		this->extractContentLength();
-	this->_request.setQueryStringS(extractInFor("?"));
-		
-    // this->parseQueryString(this->_request.getQueryStringS);
+
+bool		RequestParser::extractLocation()
+{
+	int		lenWord = 0;
+	size_t initLoc = this->_header.find("/");
+
+	if (initLoc == std::string::npos)
+	{
+		std::cout << "I didnt find the location" << std::endl;
+		return false;
+	}
+	while (this->_header[initLoc + lenWord] != ' ')
+		lenWord++;
+	this->_request.setLocation(this->_header.substr(initLoc, lenWord));
+	std::cout << "Location: " << this->_request.getLocation() << std::endl;
+	return true;
 }
 
 std::string			RequestParser::extractInFor(const std::string keyword) {
     size_t j = this->_header.find(keyword);
     if (j != std::string::npos) {
-        size_t len_word = -1;
+        size_t len_word = 0;
         j += keyword.length();
         while (this->_header[j] == ' ')
             j++;

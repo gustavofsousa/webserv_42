@@ -6,7 +6,7 @@
 
 
 Request::Request(int newClient, ConfigFile _configFile){
-	this->_parser = new RequestParser(*this);
+	// this->_parser = new RequestParser(*this);
 	this->_serverConf = _configFile;
     this->_fromClient = newClient;
 	this->_info.contentLength = -1;
@@ -19,7 +19,7 @@ Request&			Request::operator=(Request const & other) {
 	if (this != &other) {
 		this->_info = other._info;
 		this->_serverConf = other._serverConf;
-		this->_parser = other._parser;
+		// this->_parser = other._parser;
 		this->_delimeter = other._delimeter;
 		this->_ready = other._ready;
 		this->_header = other._header;
@@ -29,12 +29,12 @@ Request&			Request::operator=(Request const & other) {
 }
 
 Request::Request(Request const & other) {
-	this->_parser = new RequestParser(*this);
+	// this->_parser = new RequestParser(*this);
 	*this = other;
 }
 
 Request::~Request(void) {
-	delete this->_parser;
+	// delete this->_parser;
 }
 
 static void printYellow(std::string const& str) {
@@ -111,8 +111,11 @@ bool		Request::receiveFromClient(int client)
     if (this->checkBytesReceived(bytes) != 1) return (false);
 	buffer[bytes] = '\0';
 std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
-	if (this->extractHeader(buffer) < 0 || this->_parser->parse() == false)
-	// if (this->extractHeader(buffer) < 0)
+	// if (this->extractHeader(buffer) < 0 || this->_parser->parse() == false)
+	if (this->extractHeader(buffer) < 0)
+		return (false);
+	RequestParser	parser(*this);
+	if (parser.parse() == false)
 		return (false);
 	if (this->getMethod() == "POST" && this->extractBody(buffer, bytes) < 0)
 		return (false);

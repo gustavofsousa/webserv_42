@@ -15,12 +15,13 @@ class RequestParser
 		bool					parse( );
 
 	private:
-		Request &							_request;
-		std::string							_header;
+		Request &				_request;
+		std::string				_header;
 
-		void		            splitRequest(size_t & pos);
 		void		            parseQueryString(std::string queryString);
 		std::string	            urlDecoder(const std::string & url);
 		bool		            extractContentLength();
 		std::string				extractInFor(const std::string keyword);
+		bool					extractMethod();
+		bool					extractLocation();
 };

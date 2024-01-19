@@ -68,7 +68,7 @@ int		Request::extractHeader(std::string const& buffer) {
 		return (-1);
 	}
 	this->_header.append(buffer.begin(), buffer.begin() + pos);
-// printYellow("header: " + this->_header);
+printYellow("header: " + this->_header);
 	return (0);
 }
 
@@ -112,8 +112,9 @@ bool		Request::receiveFromClient(int client)
 	buffer[bytes] = '\0';
 std::cout << "Round:" << " Bodysize: " << this->_body.size() << " | I read now: " << bytes << std::endl;
 	if (this->extractHeader(buffer) < 0 || this->_parser->parse() == false)
+	// if (this->extractHeader(buffer) < 0)
 		return (false);
-	if (this->extractBody(buffer, bytes) < 0)
+	if (this->getMethod() == "POST" && this->extractBody(buffer, bytes) < 0)
 		return (false);
 	return (true);
 }

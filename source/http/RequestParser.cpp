@@ -26,13 +26,12 @@ bool 	RequestParser::parse()
 {
 	size_t			pos;
 
-	if (this->_header.empty())
-		return false;
+	std::cout << "Header: " << this->_header << std::endl;
 	pos = this->_header.find(" HTTP/");
 	if (pos == std::string::npos)
 		std::cout << "Error in parseRequest" << std::endl;
-	else
-		this->splitRequest(pos);
+	// else
+	// 	this->splitRequest(pos);
 	// std::cout << "method: " << this->_method << " location: " << this->_location << " request inf: " << this->_requestedInf << std::endl;
     return true;
 }

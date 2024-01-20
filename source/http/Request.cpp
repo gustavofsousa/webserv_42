@@ -129,17 +129,9 @@ bool											Request::receiveFromClient(int client)
 	bytes = recv(client, buffer, BUFFER_SIZE - 1, 0);
     if (this->checkBytesReceived(bytes) != 1)
 	{
-		std::cout << "fim    | receiveFromClient: " << client << std::endl;
 		return (false);
 	}
 	buffer[bytes] = '\0';
-/*
-	std::cout << "Round: Bodysize: " << this->_body.size() \
-				<< " | I read now: " << bytes << " bytes." << std::endl;
-	printYellow("content start");
-	std::cout << buffer << std::endl;
-	printYellow("content end");
-*/
 	if (!this->getHeader(buffer))
 		return (false);
 	this->getBody(buffer, bytes);
@@ -187,11 +179,6 @@ void											Request::getBody(std::string const& buffer, int bytes)
         this->_ready = true;
 		this->_httpMessage = this->_header + this->_body;
 		printYellow("Reached the size");
-/*
-		printYellow("body start");
-		std::cout << this->_body << std::endl;
-		printYellow("body end");
-*/
     }
 }
 
@@ -255,7 +242,6 @@ void											Request::findContentLength(void)
 	size_t	end;
 
 	start = this->_header.find("Content-Length: ");
-	//std::cout << "Header: " << this->_header << std::endl;
 	if (start == std::string::npos)
 	{
 		this->_ready = true;
@@ -382,19 +368,6 @@ bool											Request::splitRequest(std::string urlRequest, std::string root)
 			j++;
 		}
 	}
-/*
-	std::cout << "method: " << this->_method << " _location: " << this->_location << " requestedInf: " << this->_requestedInf;
-	std::map<std::string, std::string>::iterator a = this->_mapQueryString.begin();
-	std::map<std::string, std::string>::iterator z = this->_mapQueryString.end();
-	if (a != z)
-		std::cout << " queryString:";
-	while (a != z)
-	{
-		std::cout << " key: " << a->first << " value: " << a->second;
-		a++;
-	}
-	std::cout << std::endl;
-*/
 	return (true);
 }
 

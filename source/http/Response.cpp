@@ -26,13 +26,11 @@ void Response::createHTTPHeader(std::string statusCode, std::string contentType)
     header.append("\r\n").append("\r\n");
 
     this->_header = header;
-//    std::cout << "createHTTPHeader: this->_header: " << this->_header << std::endl;
 }
 
 void Response::send() {
    this->httpMessage = this->_header;
    this->httpMessage.append(this->_body);
-   std::cout << httpMessage << std::endl;
 }
 
 void Response::processFileForHTTPResponse(std::stringstream &file, std::string statusCode)

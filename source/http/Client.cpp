@@ -23,7 +23,6 @@ void                    Client::handleHTTPMethod(void)
             this->_response.send();
         }
         else {
-            std::cout << "error 408 " << std::endl;
             pagePath.clear();
             this->buildDefaultErrorPage(pagePath, "500");
             if (pagePath.find("keyPage") != std::string::npos)

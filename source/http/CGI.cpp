@@ -217,7 +217,6 @@ bool        CGI::writeFD(std::string body)
                     body.length() - bytesWritten);
         if (bytes == -1)
         {
-            printRed(strerror(errno));
             return (false);
         }
         bytesWritten += bytes;

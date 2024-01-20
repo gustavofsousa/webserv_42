@@ -24,7 +24,7 @@ int main(int argc, char **argv)
             configServer.createServer();
         else
             configServer.createServer(argv[1]);
-//        configServer.print();
+       // configServer.print();
         i = 0;
         while (i < configServer.getNbrServers())
         {

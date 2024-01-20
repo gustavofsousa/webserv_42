@@ -8,9 +8,6 @@
 #include <fcntl.h>
 #include <string.h>
 
-#include <cerrno> //remover depois
-#include <errno.h>
-
 #include "Client.hpp"
 #include "Request.hpp"
 

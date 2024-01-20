@@ -80,7 +80,12 @@ std::string             Client::fileRequested(void)
     else if (this->_request.getMethod().compare(0, 6, "DELETE") == 0)
         this->buildDeletefileRequested(fileRequested);
     else if (this->_request.getMethod().compare(0, 4, "POST") == 0)
-        this->_isCGI = true;
+    {
+        if (this->_request.getLocation().find("cgi-bin") != std::string::npos)
+            this->_isCGI = true;
+        else
+            fileRequested.append("Error404");
+    }
     if (fileRequested.empty() || fileRequested.compare(0, 5, "Error") == 0 || \
         (fileRequested.find("keyPage") == std::string::npos))
         this->buildErrorfileRequested(fileRequested, i);

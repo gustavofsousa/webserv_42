@@ -4,12 +4,12 @@ import cgi, os
 import cgitb; cgitb.enable()
 
 form = cgi.FieldStorage()
-#Get filename here.
+
 fileitem = form['file']
-# Test if the file was uploaded
+
 if fileitem.filename:
-   # strip leading path from file name to avoid
-   # directory traversal attacks
+    if not os.path.exists("var/www/html/mainSite/cgi-bin/tmp/")
+      os.makedirs("var/www/html/mainSite/cgi-bin/tmp/")
    open("var/www/html/mainSite/cgi-bin/tmp/" + fileitem.filename, "wb").write(fileitem.file.read())
    message = 'The file "' + fileitem.filename + '" was uploaded successfully'
  

@@ -33,10 +33,14 @@ CGI::CGI(const CGI & copy)
 
 CGI::~CGI(void){
     for (std::vector<char*>::iterator it = _env.begin(); it != _env.end(); ++it) {
-        delete[] *it; // Libera a memória alocada para cada char*
+        delete[] *it;
     }
-
     _env.clear();
+}
+
+bool printRed(std::string str) {
+    std::cout << "\033[1;31m" << str << "\033[0m" << std::endl;
+    return (true);
 }
 
 void        CGI::initEnvGET(std::string queryString)
@@ -73,6 +77,7 @@ bool CGI::executeCGI(){
         {
             initEnvGET(_request.getQueryStringS());
             int result = executeGET();
+            std::cout << "Result execute cgi " << result << std::endl;
             if (result == 1)
                 return true;
             else if (result == -1)
@@ -154,6 +159,7 @@ int        CGI::executePOST(void)
         return 0;
     }
     else if (this->_cgi_pid == 0){
+        std::cout << "Estou no filho:" << std::endl;
         close(_requestFD[1]);
         close(responseFD[0]);
         dup2(_requestFD[0], STDIN_FILENO);
@@ -210,13 +216,12 @@ bool        CGI::writeFD(std::string body)
     bytesWritten = 0;
     while (bytesWritten < body.length())
     {
-
         bytes = write(this->_requestFD[1], body.c_str() + bytesWritten, \
                     body.length() - bytesWritten);
         std::cout << "CGI write: " << bytesWritten << std::endl;
         if (bytes == -1)
         {
-            std::cerr << "error";
+            printRed(strerror(errno));
             return (false);
         }
         bytesWritten += bytes;
@@ -229,7 +234,7 @@ bool CGI::routineCheck(int pipefd){
     int bytes = 0; 
 
     while (this->_isActive){
-        std::cout << "Timer: " << (int) ( difftime(now, this->_request.getStartTime()) >= TIME_LIMIT) << std::endl;
+        std::cout << "Timer: " << ( difftime(now, this->_request.getStartTime()) >= TIME_LIMIT) << std::endl;
         if (difftime(now, this->_request.getStartTime()) >= TIME_LIMIT){
             kill(this->_cgi_pid, SIGKILL);
             this->_isActive = false;

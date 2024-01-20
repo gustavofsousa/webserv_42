@@ -23,10 +23,11 @@ void                    Client::handleHTTPMethod(void)
             this->_response.send();
         }
         else {
+            std::cout << "error 408 " << std::endl;
             pagePath.clear();
             this->buildDefaultErrorPage(pagePath, "500");
             if (pagePath.find("keyPage") != std::string::npos)
-            pagePath.erase(pagePath.find("keyPage"));
+                pagePath.erase(pagePath.find("keyPage"));
             this->_response.setBody(pagePath);
             this->_response.createHTTPHeader("500 Internal Server Error", "text/html; charset=utf-8");
             this->_response.send();

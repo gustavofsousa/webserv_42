@@ -255,6 +255,7 @@ void											Request::findContentLength(void)
 	size_t	end;
 
 	start = this->_header.find("Content-Length: ");
+	//std::cout << "Header: " << this->_header << std::endl;
 	if (start == std::string::npos)
 	{
 		this->_ready = true;

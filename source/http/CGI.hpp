@@ -8,11 +8,14 @@
 #include <fcntl.h>
 #include <string.h>
 
+#include <cerrno> //remover depois
+#include <errno.h>
+
 #include "Client.hpp"
 #include "Request.hpp"
 
 #define BUFFER_SIZE_CGI 64 * 1024  // 64 KB
-#define TIME_LIMIT 5
+#define TIME_LIMIT 2
 
 class   CGI
 {

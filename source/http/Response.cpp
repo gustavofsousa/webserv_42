@@ -32,6 +32,7 @@ void Response::createHTTPHeader(std::string statusCode, std::string contentType)
 void Response::send() {
    this->httpMessage = this->_header;
    this->httpMessage.append(this->_body);
+   std::cout << httpMessage << std::endl;
 }
 
 void Response::processFileForHTTPResponse(std::stringstream &file, std::string statusCode)
